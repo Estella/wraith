@@ -1,0 +1,20 @@
+#! /bin/sh
+
+set -x
+
+rm -rf tmp/
+mkdir tmp
+cp -R BitchX/ tmp/
+cp -R irssi/ tmp/
+cp -R mIRC/ tmp/
+rm -rf tmp/*/CVS/
+cd tmp/
+tar -czvf BitchX.tgz BitchX/
+tar -czvf irssi.tgz irssi/
+tar -czvf mIRC.tgz mIRC/
+
+mv -f *.tgz ~lordares/public_html/wraith/scripts/
+chmod o+r ~lordares/public_html/wraith/scripts/*.tgz
+cd ..
+rm -rf tmp/
+
