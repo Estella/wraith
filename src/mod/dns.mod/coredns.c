@@ -646,7 +646,7 @@ static void passrp(struct resolve *rp, long ttl, int type)
 
 /* Parses the response packets received.
  */
-static void parserespacket(u_8bit_t *s, int l)
+static void parserespacket(u_8bit_t *s, size_t l)
 {
     struct resolve *rp = NULL;
     packetheader *hp = NULL;
@@ -877,8 +877,9 @@ static void parserespacket(u_8bit_t *s, int l)
 		}
 		c += rdatalength;
 	    }
-	} else
+	} else {
 	    ddebug0(RES_ERR "No error returned but no answers given.");
+        }
 	break;
     case NXDOMAIN:
 	ddebug0(RES_MSG "Host not found.");
@@ -934,7 +935,7 @@ static void dns_ack(void)
         ddebug1(RES_ERR "Received reply from unknown source: %s",
 	       iptostr(from.sin_addr.s_addr));
     } else
-        parserespacket((u_8bit_t *) resrecvbuf, r);
+        parserespacket((u_8bit_t *) resrecvbuf, (size_t) r);
 }
 
 /* Remove or resend expired requests. Called once a second.

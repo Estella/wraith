@@ -467,6 +467,7 @@ struct dcc_table DCC_BOT_NEW =
   timeout_dcc_bot_new,
   display_dcc_bot_new,
   free_dcc_bot_,
+  NULL,
   NULL
 };
 /* Hash function for tandem bot commands */
@@ -987,7 +988,8 @@ struct dcc_table DCC_CHAT_SECPASS =
   tout_dcc_chat_secpass,
   display_dcc_chat_secpass,
   kill_dcc_general,
-  out_dcc_general
+  out_dcc_general,
+  NULL
 };
 
 struct dcc_table DCC_CHAT_PASS =
@@ -1000,7 +1002,8 @@ struct dcc_table DCC_CHAT_PASS =
   tout_dcc_chat_pass,
   display_dcc_chat_pass,
   kill_dcc_general,
-  out_dcc_general
+  out_dcc_general,
+  NULL
 };
 
 
@@ -1184,7 +1187,8 @@ struct dcc_table DCC_CHAT =
   NULL,
   display_dcc_chat,
   kill_dcc_general,
-  out_dcc_general
+  out_dcc_general,
+  NULL
 };
 
 static int lasttelnets;
@@ -1453,6 +1457,7 @@ struct dcc_table DCC_DUPWAIT =
   timeout_dupwait,
   display_dupwait,
   kill_dupwait,
+  NULL,
   NULL
 };
 
@@ -1676,7 +1681,8 @@ struct dcc_table DCC_TELNET_ID =
   timeout_dcc_telnet_id,
   display_dcc_telnet_id,
   kill_dcc_general,
-  out_dcc_general
+  out_dcc_general,
+  NULL
 };
 
 static void dcc_socket(int idx, char *buf, int len)

@@ -1534,6 +1534,7 @@ struct dcc_table DCC_RELAY =
   NULL,
   display_relay,
   kill_relay,
+  NULL,
   NULL
 };
 
@@ -1557,7 +1558,8 @@ struct dcc_table DCC_RELAYING =
   NULL,
   display_relaying,
   kill_relay,
-  out_relay
+  out_relay,
+  NULL
 };
 
 struct dcc_table DCC_FORK_RELAY =
@@ -1570,6 +1572,7 @@ struct dcc_table DCC_FORK_RELAY =
   failed_tandem_relay,
   display_tandem_relay,
   kill_relay,
+  NULL,
   NULL
 };
 
@@ -1583,6 +1586,7 @@ struct dcc_table DCC_PRE_RELAY =
   NULL,
   display_pre_relay,
   kill_relay,
+  NULL,
   NULL
 };
 

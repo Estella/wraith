@@ -1422,7 +1422,7 @@ static void cmd_chhandle(struct userrec *u, int idx, char *par)
 static void cmd_handle(struct userrec *u, int idx, char *par)
 {
   char oldhandle[HANDLEN + 1] = "", newhandle[HANDLEN + 1] = "";
-  int i;
+  size_t i;
 
   strncpy(newhandle, newsplit(&par), sizeof newhandle);
 
@@ -2142,7 +2142,7 @@ static void cmd_trace(struct userrec *u, int idx, char *par)
 /* After messing with someone's user flags, make sure the dcc-chat flags
  * are set correctly.
  */
-int check_dcc_attrs(struct userrec *u, int oatr)
+int check_dcc_attrs(struct userrec *u, flag_t oatr)
 {
   int i, stat;
  
@@ -2256,7 +2256,7 @@ int check_dcc_attrs(struct userrec *u, int oatr)
   return u->flags;
 }
 
-int check_dcc_chanattrs(struct userrec *u, char *chname, int chflags, int ochatr)
+int check_dcc_chanattrs(struct userrec *u, char *chname, flag_t chflags, flag_t ochatr)
 {
   int i, found = 0, atr = u ? u->flags : 0;
   struct chanset_t *chan = NULL;
@@ -2324,7 +2324,8 @@ static void cmd_chattr(struct userrec *u, int idx, char *par)
   		     mns = {0, 0, 0, 0},
 		     user = {0, 0, 0, 0},
 		     ouser = {0, 0, 0, 0};
-  int fl = -1, of = 0, ocf = 0;
+  /*int fl = -1, of = 0, ocf = 0;*/
+  flag_t fl = 0, of = 0, ocf = 0;
 
   if (!par[0]) {
     dprintf(idx, "Usage: chattr <handle> [changes] [channel]\n");
@@ -2404,8 +2405,9 @@ static void cmd_chattr(struct userrec *u, int idx, char *par)
         free(tmpchg);
       return;
     }
-
+/* FIXME: POSSIBLY WRONG BECAUSE OF SIGNNES CHANGE OF fl */
   user.match &= fl;
+
   if (chg) {
     pls.match = user.match;
     break_down_flags(chg, &pls, &mns);
