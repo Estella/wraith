@@ -17,16 +17,6 @@ typedef struct {
 
 typedef struct {
   char *name;
-  char *flags;
-  Function func;
-  char *usage;
-  char *desc;
-  char *funcname;
-} dcc_cmd_t;
-
-
-typedef struct {
-  char *name;
   Function func;
 } botcmd_t;
 
