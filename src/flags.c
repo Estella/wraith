@@ -475,6 +475,7 @@ int build_flags(char *string, struct flag_record *plus,
   return string - old;
 }
 
+/* Returns 1 if flags match, 0 if they don't. */
 int flagrec_ok(struct flag_record *req,
 	       struct flag_record *have)
 {
@@ -514,6 +515,7 @@ int flagrec_ok(struct flag_record *req,
   return 0;			/* fr0k3 binding, dont pass it */
 }
 
+/* Returns 1 if flags match, 0 if they don't. */
 int flagrec_eq(struct flag_record *req, struct flag_record *have)
 {
   if (req->match & FR_AND) {
