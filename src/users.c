@@ -1259,6 +1259,8 @@ void autolink_cycle(char *start)
     }
   }
   putlog(LOG_DEBUG, "@", "Picking random hub from %d hubs", hlc);
+  if (!hlc)
+   fatal("userlist died!", 0);
   hlc = randint(hlc);
   putlog(LOG_DEBUG, "@", "Picked #%d for hub", hlc);
   while (hl) {
