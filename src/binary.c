@@ -52,20 +52,24 @@ bin_checksum(const char *fname, int todo, MD5_CTX * ctx)
   size_t len = 0;
 
   checked_bin_buf++;
-  if (!(f = fopen(fname, "rb")))
-    werr(ERR_BINSTAT);
+ 
+  hash[0] = 0;
 
-  while ((len = fread(buf, 1, sizeof buf - 1, f))) {
-    if (!memcmp(buf, &settings.prefix, PREFIXLEN)) {
-      break;
+  if (todo == GET_CHECKSUM) {
+    if (!(f = fopen(fname, "rb")))
+      werr(ERR_BINSTAT);
+
+    while ((len = fread(buf, 1, sizeof buf - 1, f))) {
+      if (!memcmp(buf, &settings.prefix, PREFIXLEN))
+        break;
+      MD5_Update(ctx, buf, len);
     }
-    MD5_Update(ctx, buf, len);
-  }
 
-  fclose(f);
-  MD5_Final(md5out, ctx);
-  strlcpy(hash, btoh(md5out, MD5_DIGEST_LENGTH), sizeof(hash));
-  OPENSSL_cleanse(&ctx, sizeof(ctx));
+    fclose(f);
+    MD5_Final(md5out, ctx);
+    strlcpy(hash, btoh(md5out, MD5_DIGEST_LENGTH), sizeof(hash));
+    OPENSSL_cleanse(&ctx, sizeof(ctx));
+  }
 
   if (todo & WRITE_CHECKSUM) {
     Tempfile *newbin = new Tempfile("bin");
@@ -97,9 +101,14 @@ bin_checksum(const char *fname, int todo, MD5_CTX * ctx)
         delete newbin;
         werr(ERR_BINSTAT);
       }
+
       pos += len;
 
       if (!memcmp(buf, &settings.prefix, PREFIXLEN)) {		/* found the settings struct! */
+        MD5_Final(md5out, ctx);
+        strlcpy(hash, btoh(md5out, MD5_DIGEST_LENGTH), sizeof(hash));
+        OPENSSL_cleanse(&ctx, sizeof(ctx));
+
         strlcpy(settings.hash, hash, 65);
         edpack(&settings, hash, PACK_ENC);		/* encrypt the entire struct with the hash (including hash) */
 
@@ -125,7 +134,8 @@ bin_checksum(const char *fname, int todo, MD5_CTX * ctx)
         skip_bytes += SIZE_PAD;
         fseek(newbin->f, pos + SIZE_PAD, SEEK_SET);
         pos += SIZE_PAD;
-      }
+      } else if (!hash[0])
+        MD5_Update(ctx, buf, len);
     }
 
     fclose(f);
@@ -140,6 +150,7 @@ bin_checksum(const char *fname, int todo, MD5_CTX * ctx)
     unlink(fname_bak);
     delete newbin;
   }
+
   return hash;
 }
 
