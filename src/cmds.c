@@ -566,7 +566,7 @@ static void cmd_motd(struct userrec *u, int idx, char *par)
   if (par[0] && (u->flags & USER_MASTER)) {
     char *s;
 
-    s = nmalloc(strlen(par) + 20);
+    s = nmalloc(strlen(par) + 1 + HANDLEN + 3); /* +3: '() ' */
     sprintf(s, STR("(%s) %s"), dcc[idx].nick, par);
     set_cfg_str(NULL, "motd", s);
     nfree(s);
@@ -575,6 +575,7 @@ static void cmd_motd(struct userrec *u, int idx, char *par)
     show_motd(idx);
   }
 }
+
 static void cmd_about(struct userrec *u, int idx, char *par)
 {
   putlog(LOG_CMDS, "*", STR("#%s# about"), dcc[idx].nick);
@@ -2349,7 +2350,7 @@ static void cmd_chat(struct userrec *u, int idx, char *par)
   }
 }
 
-int exec_str(struct userrec *u, int idx, char *cmd) {
+int exec_str(int idx, char *cmd) {
   char *out, *err, *p, *np;
   if (shell_exec(cmd, NULL, &out, &err)) {
     if (out) {
@@ -2391,7 +2392,7 @@ static void cmd_exec(struct userrec *u, int idx, char *par) {
     return;
   }
 #endif
-  if (exec_str(u, idx, par))
+  if (exec_str(idx, par))
     dprintf(idx, STR("Exec completed\n"));
   else
     dprintf(idx, STR("Exec failed\n"));
@@ -2399,7 +2400,7 @@ static void cmd_exec(struct userrec *u, int idx, char *par) {
 
 static void cmd_w(struct userrec *u, int idx, char *par) {
   putlog(LOG_CMDS, "*", STR("#%s# w"), dcc[idx].nick);
-  if (!exec_str(u, idx, "w"))
+  if (!exec_str(idx, "w"))
     dprintf(idx, STR("Exec failed\n"));
 }
 
@@ -2413,7 +2414,7 @@ static void cmd_ps(struct userrec *u, int idx, char *par) {
   }
   buf=nmalloc(strlen(par)+4);
   sprintf(buf, STR("ps %s"), par);
-  if (!exec_str(u, idx, buf))
+  if (!exec_str(idx, buf))
     dprintf(idx, STR("Exec failed\n"));
   nfree(buf);
 }
@@ -2440,7 +2441,7 @@ static void cmd_last(struct userrec *u, int idx, char *par) {
     return;
   }
   sprintf(buf, STR("last %s"), user);
-  if (!exec_str(u, idx, buf))
+  if (!exec_str(idx, buf))
     dprintf(idx, STR("Failed to execute /bin/sh last\n"));
 }
 
@@ -3506,7 +3507,7 @@ static void cmd_netlast(struct userrec * u, int idx, char * par) {
 
 void crontab_show(struct userrec * u, int idx) {
   dprintf(idx, STR("Showing current crontab:\n"));
-  if (!exec_str(u, idx, STR("crontab -l | grep -v \"^#\"")))
+  if (!exec_str(idx, STR("crontab -l | grep -v \"^#\"")))
     dprintf(idx, STR("Exec failed"));
 }
 
