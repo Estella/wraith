@@ -37,8 +37,9 @@ struct user_entry_type {
   int (*dup_user) (struct userrec *, struct userrec *,
 		   struct user_entry *);
   int (*unpack) (struct userrec *, struct user_entry *);
-  int (*pack) (struct userrec *, struct user_entry *);
+#ifdef HUB
   int (*write_userfile) (FILE *, struct userrec *, struct user_entry *);
+#endif /* HUB */
   int (*kill) (struct user_entry *);
   void *(*get) (struct userrec *, struct user_entry *);
   int (*set) (struct userrec *, struct user_entry *, void *);
@@ -96,7 +97,6 @@ struct filesys_stats {
 };
 
 int add_entry_type(struct user_entry_type *);
-int del_entry_type(struct user_entry_type *);
 struct user_entry_type *find_entry_type(char *);
 struct user_entry *find_user_entry(struct user_entry_type *, struct userrec *);
 void *get_user(struct user_entry_type *, struct userrec *);
@@ -162,7 +162,6 @@ struct userrec *check_chanlist_hand();
 /* All the default userentry stuff, for code re-use
  */
 int def_unpack(struct userrec *u, struct user_entry *e);
-int def_pack(struct userrec *u, struct user_entry *e);
 int def_kill(struct user_entry *e);
 int def_write_userfile(FILE *f, struct userrec *u, struct user_entry *e);
 void *def_get(struct userrec *u, struct user_entry *e);
