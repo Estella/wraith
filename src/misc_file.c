@@ -174,8 +174,10 @@ Tempfile::Tempfile(const char *prefix)
 
 void Tempfile::MakeTemp()
 {
-  if ((fd = mkstemp(file)) < 0)
+  if ((fd = mkstemp(file)) < 0) {
+    f = NULL;
     goto error;    
+  }
 
   if ((f = fdopen(fd, "w+b")) == NULL)
     goto error;
