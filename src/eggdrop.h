@@ -10,6 +10,18 @@
 #ifndef _EGG_EGGDROP_H
 #define _EGG_EGGDROP_H
 
+#ifdef HAVE_OPENSSL_SSL_H
+# ifndef SSL_INC
+#  include <openssl/ssl.h>
+#  include <openssl/rand.h>
+#  include <openssl/err.h>
+#  include <openssl/md5.h>
+#  define SSL_INC
+# endif /* ! SSL_INC */
+# define HAVE_SSL 1
+#endif /* HAVE_OPENSSL_SSL_H */
+
+
 /*
  * Enable IPv6 support?
  */
@@ -128,10 +140,6 @@
 #if !HAVE_VSPRINTF
 #  include "error_you_need_vsprintf_to_compile_eggdrop"
 #endif
-
-#ifdef HAVE_OPENSSL_SSL_H
-#  define HAVE_SSL
-#endif /* HAVE_OPENSSL_SSL_H */
 
 /* IPv6 sanity checks. */
 #ifdef USE_IPV6
@@ -322,6 +330,7 @@ struct dcc_t {
   char addr6[121];              /* easier.. ipv6 address in regular notation (3ffe:80c0:225::) */
 #endif /* USE_IPV6 */
   unsigned int port;
+  int ssl;			/* use ssl on this dcc? */
   struct userrec *user;
   char simulbot[NICKLEN];	/* used for hub->leaf cmd simulation, holds bot that results should be sent to */
   time_t simultime;		/* the time when the simul dcc is initiated, expires after a number of seconds */
@@ -596,6 +605,9 @@ struct dupwait_info {
 #define DET_SUICIDE 4
 #define DET_NOCHECK 5
 
+#define CONNECT_SSL 1
+#define ACCEPT_SSL 2
+
 /* Structure for internal logs */
 typedef struct {
   char *filename;
@@ -722,6 +734,10 @@ typedef struct {
 #ifdef USE_IPV6
   unsigned int af;
 #endif /* USE_IPV6 */
+#ifdef HAVE_SSL
+  SSL 		*ssl;
+#endif /* HAVE_SSL */
+
 } sock_list;
 #ifdef S_DCCPASS
 typedef struct cmd_pass {

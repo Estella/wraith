@@ -1877,7 +1877,7 @@ int shell_exec(char *cmdline, char *input, char **output, char **erroutput)
 /* Update system code
  */
 int ucnt = 0;
-static void updatelocal(void)
+void updatelocal(void)
 {
 #ifdef LEAF
   module_entry *me;
