@@ -188,6 +188,7 @@ leaf:	general
 	@echo ""
 	+@cd src/mod && $(MAKE_LEAF) static
 	+@cd src && $(MAKE_LEAF) $(LEAFEXEC)
+	@./$(LEAFEXEC) -0
 	@echo ""
 
 dleaf:  general
@@ -198,6 +199,7 @@ dleaf:  general
 	@echo ""
 	+@cd src/mod && $(MAKE_DLEAF) static
 	+@cd src && $(MAKE_DLEAF) $(LEAFEXEC)
+	@./$(LEAFEXEC) -0
 	@echo ""
 
 hub:	general
@@ -208,6 +210,7 @@ hub:	general
 	@echo ""
 	+@cd src/mod && $(MAKE_HUB) static
 	+@cd src && $(MAKE_HUB) $(HUBEXEC)
+	@./$(HUBEXEC) -0
 	@echo ""
 
 dhub:   general
@@ -218,6 +221,7 @@ dhub:   general
 	@echo ""
 	+@cd src/mod && $(MAKE_DHUB) static
 	+@cd src && $(MAKE_DHUB) $(HUBEXEC)
+	@./$(HUBEXEC) -0
 	@echo ""
 
 #safety hash
