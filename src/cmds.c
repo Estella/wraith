@@ -857,7 +857,7 @@ static void cmd_who(int idx, char *par)
     }
     putlog(LOG_CMDS, "*", "#%s# who %s", dcc[idx].nick, par);
     if (!egg_strcasecmp(par, conf.bot->nick))
-      tell_who(u, idx, dcc[idx].u.chat->channel);
+      tell_who(dcc[idx].user, idx, dcc[idx].u.chat->channel);
     else {
       i = nextbot(par);
       if (i < 0) {
@@ -874,9 +874,9 @@ static void cmd_who(int idx, char *par)
   } else {
     putlog(LOG_CMDS, "*", "#%s# who", dcc[idx].nick);
     if (dcc[idx].u.chat->channel < 0)
-      tell_who(u, idx, 0);
+      tell_who(dcc[idx].user, idx, 0);
     else
-      tell_who(u, idx, dcc[idx].u.chat->channel);
+      tell_who(dcc[idx].user, idx, dcc[idx].u.chat->channel);
   }
 }
 #endif /* HUB */
@@ -1332,7 +1332,7 @@ static void cmd_date(int idx, char *par)
 static void cmd_chhandle(int idx, char *par)
 {
   char hand[HANDLEN + 1] = "", newhand[HANDLEN + 1] = "";
-  int atr = u ? u->flags : 0, atr2;
+  int atr = dcc[idx].user ? dcc[idx].user->flags : 0, atr2;
   size_t i;
   struct userrec *u2 = NULL;
 
@@ -1418,7 +1418,8 @@ static void cmd_handle(int idx, char *par)
 static void cmd_chpass(int idx, char *par)
 {
   char *handle = NULL, *new = NULL, pass[MAXPASSLEN] = "";
-  int atr = u ? u->flags : 0, l;
+  int atr = dcc[idx].user ? dcc[idx].user->flags : 0, l;
+  struct userrec *u = NULL;
 
   if (!par[0])
     dprintf(idx, "Usage: chpass <handle> [password]\n");
@@ -1473,7 +1474,8 @@ static void cmd_chpass(int idx, char *par)
 static void cmd_chsecpass(int idx, char *par)
 {
   char *handle = NULL, *new = NULL, pass[MAXPASSLEN + 1] = "";
-  int atr = u ? u->flags : 0, l;
+  int atr = dcc[idx].user ? dcc[idx].user->flags : 0, l;
+  struct userrec *u = NULL;
 
   if (!par[0])
     dprintf(idx, "Usage: chsecpass <handle> [secpass/rand]\n");
@@ -1667,7 +1669,7 @@ static void cmd_chaddr(int idx, char *par)
     dprintf(idx, "This command is only useful for tandem bots.\n");
     return;
   }
-  if ((u1 && u1->bot) && (!u || !u->flags & USER_OWNER)) {
+  if ((u1 && u1->bot) && (!dcc[idx].user || !dcc[idx].user->flags & USER_OWNER)) {
     dprintf(idx, "You can't change a bot's address.\n");
     return;
   }
