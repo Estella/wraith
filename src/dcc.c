@@ -595,8 +595,7 @@ dcc_identd_connect(int idx, char *buf, int atr)
     sock = answer(sock, s, &ip, &port, 0);
 
   if (sock < 0) {
-    neterror(s);
-    putlog(LOG_MISC, "*", DCC_FAILED, s);
+    putlog(LOG_MISC, "*", DCC_FAILED, strerror(errno));
     return;
   }
   /* changeover_dcc(idx, &DCC_IDENTD, 0); */
@@ -1210,8 +1209,7 @@ dcc_telnet(int idx, char *buf, int i)
     sock = answer(sock, s, &ip, &port, 0);
 /*. ssl_link ACCEPT_SSL should go here!!!! */
   if (sock < 0) {
-    neterror(s);
-    putlog(LOG_MISC, "*", DCC_FAILED, s);
+    putlog(LOG_MISC, "*", DCC_FAILED, strerror(errno));
     return;
   }
   /* Buffer data received on this socket.  */
@@ -1308,7 +1306,7 @@ dcc_telnet_hostresolved(int i)
     if (sock == -2)
       strcpy(s, "DNS lookup failed for ident");
     else
-      neterror(s);
+      strcpy(s, strerror(errno));
   } else {
     j = new_dcc(&DCC_IDENT, 0);
     if (j < 0) {
