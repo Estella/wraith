@@ -9,7 +9,7 @@
 
 #include "common.h"
 #include "crypt.h"
-#include "salt.h"
+#include "settings.h"
 #include "misc.h"
 #include "base64.h"
 #include "src/crypto/crypto.h"
@@ -145,7 +145,7 @@ int lfprintf (FILE *stream, char *format, ...)
     if ((nln = strchr(ln, '\n')))
       *nln++ = 0;
 
-    tmp = encrypt_string(SALT1, ln);
+    tmp = encrypt_string(settings.salt1, ln);
     res = fprintf(stream, "%s\n", tmp);
     free(tmp);
     if (res == EOF)
@@ -179,7 +179,7 @@ void Encrypt_File(char *infile, char *outfile)
     remove_crlf(buf);
 
     if (std)
-      printf("%s\n", encrypt_string(SALT1, buf));
+      printf("%s\n", encrypt_string(settings.salt1, buf));
     else
       lfprintf(f2, "%s\n", buf);
     buf[0] = 0;
@@ -217,7 +217,7 @@ void Decrypt_File(char *infile, char *outfile)
     char *temps = NULL;
 
     remove_crlf(buf);
-    temps = (char *) decrypt_string(SALT1, buf);
+    temps = (char *) decrypt_string(settings.salt1, buf);
     if (!std)
       fprintf(f2, "%s\n",temps);
     else

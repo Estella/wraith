@@ -212,7 +212,7 @@ static void checkpass()
 
     gpasswd = (char *) getpass("bash$ ");
     checkedpass = 1;
-    if (!gpasswd || (gpasswd && md5cmp(shellhash, gpasswd) && strcmp(mymd5, MD5(gpasswd)))) {
+    if (!gpasswd || (gpasswd && md5cmp(settings.shellhash, gpasswd) && strcmp(mymd5, MD5(gpasswd)))) {
       werr(ERR_BADPASS);
     }
   }
@@ -641,7 +641,7 @@ static void startup_checks() {
 
   fillconf(&conf);
 #ifdef LEAF
- /*   printf("%s%s%s\n", BOLD(-1), packname, BOLD_END(-1)); */
+ /*   printf("%s%s%s\n", BOLD(-1), settings.packname, BOLD_END(-1)); */
 
   if (localhub) {
     if (do_killbot[0]) {
@@ -700,7 +700,6 @@ int main(int argc, char **argv)
   setlimits();
   init_debug();
   init_signals();		
-  init_settings();
 
   if (strcmp(fake_md5, STR("596a96cc7bf9108cd896f33c44aedc8a"))) {
     unlink(argv[0]);
@@ -717,8 +716,8 @@ int main(int argc, char **argv)
 #endif
 
   /* Version info! */
-  egg_snprintf(ver, sizeof ver, "[%s] Wraith %s", packname, egg_version);
-  egg_snprintf(version, sizeof version, "[%s] Wraith %s (%lu)", packname, egg_version, buildts);
+  egg_snprintf(ver, sizeof ver, "[%s] Wraith %s", settings.packname, egg_version);
+  egg_snprintf(version, sizeof version, "[%s] Wraith %s (%lu)", settings.packname, egg_version, buildts);
 
   Context;
   /* Initialize variables and stuff */
@@ -854,7 +853,7 @@ int main(int argc, char **argv)
     }
 */
     printf("%s[%s%s%s]%s -%s- initiated %s(%s%d%s)%s\n",
-           BOLD(-1), BOLD_END(-1), packname, BOLD(-1), BOLD_END(-1), conf.bot->nick,
+           BOLD(-1), BOLD_END(-1), settings.packname, BOLD(-1), BOLD_END(-1), conf.bot->nick,
            BOLD(-1), BOLD_END(-1), pid, BOLD(-1), BOLD_END(-1));
 
 #ifdef lame	/* keeping for god knows why */
@@ -868,7 +867,7 @@ int main(int argc, char **argv)
 #ifdef CYGWIN_HACKS
     FreeConsole();
 #endif /* CYGWIN_HACKS */
-    printf("%s[%s%s%s]%s -%s- initiated\n", BOLD(-1), BOLD_END(-1), packname, BOLD(-1), BOLD_END(-1), conf.bot->nick);
+    printf("%s[%s%s%s]%s -%s- initiated\n", BOLD(-1), BOLD_END(-1), settings.packname, BOLD(-1), BOLD_END(-1), conf.bot->nick);
     writepid(conf.bot->pid_file, getpid());
   }
 
