@@ -44,15 +44,15 @@ init_dcc_max()
   if (max_dcc < 1)
     max_dcc = 1;
   if (dcc)
-    dcc = (struct dcc_t *) realloc(dcc, sizeof(struct dcc_t) * max_dcc);
+    dcc = (struct dcc_t *) my_realloc(dcc, sizeof(struct dcc_t) * max_dcc);
   else
-    dcc = (struct dcc_t *) calloc(1, sizeof(struct dcc_t) * max_dcc);
+    dcc = (struct dcc_t *) my_calloc(1, sizeof(struct dcc_t) * max_dcc);
 
   MAXSOCKS = max_dcc + 10;
   if (socklist)
-    socklist = (sock_list *) realloc((void *) socklist, sizeof(sock_list) * MAXSOCKS);
+    socklist = (sock_list *) my_realloc((void *) socklist, sizeof(sock_list) * MAXSOCKS);
   else
-    socklist = (sock_list *) calloc(1, sizeof(sock_list) * MAXSOCKS);
+    socklist = (sock_list *) my_calloc(1, sizeof(sock_list) * MAXSOCKS);
 
   for (; osock < MAXSOCKS; osock++)
     socklist[osock].flags = SOCK_UNUSED;
@@ -225,7 +225,7 @@ dprintf(int idx, const char *format, ...)
       bounce_simul(idx, buf);
     } else if (dcc[idx].msgc > 0) {
       size_t size = strlen(dcc[idx].simulbot) + strlen(buf) + 20;
-      char *ircbuf = (char *) calloc(1, size);
+      char *ircbuf = (char *) my_calloc(1, size);
 
       egg_snprintf(ircbuf, size, "PRIVMSG %s :%s", dcc[idx].simulbot, buf);
       tputs(dcc[idx].sock, ircbuf, strlen(ircbuf));
@@ -543,7 +543,7 @@ new_dcc(struct dcc_table *type, int xtra_size)
 
   dcc[i].type = type;
   if (xtra_size)
-    dcc[i].u.other = (char *) calloc(1, xtra_size);
+    dcc[i].u.other = (char *) my_calloc(1, xtra_size);
 
   sdprintf("new_dcc (%s): %d (dccn/dcc_total: %d/%d)", type->name, i, dccn, dcc_total);
   return i;
@@ -563,7 +563,7 @@ changeover_dcc(int i, struct dcc_table *type, int xtra_size)
   }
   dcc[i].type = type;
   if (xtra_size)
-    dcc[i].u.other = (char *) calloc(1, xtra_size);
+    dcc[i].u.other = (char *) my_calloc(1, xtra_size);
 }
 
 int
@@ -729,7 +729,7 @@ listen_all(port_t lport, bool off)
       if (i > 0) {
 #endif /* USE_IPV6 */
         if (!pmap) {
-          pmap = (struct portmap *) calloc(1, sizeof(struct portmap));
+          pmap = (struct portmap *) my_calloc(1, sizeof(struct portmap));
           pmap->next = root;
           root = pmap;
         }

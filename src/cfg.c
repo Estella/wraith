@@ -638,7 +638,7 @@ struct cfg_entry CFG_OPREQUESTS = {
 
 void add_cfg(struct cfg_entry *entry)
 {
-  cfg = (struct cfg_entry **) realloc(cfg, sizeof(void *) * (cfg_count + 1));
+  cfg = (struct cfg_entry **) my_realloc(cfg, sizeof(void *) * (cfg_count + 1));
   cfg[cfg_count] = entry;
   cfg_count++;
   entry->ldata = NULL;
@@ -707,7 +707,7 @@ void set_cfg_str(char *target, char *entryname, char *data)
         }
       }
     }
-    xk = (struct xtra_key *) calloc(1, sizeof(struct xtra_key));
+    xk = (struct xtra_key *) my_calloc(1, sizeof(struct xtra_key));
     xk->key = strdup(entry->name);
     if (data) {
       xk->data = strdup(data);
@@ -848,7 +848,7 @@ void set_cmd_pass(char *ln, int shareit)
       free(cp);
   } else if (ln[0]) {
     /* create */
-    cp = (struct cmd_pass *) calloc(1, sizeof(struct cmd_pass));
+    cp = (struct cmd_pass *) my_calloc(1, sizeof(struct cmd_pass));
     cp->next = cmdpass;
     cmdpass = cp;
     cp->name = strdup(cmd);

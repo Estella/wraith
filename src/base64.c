@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "base64.h"
+#include "src/compat/compat.h"
 
 static const char base64[65] = ".\\0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 static const char base64r[256] = {
@@ -29,7 +30,7 @@ static const char base64r[256] = {
 char *
 b64enc(const unsigned char *data, size_t len)
 {
-  char *dest = (char *) calloc(1, (len << 2) / 3 + 4 + 1);
+  char *dest = (char *) my_calloc(1, (len << 2) / 3 + 4 + 1);
 
   b64enc_buf(data, len, dest);
   return (dest);
@@ -54,7 +55,7 @@ b64enc_buf(const unsigned char *data, size_t len, char *dest)
 char *
 b64dec(const unsigned char *data, size_t *len)
 {
-  char *dest = (char *) calloc(1, ((*len * 3) >> 2) + 6 + 1);
+  char *dest = (char *) my_calloc(1, ((*len * 3) >> 2) + 6 + 1);
 
   b64dec_buf(data, len, dest);
   return (dest);
