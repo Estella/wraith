@@ -10,6 +10,7 @@
 
 #include "eggmain.h"
 #include "misc.h"
+#include "dcc.h"
 #include "net.h"
 #include "users.h"
 #include "cfg.h"

@@ -8,6 +8,7 @@
 
 #include "eggmain.h"
 #include "cmds.h"
+#include "dcc.h"
 #include "misc.h"
 #include "net.h"
 #include "userrec.h"

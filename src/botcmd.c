@@ -10,6 +10,7 @@
 #include "botcmd.h"
 #include "net.h"
 #include "misc.h"
+#include "dcc.h"
 #include "userrec.h"
 #include "cfg.h"
 #include "dccutil.h"

@@ -12,6 +12,7 @@
 #include <sys/stat.h>
 #include "eggmain.h"
 #include "color.h"
+#include "dcc.h"
 #include "net.h"
 #include "dccutil.h"
 #include "misc.h"
