@@ -293,7 +293,7 @@ init_conf()
  */
 
 pid_t
-checkpid(char *nick, conf_bot * bot)
+checkpid(char *nick, conf_bot *bot)
 {
   FILE *f = NULL;
   char buf[DIRMAX] = "", s[11] = "", *tmpnick = NULL, *tmp_ptr = NULL;
@@ -318,7 +318,7 @@ checkpid(char *nick, conf_bot * bot)
     remove_crlf(s);
     fclose(f);
     xx = atoi(s);
-    if (bot) {
+//    if (bot) {
       int x = 0;
 
       x = kill(xx, SIGCHLD);
@@ -326,9 +326,9 @@ checkpid(char *nick, conf_bot * bot)
         return 0;
       else if (x == 0)
         return xx;
-    } else {
-      return xx ? xx : 0;
-    }
+//    } else {
+//      return xx ? xx : 0;
+//    }
   }
 
   return 0;
