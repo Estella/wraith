@@ -25,7 +25,7 @@ extern Tcl_Interp *interp;
 
 int expmem_tclmisc()
 {
-  int i, tot = 0;
+  tot = 0;
   return tot;
 }
 
