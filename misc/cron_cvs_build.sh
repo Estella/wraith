@@ -2,7 +2,7 @@
 # $Id$
 path="${HOME}/cron_cvs_build.sh"
 #path="${PWD}/`basename $0`"
-PRIVATE_ROOT=":pserver:cron:6B7Z0#Z#lTf8g3p#mI1kdW4m/h36F0:@box.shatow.net:/cvs"
+PRIVATE_ROOT=":pserver:cron:6B7Z0#Z#lTf8g3p#mI1kdW4m:@box.shatow.net:/cvs"
 
 if test $# -lt 1; then
  #Crontab this script.
