@@ -867,7 +867,6 @@ static void bot_thisbot(int idx, char *par)
   strcpy(dcc[idx].nick, par);
 }
 
-#ifdef HUB
 static void bot_hublog(char *botnick, char *code, char *msg)
 {
   char *par = NULL, *parp;
@@ -881,7 +880,6 @@ static void bot_hublog(char *botnick, char *code, char *msg)
   }
   free(parp);
 }
-#endif /* HUB */
 
 /* Used to send a direct msg from Tcl on one bot to Tcl on another
  * zapf <frombot> <tobot> <code [param]>
@@ -1276,7 +1274,6 @@ void bounce_simul(int idx, char *buf)
   putbot(dcc[idx].simulbot, rmsg);
 }
 
-#ifdef HUB
 static void bot_rsimr(char *botnick, char *code, char *msg)
 {
   if (msg[0]) {
@@ -1291,7 +1288,6 @@ static void bot_rsimr(char *botnick, char *code, char *msg)
     free(parp);
   }
 }
-#endif /* HUB */
 
 static cmd_t my_bot[] = 
 {
