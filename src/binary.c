@@ -334,7 +334,7 @@ void write_settings(const char *fname, int die)
 
   MD5_Init(&ctx);
   if ((hash = bin_checksum(fname, WRITE_CHECKSUM, &ctx))) {
-    printf("* Wrote settings to %s.\n", fname);
+    printf("* Wrote settings to: %s.\n", fname);
     edpack(&settings, hash, PACK_DEC);
   }
 
@@ -380,5 +380,5 @@ void conf_to_bin(conf_t *in)
 
   newbin = move_bin(in->binpath, in->binname, 0);
   /* tellconfig(&settings); */
-  write_settings(newbin, 0);
+  write_settings(newbin, 1);
 }
