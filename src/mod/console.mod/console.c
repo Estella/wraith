@@ -6,13 +6,23 @@
  * $Id$
  */
 
-#define MODULE_NAME "console"
-#define MAKING_CONSOLE
-#include "src/mod/module.h"
-#include <stdlib.h>
+#undef MAKING_MODS
 #include "console.h"
+#include "src/common.h"
+#include "src/tclhash.h"
+#include "src/tandem.h"
+#include "src/cmds.h"
+#include "src/users.h"
+#include "src/userent.h"
+#include "src/botmsg.h"
+#include "src/userrec.h"
+#include "src/users.h"
+#include "src/misc.h"
+#include "src/core_binds.h"
 
-static Function *global = NULL;
+extern int noshare;
+extern char botnetnick[];
+
 static int console_autosave = 1;
 static int info_party = 1;
 
@@ -207,7 +217,7 @@ static int console_dupuser(struct userrec *new, struct userrec *old,
   struct console_info *i = e->u.extra, *j;
 
   j = malloc(sizeof(struct console_info));
-  my_memcpy(j, i, sizeof(struct console_info));
+  egg_memcpy(j, i, sizeof(struct console_info));
 
   j->channel = strdup(i->channel);
   return set_user(e->type, new, j);
@@ -327,7 +337,7 @@ static int console_store(struct userrec *u, int idx, char *par)
 }
 
 /* cmds.c:cmd_console calls this, better than chof bind - drummer,07/25/1999 */
-static int console_dostore(int idx)
+int console_dostore(int idx)
 {
   if (console_autosave)
     console_store(dcc[idx].user, idx, NULL);
@@ -346,27 +356,11 @@ static cmd_t mydcc[] =
   {NULL,	NULL,	NULL,			NULL}
 };
 
-EXPORT_SCOPE char *console_start();
-
-static Function console_table[] =
+void console_init()
 {
-  (Function) console_start,
-  (Function) NULL,
-  (Function) NULL,
-  (Function) NULL,
-  (Function) console_dostore,
-};
-
-char *console_start(Function * global_funcs)
-{
-  global = global_funcs;
-
-  module_register(MODULE_NAME, console_table, 1, 1);
-
   add_builtins("dcc", mydcc);
   add_builtins("chon", mychon);
 
   USERENTRY_CONSOLE.get = def_get;
   add_entry_type(&USERENTRY_CONSOLE);
-  return NULL;
 }
