@@ -505,7 +505,7 @@ void write_userfile(int idx)
 {
   FILE *f;
   char *new_userfile;
-  char s1[81];
+  char s1[81], backup[DIRMAX];
   time_t tt;
   struct userrec *u;
   int ok;
@@ -546,6 +546,8 @@ void write_userfile(int idx)
   lfprintf(f, "#DONT DELETE THIS LINE.");
   fclose(f);
   putlog(LOG_DEBUG, "@", "Done writing userfile.");
+  snprintf(backup, sizeof backup, "%s/%s~", tempdir, userfile);
+  copyfile(userfile, backup);
   movefile(new_userfile, userfile);
   nfree(new_userfile);
 }
