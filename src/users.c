@@ -461,7 +461,7 @@ tell_user(int idx, struct userrec *u)
 
   fr.global = u->flags;
   build_flags(s, &fr, NULL);
-  li = get_user(&USERENTRY_LASTON, u);
+  li = (struct laston_info *) get_user(&USERENTRY_LASTON, u);
   if (!li || !li->laston)
     strcpy(s1, "never");
   else {
@@ -597,7 +597,7 @@ void tell_users_match(int idx, char *mtch, int start, int limit, char *chname, i
 	dprintf(idx, MISC_TRUNCATED, limit);
     } else {
       fnd = 0;
-      for (q = get_user(&USERENTRY_HOSTS, u); q; q = q->next) {
+      for (q = (struct list_type *) get_user(&USERENTRY_HOSTS, u); q; q = q->next) {
 	if ((wild_match(mtch, q->extra)) && (!fnd)) {
 	  cnt++;
 	  fnd = 1;
@@ -1030,7 +1030,7 @@ void link_pref_val(struct userrec *u, char *val)
 
   if (!u->bot)
     return;
-  if (!(ba = get_user(&USERENTRY_BOTADDR, u))) {
+  if (!(ba = (struct bot_addr *) get_user(&USERENTRY_BOTADDR, u))) {
     return;
   }
   if (!ba->hublevel) {
@@ -1175,7 +1175,7 @@ void autolink_cycle(char *start)
   if (!start)
     botlinkcount = 0;
 
-  my_ba = get_user(&USERENTRY_BOTADDR, conf.bot->u);
+  my_ba = (struct bot_addr *) get_user(&USERENTRY_BOTADDR, conf.bot->u);
   if (my_ba && (my_ba->uplink[0])) {
     strncpyz(uplink, my_ba->uplink, sizeof(uplink));
   } else {

@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include "base64.h"
 
-static const char base64[64] = ".\\0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+static const char base64[65] = ".\\0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 static const char base64r[256] = {
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -27,7 +27,7 @@ static const char base64r[256] = {
 };
 
 char *
-b64enc(const unsigned char *data, int len)
+b64enc(const unsigned char *data, size_t len)
 {
   char *dest = NULL;
 
@@ -37,9 +37,9 @@ b64enc(const unsigned char *data, int len)
 }
 
 void
-b64enc_buf(const unsigned char *data, int len, char *dest)
+b64enc_buf(const unsigned char *data, size_t len, char *dest)
 {
-  int i, t;
+  size_t i, t;
 
 #define DB(x) ((unsigned char) (x + i < len ? data[x + i] : 0))
     for (i = 0, t = 0; i < len; i += 3, t += 4) {
@@ -53,7 +53,7 @@ b64enc_buf(const unsigned char *data, int len, char *dest)
 }
 
 char *
-b64dec(const unsigned char *data, int *len)
+b64dec(const unsigned char *data, size_t *len)
 {
   char *dest = NULL;
 
@@ -63,9 +63,9 @@ b64dec(const unsigned char *data, int *len)
 }
 
 void
-b64dec_buf(const unsigned char *data, int *len, char *dest)
+b64dec_buf(const unsigned char *data, size_t *len, char *dest)
 {
-  int t, i;
+  size_t t, i;
 
 #define DB(x) ((unsigned char) (x + i < *len ? base64r[(unsigned char) data[x + i]] : 0))
   for (i = 0, t = 0; i < *len; i += 4, t += 3) {
