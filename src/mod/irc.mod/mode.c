@@ -1357,7 +1357,7 @@ static int gotmode(char *from, char *msg)
           }
         }
         if (isbadop) {
-          char trg[NICKLEN + 1] = "";
+          char trg[NICKLEN] = "";
 
           n = i = 0;
           switch (role) {
@@ -1385,7 +1385,7 @@ static int gotmode(char *from, char *msg)
                 i++;
             }
             if (!n) {
-              strcpy(trg, (char *) &modes[i][3]);
+              strncpyz(trg, (char *) &modes[i][3], NICKLEN);
               m = ismember(chan, trg);
               if (m) {
                 if (!(m->flags & CHANOP)) {
@@ -1411,7 +1411,7 @@ static int gotmode(char *from, char *msg)
       }
       if ((ops) && chan && !channel_manop(chan) && (ufrom) &&
           !(ufrom->flags & USER_BOT)) {
-        char trg[NICKLEN + 1] = "";
+        char trg[NICKLEN] = "";
         n = i = 0;
 
         switch (role) {
@@ -1439,7 +1439,7 @@ static int gotmode(char *from, char *msg)
               i++;
           }
           if (!n) {
-            strcpy(trg, (char *) &modes[i][3]);
+            strncpyz(trg, (char *) &modes[i][3], NICKLEN);
             m = ismember(chan, trg);
             if (m) {
               if (!(m->flags & CHANOP) && (rfc_casecmp(botname, trg))) {
