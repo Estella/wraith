@@ -803,7 +803,7 @@ static void maybe_revenge(struct chanset_t *chan, char *whobad,
 
 /* Set the key.
  */
-static void setkey(struct chanset_t *chan, char *k)
+static void my_setkey(struct chanset_t *chan, char *k)
 {
   nfree(chan->channel.key);
   if (k == NULL) {
