@@ -210,7 +210,6 @@ char *progname();
 void init_settings();
 
 /* misc.c */
-char *wbanner();
 char *replace(char *, char *, char *);
 #ifdef S_GARBLESTRINGS
 char *degarble(int, char *);
