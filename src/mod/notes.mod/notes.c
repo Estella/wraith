@@ -110,7 +110,7 @@ static void notes_change(char *oldnick, char *newnick)
     fclose(f);
     return;
   }
-  chmod(s, userfile_perm);	/* Use userfile permissions. */
+  fixmod(s);
   while (!feof(f)) {
     fgets(s, 512, f);
     if (!feof(f)) {
@@ -157,7 +157,7 @@ static void expire_notes()
     fclose(f);
     return;
   }
-  chmod(s, userfile_perm);	/* Use userfile permissions. */
+  fixmod(s);
   while (!feof(f)) {
     fgets(s, 512, f);
     if (!feof(f)) {
@@ -286,7 +286,7 @@ int storenote(char *argv1, char *argv2, char *argv3, int idx, char *who, int buf
 	char *p = NULL, *from = argv1;
 	size_t len = 0;
 
-	chmod(notefile, userfile_perm);	/* Use userfile permissions. */
+	fixmod(notefile);
 	while ((argv3[0] == '<') || (argv3[0] == '>')) {
 	  p = newsplit(&(argv3));
 	  if (*p == '<')
@@ -505,7 +505,7 @@ void notes_del(char *hand, char *nick, char *sdl, int idx)
     fclose(f);
     return;
   }
-  chmod(s, userfile_perm);	/* Use userfile permissions. */
+  fixmod(s);
   notes_parse(dl, sdl);
   while (!feof(f)) {
     fgets(s, 512, f);
@@ -648,7 +648,7 @@ static int msg_notes(char *nick, char *host, struct userrec *u, char *par)
       putlog(LOG_MISC, "*", "* %s", NOTES_NOTEFILE_UNREACHABLE);
       return 1;
     }
-    chmod(notefile, userfile_perm);	/* Use userfile permissions. */
+    fixmod(notefile);
     fprintf(f, "%s %s %li %s\n", to, u->handle, now, par);
     fclose(f);
     dprintf(DP_HELP, "NOTICE %s :%s\n", nick, NOTES_DELIVERED);
