@@ -722,7 +722,9 @@ share_pls_ban(int idx, char *par)
     time_t expire_time;
     char *ban = NULL, *tm = NULL, *from = NULL;
     int flags = 0;
+#ifdef LEAF
     bool stick = 0;
+#endif /* LEAF */
 
     shareout_but(idx, "+b %s\n", par);
     noshare = 1;
@@ -732,7 +734,9 @@ share_pls_ban(int idx, char *par)
     from = newsplit(&par);
     if (strchr(from, 's')) {
       flags |= MASKREC_STICKY;
+#ifdef LEAF
       stick++;
+#endif /* LEAF */
     }
     if (strchr(from, 'p'))
       flags |= MASKREC_PERM;
@@ -757,7 +761,9 @@ share_pls_banchan(int idx, char *par)
     time_t expire_time;
     int flags = 0;
     char *ban = NULL, *tm = NULL, *chname = NULL, *from = NULL;
+#ifdef LEAF
     bool stick = 0;
+#endif /* LEAF */
     struct chanset_t *chan = NULL;
 
     ban = newsplit(&par);
@@ -769,7 +775,9 @@ share_pls_banchan(int idx, char *par)
     from = newsplit(&par);
     if (strchr(from, 's')) {
       flags |= MASKREC_STICKY;
+#ifdef LEAF
       stick++;
+#endif /* LEAF */
     }
     if (strchr(from, 'p'))
       flags |= MASKREC_PERM;
@@ -834,7 +842,9 @@ share_pls_exemptchan(int idx, char *par)
     int flags = 0;
     struct chanset_t *chan = NULL;
     char *exempt = NULL, *tm = NULL, *chname = NULL, *from = NULL;
+#ifdef LEAF
     bool stick = 0;
+#endif /* LEAF */
 
     exempt = newsplit(&par);
     tm = newsplit(&par);
@@ -845,7 +855,9 @@ share_pls_exemptchan(int idx, char *par)
     from = newsplit(&par);
     if (strchr(from, 's')) {
       flags |= MASKREC_STICKY;
+#ifdef LEAF
       stick++;
+#endif /* LEAF */
     }
     if (strchr(from, 'p'))
       flags |= MASKREC_PERM;
@@ -872,7 +884,9 @@ share_pls_invite(int idx, char *par)
     time_t expire_time;
     char *invite = NULL, *tm = NULL, *from = NULL;
     int flags = 0;
+#ifdef LEAF
     bool stick = 0;
+#endif /* LEAF */
 
     shareout_but(idx, "+inv %s\n", par);
     noshare = 1;
@@ -882,7 +896,9 @@ share_pls_invite(int idx, char *par)
     from = newsplit(&par);
     if (strchr(from, 's')) {
       flags |= MASKREC_STICKY;
+#ifdef LEAF
       stick++;
+#endif /* LEAF */
     }
     if (strchr(from, 'p'))
       flags |= MASKREC_PERM;
@@ -910,7 +926,9 @@ share_pls_invitechan(int idx, char *par)
     int flags = 0;
     struct chanset_t *chan = NULL;
     char *invite = NULL, *tm = NULL, *chname = NULL, *from = NULL;
+#ifdef LEAF
     bool stick = 0;
+#endif /* LEAF */
 
     invite = newsplit(&par);
     tm = newsplit(&par);
@@ -921,7 +939,9 @@ share_pls_invitechan(int idx, char *par)
     from = newsplit(&par);
     if (strchr(from, 's')) {
       flags |= MASKREC_STICKY;
+#ifdef LEAF
       stick++;
+#endif /* LEAF */
     }
     if (strchr(from, 'p'))
       flags |= MASKREC_PERM;
