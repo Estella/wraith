@@ -668,7 +668,6 @@ printf("I AM : %s (%d)\n", conf.bot->nick, conf.bot->pid);
   }
 
   chanprog();
-printf("MY HANDLE: %s\n", conf.bot->u->handle);
 //fatal("WOOT", 0);
 
   dns_init();

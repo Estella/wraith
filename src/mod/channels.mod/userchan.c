@@ -399,7 +399,7 @@ static int u_addban(struct chanset_t *chan, char *ban, char *from, char *note,
     simple_sprintf(s, "%s!%s", me->funcs[SERVER_BOTNAME],
 		   me->funcs[SERVER_BOTUSERHOST]);
   else
-    simple_sprintf(s, "%s!%s@%s", origbotname, botuser, hostname);
+    simple_sprintf(s, "%s!%s@%s", origbotname, botuser, conf.bot->host);
   if (wild_match(host, s)) {
     putlog(LOG_MISC, "*", IRC_IBANNEDME);
     return 0;
@@ -484,7 +484,7 @@ static int u_addinvite(struct chanset_t *chan, char *invite, char *from,
     simple_sprintf(s, "%s!%s", me->funcs[SERVER_BOTNAME],
 		   me->funcs[SERVER_BOTUSERHOST]);
   else
-    simple_sprintf(s, "%s!%s@%s", origbotname, botuser, hostname);
+    simple_sprintf(s, "%s!%s@%s", origbotname, botuser, conf.bot->host);
 
   for (l = *u; l; l = l->next)
     if (!rfc_casecmp(l->mask, host)) {
@@ -563,7 +563,7 @@ static int u_addexempt(struct chanset_t *chan, char *exempt, char *from,
     simple_sprintf(s, "%s!%s", me->funcs[SERVER_BOTNAME],
 		   me->funcs[SERVER_BOTUSERHOST]);
   else
-    simple_sprintf(s, "%s!%s@%s", origbotname, botuser, hostname);
+    simple_sprintf(s, "%s!%s@%s", origbotname, botuser, conf.bot->host);
 
   for (l = *u; l; l = l->next)
     if (!rfc_casecmp(l->mask, host)) {

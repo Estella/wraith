@@ -44,13 +44,13 @@ extern struct auth_t    *auth;
 extern Tcl_Interp	*interp;
 extern struct userrec	*userlist, *lastuser;
 extern char		 tempdir[], botname[], natip[], cmdprefix[],
-			 hostname[], origbotname[], botuser[], admin[],
+			 origbotname[], botuser[], admin[],
 			 userfile[], ver[], kickprefix[], bankickprefix[],
-			 version[], quit_msg[], hostname6[], bdhash[], dcc_prefix[],
 #ifdef S_AUTHHASH
                          authkey[], 
 #endif /* S_AUTHHASH */
-			 myip[], myip6[];
+			 version[], quit_msg[], bdhash[], dcc_prefix[];
+
 extern int	 	 noshare, loading, role, server_lag, 
 #ifdef S_AUTHCMDS
 			 auth_total, 
@@ -310,7 +310,7 @@ Function global_table[] =
   /* 112 - 115 */
   (Function) tempdir,		 /* char *				*/
   (Function) natip,		 /* char *				*/
-  (Function) hostname,		 /* char *				*/
+  (Function) 0,	
   (Function) origbotname,	 /* char *				*/
   /* 116 - 119 */
   (Function) botuser,		 /* char *				*/
@@ -553,7 +553,7 @@ Function global_table[] =
   (Function) higher_bot_linked,
   (Function) bot_aggressive_to,
   (Function) botunlink,
-  (Function) hostname6,		 /* char *				*/
+  (Function) 0,
   (Function) & timesync, /* int					*/
   (Function) 0, 
   (Function) kickreason,
@@ -592,8 +592,8 @@ Function global_table[] =
   (Function) 0,
 #endif /* S_AUTHHASH */
   (Function) & USERENTRY_SECPASS,
-  (Function) myip,
-  (Function) myip6,
+  (Function) 0,
+  (Function) 0,
   (Function) cmdprefix,
   (Function) replace,
   (Function) degarble,
