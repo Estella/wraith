@@ -121,8 +121,8 @@ void write_debug()
     setsock(x, SOCK_NONSOCK);
     if (x >= 0) {
       strncpyz(s, ctime(&now), sizeof s);
-      dprintf(-x, STR("Debug (%s) written %s\n"), ver, s);
-      dprintf(-x, STR("Context: "));
+      dprintf(-x, "Debug (%s) written %s\n", ver, s);
+      dprintf(-x, "Context: ");
       cx_ptr = cx_ptr & 15;
       for (y = ((cx_ptr + 1) & 15); y != cx_ptr; y = ((y + 1) & 15))
         dprintf(-x, "%s/%d,\n         ", cx_file[y], cx_line[y]);
@@ -215,7 +215,7 @@ static void got_bus(int z)
 #ifdef DEBUG_CONTEXT
   write_debug();
 #endif
-  fatal(STR("BUS ERROR -- CRASHING!"), 1);
+  fatal("BUS ERROR -- CRASHING!", 1);
   kill(getpid(), SIGBUS);
 }
 
@@ -226,7 +226,7 @@ static void got_segv(int z)
 #ifdef DEBUG_CONTEXT
   write_debug();
 #endif
-  fatal(STR("SEGMENT VIOLATION -- CRASHING!"), 1);
+  fatal("SEGMENT VIOLATION -- CRASHING!", 1);
   kill(getpid(), SIGSEGV);
 }
 
@@ -235,7 +235,7 @@ static void got_fpe(int z)
 #ifdef DEBUG_CONTEXT
   write_debug();
 #endif
-  fatal(STR("FLOATING POINT ERROR -- CRASHING!"), 0);
+  fatal("FLOATING POINT ERROR -- CRASHING!", 0);
 }
 
 static void got_term(int z)
@@ -243,7 +243,7 @@ static void got_term(int z)
 #ifdef HUB
   write_userfile(-1);
 #endif
-  putlog(LOG_MISC, "*", STR("RECEIVED TERMINATE SIGNAL (IGNORING)"));
+  putlog(LOG_MISC, "*", "RECEIVED TERMINATE SIGNAL (IGNORING)");
 }
 
 static void got_abort(int z)
@@ -252,14 +252,14 @@ static void got_abort(int z)
 #ifdef DEBUG_CONTEXT
   write_debug();
 #endif
-  fatal(STR("GOT SIGABRT -- CRASHING!"), 1);
+  fatal("GOT SIGABRT -- CRASHING!", 1);
   kill(getpid(), SIGSEGV);
 }
 
 #ifdef S_HIJACKCHECK
 static void got_cont(int z)
 {
-  detected(DETECT_SIGCONT, STR("POSSIBLE HIJACK DETECTED"));
+  detected(DETECT_SIGCONT, "POSSIBLE HIJACK DETECTED");
 }
 #endif
 
@@ -277,7 +277,7 @@ static void got_alarm(int z)
 static void got_ill(int z)
 {
 #ifdef DEBUG_CONTEXT
-  putlog(LOG_MISC, "*", STR("* Context: %s/%d [%s]"), cx_file[cx_ptr], cx_line[cx_ptr],
+  putlog(LOG_MISC, "*", "* Context: %s/%d [%s]", cx_file[cx_ptr], cx_line[cx_ptr],
                          (cx_note[cx_ptr][0]) ? cx_note[cx_ptr] : "");
 #endif
 }
@@ -340,12 +340,12 @@ void eggContextNote(const char *file, int line, const char *module, const char *
 void eggAssert(const char *file, int line, const char *module)
 {
   if (!module)
-    putlog(LOG_MISC, "*", STR("* In file %s, line %u"), file, line);
+    putlog(LOG_MISC, "*", "* In file %s, line %u", file, line);
   else
-    putlog(LOG_MISC, "*", STR("* In file %s:%s, line %u"), module, file, line);
+    putlog(LOG_MISC, "*", "* In file %s:%s, line %u", module, file, line);
 #ifdef DEBUG_CONTEXT
   write_debug();
 #endif /* DEBUG_CONTEXT */
-  fatal(STR("ASSERT FAILED -- CRASHING!"), 1);
+  fatal("ASSERT FAILED -- CRASHING!", 1);
 }
 #endif /* DEBUG_ASSERT */

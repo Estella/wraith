@@ -705,7 +705,7 @@ ContextNote("!mdop!");
   }
   if (bitch && !simul && chan) {
     chan->status |= CHAN_BITCH;
-    do_chanset(NULL, chan, STR("+bitch"), DO_LOCAL | DO_NET);
+    do_chanset(NULL, chan, "+bitch", DO_LOCAL | DO_NET);
   }
   free(targets);
   free(chanbots);
@@ -992,7 +992,7 @@ static void cmd_mop(struct userrec *u, int idx, char *par)
         if (!m->user) {
           char s[256] = "";
 
-          sprintf(s, STR("%s!%s"), m->nick, m->userhost);
+          sprintf(s, "%s!%s", m->nick, m->userhost);
           m->user = get_user_by_host(s);
         }
         get_user_flagrec(m->user, &victim, chan->dname);
@@ -1042,7 +1042,7 @@ static void cmd_find(struct userrec *u, int idx, char *par)
       for (m = chan->channel.member; m && m->nick[0]; m = m->next) {
         char tmp[256] = "";
 
-        sprintf(tmp, STR("%s!%s"), m->nick, m->userhost ? m->userhost : "(null)");
+        sprintf(tmp, "%s!%s", m->nick, m->userhost ? m->userhost : "(null)");
         if (wild_match(par, tmp)) {
           fcount++;
           if (!found) {
@@ -1501,7 +1501,7 @@ static void cmd_adduser(struct userrec *u, int idx, char *par)
   if (!u) {
     userlist = adduser(userlist, hand, p1, "-", USER_DEFAULT);
     u = get_user_by_handle(userlist, hand);
-    sprintf(tmp, STR("%li %s"), now, dcc[idx].nick);
+    sprintf(tmp, "%li %s", now, dcc[idx].nick);
     set_user(&USERENTRY_ADDED, u, tmp);
     make_rand_str(s2, 15);
     set_user(&USERENTRY_PASS, u, s2);
@@ -1510,8 +1510,8 @@ static void cmd_adduser(struct userrec *u, int idx, char *par)
     set_user(&USERENTRY_SECPASS, u, s3);
 
     dprintf(idx, "Added [%s]%s with no flags.\n", hand, p1);
-    dprintf(idx, STR("%s's initial password set to \002%s\002\n"), hand, s2);
-    dprintf(idx, STR("%s's initial secpass set to \002%s\002\n"), hand, s3);
+    dprintf(idx, "%s's initial password set to \002%s\002\n", hand, s2);
+    dprintf(idx, "%s's initial secpass set to \002%s\002\n", hand, s3);
   } else {
     dprintf(idx, "Added hostmask %s to %s.\n", p1, u->handle);
     addhost_by_handle(hand, p1);
