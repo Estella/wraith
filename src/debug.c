@@ -208,7 +208,7 @@ void write_debug()
     }
     putlog(LOG_MISC, "*", "* Emailed DEBUG to development team...");
 #endif /* !CYGWIN_HACKS */
-//    unlink(buf);
+    unlink(buf);
   }
 }
 #endif /* DEBUG_CONTEXT */

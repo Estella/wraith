@@ -96,7 +96,7 @@ struct user_entry *find_user_entry(struct user_entry_type *, struct userrec *);
 void *get_user(struct user_entry_type *, struct userrec *);
 int set_user(struct user_entry_type *, struct userrec *, void *);
 
-#define is_bot(u)	((u) && ((u)->flags & USER_BOT))
+#define is_bot(u)	((u) && (u)->bot)
 
 /* Fake users used to store ignores and bans
  */
@@ -125,6 +125,7 @@ struct userrec {
   struct userrec *next;
   flag_t flags;
   char handle[HANDLEN + 1];
+  char bot;
 };
 
 struct igrec {
