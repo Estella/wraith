@@ -180,7 +180,6 @@ int def_dupuser(struct userrec *new, struct userrec *old,
 
 
 #ifndef MAKING_MODS
-int whois_access(struct userrec *, struct userrec *);
 #ifdef HUB
 void backup_userfile();
 #endif /* HUB */
