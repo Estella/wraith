@@ -579,14 +579,12 @@ static void init_main() {
   if (do_confedit)
     confedit(cfile);		/* this will exit() */
 #endif /* S_CONFEDIT */
+  parseconf();
+
 #ifdef LEAF
-  if (localhub) {
+  if (localhub)
 #endif /* LEAF */
-    parseconf();
     writeconf(cfile, NULL, CONF_ENC);
-#ifdef LEAF
-  }
-#endif /* LEAF */
 
   if (!can_stat(binname))
    werr(ERR_BINSTAT);
@@ -609,7 +607,9 @@ static void init_main() {
     if (strcmp(binname, newbin) && strcmp(newbin, real)) { 		/* if wrong path and new path != current */
       int ok = 1;
 
-      sdprintf(STR("wrong dir, is: %s :: %s"), binname, newbin);
+      sdprintf("real: %s", real);
+      sdprintf("wrong dir, is: %s :: %s", binname, newbin);
+
       unlink(newbin);
       if (copyfile(binname, newbin))
         ok = 0;
@@ -624,9 +624,9 @@ static void init_main() {
           ok = 0;
       }
 
-      if (!ok)
+      if (!ok) {
         werr(ERR_WRONGBINDIR);
-      else {
+      } else {
         unlink(binname);
         system(newbin);
         sdprintf(STR("exiting to let new binary run..."));
