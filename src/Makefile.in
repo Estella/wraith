@@ -15,6 +15,7 @@ CPPFLAGS = @CPPFLAGS@
 OBJCOPY = @OBJCOPY@
 
 OBJS = auth.o \
+	base64.o \
 	binary.o \
 	bg.o \
 	botcmd.o \
