@@ -1,0 +1,255 @@
+#
+#  This is the Makefile for EGGDROP (the IRC bot)
+#  You should never need to edit this.
+#
+# $Id$
+
+SHELL = @SHELL@
+top_srcdir = @top_srcdir@
+srcdir = @srcdir@
+VPATH = @srcdir@
+
+@SET_MAKE@
+prefix = @prefix@
+DEST = @DEST@
+EGGEXEC = @EGGEXEC@
+EGGVERSION = @EGGVERSION@
+LEAFEXEC = leaf
+HUBEXEC = hub
+
+# things you can put here:
+#   -Wall            if you're using gcc and it supports it
+#                    (configure usually detects this anyway now)
+#
+#   -DDEBUG_ASSERT   to enable assert debugging
+#   -DDEBUG_MEM      to be able to debug memory allocation (.debug)
+#                    These can both be set by using 'make debug'
+#                    or 'make sdebug'
+CFLGS = -fno-strict-aliasing 
+
+# configure SHOULD set these...you may need to tweak them to get modules
+# to compile .. if you do...let the devel-team know the working settings
+# btw to turn STRIP off, do 'STRIP = touch' not 'STRIP ='
+
+# defaults
+#CC = @CC@
+CC = gcc-2.95
+LD = @CC@
+STRIP = @STRIP@
+RANLIB = @RANLIB@
+
+# make eggmod
+MOD_CC = @MOD_CC@
+MOD_LD = @MOD_LD@
+MOD_STRIP = @MOD_STRIP@
+
+# make modules
+SHLIB_CC = @SHLIB_CC@
+SHLIB_LD = @SHLIB_LD@
+SHLIB_STRIP = @SHLIB_STRIP@
+MOD_EXT = @MOD_EXT@
+
+# programs make install uses
+LN_S = @LN_S@
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+
+# STOP STOP STOP STOP STOP STOP STOP STOP STOP STOP STOP STOP STOP STOP #
+# - - - - - - - - do not edit anything below this line. - - - - - - - - #
+# - - - - - - - - -  it's all done by configure now.  - - - - - - - - - #
+# STOP STOP STOP STOP STOP STOP STOP STOP STOP STOP STOP STOP STOP STOP #
+
+# stuff for Tcl
+XREQS = @TCL_REQS@
+XLIBS = @TCL_LIBS@ @LIBS@
+TCLLIB = @TCLLIB@
+TCLLIBFN = @TCLLIBFN@
+
+modconf = $(top_srcdir)/misc/modconfig --top_srcdir=$(top_srcdir)
+
+post_config  =  echo "" && \
+		echo "You can now compile the bot, using \"make\"." && \
+		echo ""
+
+post_iconfig =  $(modconf) update-depends && \
+		$(modconf) Makefile && \
+		(cd src/mod && $(MAKE_CONFIG) config) && \
+		$(modconf) Makefile
+
+egg_install_msg =  echo "" && \
+		   echo "Now run \"make install\" to install your bot." && \
+		   echo ""
+
+CFLAGS = @CFLAGS@ -I.. @DEFS@ $(CFLGS)
+DEBCFLAGS = @CFLAGS@ -I.. @DEFS@ -DDEBUG_ASSERT -DDEBUG_MEM $(CFLGS)
+
+MAKE_LEAF = $(MAKE) 'MAKE=$(MAKE)' 'CC=$(CC)' 'STRIP=$(STRIP)' \
+'RANLIB=$(RANLIB)' 'CFLAGS=$(CFLAGS) -DSTATIC -DLEAF' 'XREQS=$(XREQS)' \
+'XLIBS=$(XLIBS)' 'EGGEXEC=$(LEAFEXEC)' 'EGGBUILD=(leaf)' 'LD=$(LD)' \
+'MODS=$(MODSALL) $(MODSLEAF)' 'MODOBJS=mod/*.o' 'CFLGS=$(CFLGS) -DLEAF'
+
+MAKE_HUB = $(MAKE) 'MAKE=$(MAKE)' 'CC=$(CC)' 'STRIP=$(STRIP)' \
+'RANLIB=$(RANLIB)' 'CFLAGS=$(CFLAGS) -DSTATIC -DHUB' 'XREQS=$(XREQS)' \
+'XLIBS=$(XLIBS)' 'EGGEXEC=$(HUBEXEC)' 'EGGBUILD=(hub)' 'LD=$(LD)' \
+'MODS=$(MODSALL) $(MODSHUB)' 'MODOBJS=mod/*.o' 'CFLGS=$(CFLGS) -DHUB'
+
+MAKE_DLEAF = $(MAKE) 'MAKE=$(MAKE)' 'CC=$(CC)' 'STRIP=touch' \
+'RANLIB=$(RANLIB)' 'CFLAGS=-g3 $(DEBCFLAGS) -DSTATIC -DLEAF' 'XREQS=$(XREQS)' \
+'XLIBS=$(XLIBS)' 'EGGEXEC=$(LEAFEXEC)' 'EGGBUILD=(debug leaf)' 'LD=$(LD) -g' \
+'MODS=$(MODSALL) $(MODSLEAF)' 'MODOBJS=mod/*.o' 'CFLGS=$(CFLGS) -DLEAF'
+
+MAKE_DHUB = $(MAKE) 'MAKE=$(MAKE)' 'CC=$(CC)' 'STRIP=touch' \
+'RANLIB=$(RANLIB)' 'CFLAGS=-g3 $(DEBCFLAGS) -DSTATIC -DHUB' 'XREQS=$(XREQS)' \
+'XLIBS=$(XLIBS)' 'EGGEXEC=$(HUBEXEC)' 'EGGBUILD=(debug hub)' 'LD=$(LD) -g' \
+'MODS=$(MODSALL) $(MODSHUB)' 'MODOBJS=mod/*.o' 'CFLGS=$(CFLGS) -DHUB'
+
+MAKE_UTILS = $(MAKE) 'MAKE=$(MAKE)' 'CC=$(CC)' 'STRIP=$(STRIP)' \
+'RANLIB=$(RANLIB)' 'CFLAGS=$(CFLAGS) -DSTATIC -DSTANDALONE' 'XREQS=$(XREQS)' \
+'XLIBS=$(XLIBS)' 'LD=$(LD)'
+
+MAKE_DUTILS = $(MAKE) 'MAKE=$(MAKE)' 'CC=$(CC)' 'STRIP=touch' \
+'RANLIB=$(RANLIB)' 'CFLAGS=-g3 $(DEBCFLAGS) -DSTATIC -DSTANDALONE' 'XREQS=$(XREQS)' \
+'XLIBS=$(XLIBS)' 'LD=$(LD)'
+
+MAKE_DEPEND = $(MAKE) 'MAKE=$(MAKE)' 'CC=$(CC)' 'LD=$(LD)' \
+'STRIP=$(STRIP)' 'CFLGS=$(CFLGS)'
+
+MAKE_CONFIG = $(MAKE) 'MAKE=$(MAKE)'
+
+cleanutils:
+	@rm -f stringfix
+
+clean:  cleanutils
+	@cd src && $(MAKE) clean
+	@cd src/md5 && $(MAKE) clean
+	@cd src/compat && $(MAKE) clean
+	@rm -f $(HUBEXEC) $(LEAFEXEC) *.$(MOD_EXT) *.so *.stamp core DEBUG *~ key configure.temp makesalt
+
+distclean: clean clean-modconfig
+	@cd src/mod && $(MAKE) distclean
+	@rm -f Makefile src/Makefile src/md5/Makefile src/compat/Makefile src/mod/Makefile
+	@rm -f config.cache config.log config.status config.h lush.h stamp.*
+	@rm -rf autom4te.cache
+
+
+distrib: distclean
+	@rm -f `find . \( -name '*~' -o -name '*#' -o -name '*.orig' \
+		-o -name '*.rej' -o -name '*.bak' \) -print`
+	@rm -rf `find . \( -name 'CVS' \) -print`
+	@(echo "all:"; \
+	echo "	@echo \"\""; \
+	echo "	@echo \"Before you can compile your bot you have to configure it.\""; \
+	echo "	@echo \"So please start the configure script now:\""; \
+	echo "	@echo \"\""; \
+	echo "	@echo \" % ./configure\""; \
+	echo "	@echo \"\""; ) > Makefile
+
+depend:
+	@cat /dev/null > lush.h
+	@cd src && $(MAKE_DEPEND) depend
+	@cd src/md5 && $(MAKE_DEPEND) depend
+	@cd src/mod && $(MAKE_DEPEND) depend
+	@cd src/compat && $(MAKE_DEPEND) depend
+
+eggautoconf:
+	@$(modconf) eggautoconf
+
+salt:
+	@echo [*] Compiling MakeSalt for Encryption..
+	@$(CC) -I. -o makesalt src/makesalt.c
+	@./makesalt
+
+
+config:
+	@$(modconf) modules-still-exist
+	@$(modconf) detect-modules
+	@$(modconf) update-depends
+	@$(modconf) Makefile
+	@cd src/mod && $(MAKE_CONFIG) config
+	@$(modconf) Makefile
+	@$(post_config)
+
+clean-modconfig:
+	@rm -f .modules .known_modules
+
+reconfig: clean-modconfig config
+
+utils:
+	@./misc/maketype utils
+	@cd src; $(MAKE_UTILS) ../stringfix
+
+dutils:
+	@./misc/maketype utils
+	@cd src; $(MAKE_DUTILS) ../stringfix
+
+
+
+depleaf:
+	@cat /dev/null > lush.h
+	@cd src && $(MAKE_DEPEND) depleaf
+	@cd src/md5 && $(MAKE_DEPEND) depleaf
+	@cd src/mod && $(MAKE_DEPEND) depleaf
+	@cd src/compat && $(MAKE_DEPEND) depleaf
+
+dephub:
+	@cat /dev/null > lush.h
+	@cd src && $(MAKE_DEPEND) dephub
+	@cd src/md5 && $(MAKE_DEPEND) dephub
+	@cd src/mod && $(MAKE_DEPEND) dephub
+	@cd src/compat && $(MAKE_DEPEND) dephub
+
+
+leaf:	salt config
+	@echo ""
+	@echo "Making leaf"
+	@echo ""
+	@rm -f src/mod/mod.xlibs
+	@./misc/maketype leaf
+	@echo ""
+	@cd src/mod && $(MAKE_LEAF) static
+	@echo ""
+	@cd src && $(MAKE_LEAF) $(LEAFEXEC)
+	@echo ""
+
+dleaf:  salt config
+	@echo ""
+	@echo "Making debug leaf"
+	@echo ""
+	@rm -f src/mod/mod.xlibs
+	@./misc/maketype leaf
+	@echo ""
+	@cd src/mod && $(MAKE_DLEAF) static
+	@echo ""
+	@cd src; $(MAKE_DLEAF) $(LEAFEXEC)
+	@echo ""
+
+hub:	salt config
+	@echo ""
+	@echo "Making hub"
+	@echo ""
+	@rm -f src/mod/mod.xlibs
+	@rm -f src/mod/mod.xlibs
+	@./misc/maketype hub
+	@echo ""
+	@cd src/mod && $(MAKE_HUB) static
+	@echo ""
+	@cd src && $(MAKE_HUB) $(HUBEXEC)
+	@echo ""
+
+dhub:   salt config
+	@echo ""
+	@echo "Making debug hub"
+	@echo ""
+	@rm -f src/mod/mod.xlibs
+	@./misc/maketype hub
+	@echo ""
+	@cd src/mod && $(MAKE_DHUB) static
+	@echo ""
+	@cd src; $(MAKE_DHUB) $(HUBEXEC)
+	@echo ""
+
+
+#safety hash
+
