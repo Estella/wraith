@@ -5,7 +5,7 @@
  * $Id$
  */
 #ifdef LEAF
-static void cmd_servers(struct userrec *u, int idx, char *par)
+static void cmd_servers(int idx, char *par)
 {
   struct server_list *x = serverlist;
   int i;
@@ -33,7 +33,7 @@ static void cmd_servers(struct userrec *u, int idx, char *par)
   }
 }
 
-static void cmd_dump(struct userrec *u, int idx, char *par)
+static void cmd_dump(int idx, char *par)
 {
   putlog(LOG_CMDS, "*", "#%s# dump %s", dcc[idx].nick, par);
   if (!isowner(dcc[idx].nick)) {
@@ -47,7 +47,7 @@ static void cmd_dump(struct userrec *u, int idx, char *par)
   dprintf(DP_SERVER, "%s\n", par);
 }
 
-static void cmd_jump(struct userrec *u, int idx, char *par)
+static void cmd_jump(int idx, char *par)
 {
   char *other = NULL;
   int port;
@@ -68,7 +68,7 @@ static void cmd_jump(struct userrec *u, int idx, char *par)
   cycle_time = 0;
 }
 
-static void cmd_clearqueue(struct userrec *u, int idx, char *par)
+static void cmd_clearqueue(int idx, char *par)
 {
   int msgs;
 
