@@ -6,6 +6,7 @@
  */
 
 #include "common.h"
+#include "cmds.h"
 #include "cfg.h"
 #include "userrec.h"
 #include "misc.h"
@@ -19,6 +20,9 @@
 #include "chan.h"
 #include "tandem.h"
 #include "modules.h"
+#ifdef S_DCCPASS
+#include "botnet.h"
+#endif /* S_DCCPASS */
 #include <net/if.h>
 
 #include "stat.h"
@@ -715,7 +719,7 @@ void init_config()
 }
 
 #ifdef S_DCCPASS
-int check_cmd_pass(char *cmd, char *pass)
+int check_cmd_pass(const char *cmd, char *pass)
 {
   struct cmd_pass *cp = NULL;
 
@@ -731,7 +735,7 @@ int check_cmd_pass(char *cmd, char *pass)
   return 0;
 }
 
-int has_cmd_pass(char *cmd) 
+int has_cmd_pass(const char *cmd) 
 {
   struct cmd_pass *cp = NULL;
 
