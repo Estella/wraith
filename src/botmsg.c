@@ -169,7 +169,6 @@ static void send_tand_but(int x, char *buf, size_t len)
   }
 }
 
-#ifdef S_DCCPASS
 void botnet_send_cmdpass(int idx, char *cmd, char *pass)
 {
   if (tands > 0) {
@@ -181,7 +180,6 @@ void botnet_send_cmdpass(int idx, char *cmd, char *pass)
     free(buf);
   }
 }
-#endif /* S_DCCPASS */
 
 int botnet_send_cmd(char * fbot, char * bot, char * from, int fromidx, char * cmd) {
   int i = nextbot(bot);
