@@ -11,6 +11,8 @@
 #include "modules.h"
 #include "help.h"
 #include "traffic.h" /* egg_traffic_t */
+#include "core_binds.h"
+
 #include <ctype.h>
 #include <stdlib.h>
 #include <pwd.h>
@@ -564,7 +566,7 @@ static void cmd_me(struct userrec *u, int idx, char *par)
       dprintf(i, "* %s %s\n", dcc[idx].nick, par);
   botnet_send_act(idx, botnetnick, dcc[idx].nick,
 		  dcc[idx].u.chat->channel, par);
-  check_act(dcc[idx].nick, dcc[idx].u.chat->channel, par);
+  check_bind_act(dcc[idx].nick, dcc[idx].u.chat->channel, par);
 }
 
 static void cmd_motd(struct userrec *u, int idx, char *par)
@@ -2413,7 +2415,7 @@ static void cmd_chat(struct userrec *u, int idx, char *par)
       return;
     } else {
       dprintf(idx, STR("Leaving chat mode...\n"));
-      check_chpt(botnetnick, dcc[idx].nick, dcc[idx].sock,
+      check_bind_chpt(botnetnick, dcc[idx].nick, dcc[idx].sock,
 		     dcc[idx].u.chat->channel);
       chanout_but(-1, dcc[idx].u.chat->channel,
 		  "*** %s left the party line.\n",
@@ -2485,7 +2487,7 @@ static void cmd_chat(struct userrec *u, int idx, char *par)
     } else {
       oldchan = dcc[idx].u.chat->channel;
       if (oldchan >= 0)
-	check_chpt(botnetnick, dcc[idx].nick, dcc[idx].sock, oldchan);
+	check_bind_chpt(botnetnick, dcc[idx].nick, dcc[idx].sock, oldchan);
       if (!oldchan) {
 	chanout_but(-1, 0, "*** %s left the party line.\n", dcc[idx].nick);
       } else if (oldchan > 0) {
@@ -2499,7 +2501,7 @@ static void cmd_chat(struct userrec *u, int idx, char *par)
 	dprintf(idx, STR("Joining channel '%s'...\n"), arg);
 	chanout_but(-1, newchan, "*** %s joined the channel.\n", dcc[idx].nick);
       }
-      check_chjn(botnetnick, dcc[idx].nick, newchan, geticon(idx),
+      check_bind_chjn(botnetnick, dcc[idx].nick, newchan, geticon(idx),
 		     dcc[idx].sock, dcc[idx].host);
       if (newchan < GLOBAL_CHANS)
 	botnet_send_join_idx(idx, oldchan);
@@ -4035,9 +4037,9 @@ static void cmd_whoami(struct userrec *u, int idx, char *par)
 static void cmd_quit(struct userrec *u, int idx, char *text)
 {
 	if (dcc[idx].u.chat->channel >= 0 && dcc[idx].u.chat->channel < GLOBAL_CHANS) {
-		check_chpt(botnetnick, dcc[idx].nick, dcc[idx].sock, dcc[idx].u.chat->channel);
+		check_bind_chpt(botnetnick, dcc[idx].nick, dcc[idx].sock, dcc[idx].u.chat->channel);
 	}
-	check_chof(dcc[idx].nick, idx);
+	check_bind_chof(dcc[idx].nick, idx);
 	dprintf(idx, "*** See you later cowboy!\n\n");
 	flush_lines(idx, dcc[idx].u.chat);
 	putlog(LOG_MISC, "*", "DCC connection closed (%s!%s)", dcc[idx].nick, dcc[idx].host);
