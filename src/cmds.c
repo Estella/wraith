@@ -982,7 +982,7 @@ static void cmd_userlist(struct userrec *u, int idx, char *par)
   putlog(LOG_CMDS, "*", STR("#%s# userlist"), dcc[idx].nick);
 
   for (u=userlist;u;u=u->next) {
-    if ((u->flags & USER_BOT) && (u->flags & USER_CHANHUB)) {
+    if (whois_access(dcc[idx].user, u) && (u->flags & USER_BOT) && (u->flags & USER_CHANHUB)) {
       if (cnt)
         dprintf(idx, ", ");
       else
@@ -1003,7 +1003,7 @@ static void cmd_userlist(struct userrec *u, int idx, char *par)
 
 #ifdef HUB
   for (u=userlist;u;u=u->next) {
-    if (!(u->flags & USER_BOT) && (u->flags & USER_ADMIN)) {
+    if (whois_access(dcc[idx].user, u) && !(u->flags & USER_BOT) && (u->flags & USER_ADMIN)) {
       if (cnt)
         dprintf(idx, ", ");
       else
@@ -1024,7 +1024,7 @@ static void cmd_userlist(struct userrec *u, int idx, char *par)
 
 
   for (u=userlist;u;u=u->next) {
-    if (!(u->flags & (USER_BOT | USER_ADMIN)) && (u->flags & USER_OWNER)) {
+    if (whois_access(dcc[idx].user, u) && !(u->flags & (USER_BOT | USER_ADMIN)) && (u->flags & USER_OWNER)) {
       if (cnt)
         dprintf(idx, ", ");
       else
@@ -1044,7 +1044,7 @@ static void cmd_userlist(struct userrec *u, int idx, char *par)
   cnt=0;
 
   for (u=userlist;u;u=u->next) {
-    if (!(u->flags & (USER_BOT | USER_OWNER)) && (u->flags & USER_MASTER)) {
+    if (whois_access(dcc[idx].user, u) && !(u->flags & (USER_BOT | USER_OWNER)) && (u->flags & USER_MASTER)) {
       if (cnt)
         dprintf(idx, ", ");
       else
@@ -1064,21 +1064,23 @@ static void cmd_userlist(struct userrec *u, int idx, char *par)
 #endif /* HUB */
 
   for (u=userlist;u;u=u->next) {
+    if (whois_access(dcc[idx].user, u)) {
 #ifdef HUB
-    if (!(u->flags & (USER_BOT | USER_MASTER)) && (u->flags & USER_OP)) {
+      if (!(u->flags & (USER_BOT | USER_MASTER)) && (u->flags & USER_OP)) {
 #else /* !HUB */
-    if (!(u->flags & USER_BOT) && (u->flags & USER_OP)) {
+      if (!(u->flags & USER_BOT) && (u->flags & USER_OP)) {
 #endif /* HUB */
-      if (cnt)
-        dprintf(idx, ", ");
-      else
-        dprintf(idx, STR("Ops     : "));
-      dprintf(idx, u->handle);
-      cnt++;
-      tt++;
-      if (cnt == 15) {
-        dprintf(idx, "\n");
-        cnt=0;
+        if (cnt)
+          dprintf(idx, ", ");
+        else
+          dprintf(idx, STR("Ops     : "));
+        dprintf(idx, u->handle);
+        cnt++;
+        tt++;
+        if (cnt == 15) {
+          dprintf(idx, "\n");
+          cnt=0;
+        }
       }
     }
   }
@@ -1087,7 +1089,7 @@ static void cmd_userlist(struct userrec *u, int idx, char *par)
   cnt=0;
 
   for (u=userlist;u;u=u->next) {
-    if (!(u->flags & (USER_BOT | USER_OP))) {
+    if (whois_access(dcc[idx].user, u) && !(u->flags & (USER_BOT | USER_OP))) {
       if (cnt)
         dprintf(idx, ", ");
       else
