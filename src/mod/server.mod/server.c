@@ -1359,7 +1359,6 @@ static void dcc_chat_hostresolved(int i)
   return;
 }
 
-
 /*
  *     Server timer functions
  */
