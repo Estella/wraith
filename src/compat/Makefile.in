@@ -20,6 +20,7 @@ OBJS = inet_aton.o \
 	snprintf.o \
 	memset.o \
 	memcpy.o \
+	memutil.o \
 	strcasecmp.o \
 	strftime.o
 
