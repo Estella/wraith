@@ -194,7 +194,11 @@ static void cmd_kickban(struct userrec *u, int idx, char *par)
       dprintf(idx, "No such channel.\n");
       return;
     }
-
+    else if (!chk_op(user, chan)) {
+      if (all) goto next;
+      dprintf(idx, "You don't have access to %s\n", chan->dname);
+      return;
+    }
     if (!channel_active(chan)) {
       if (all) goto next;
       dprintf(idx, "I'm not on %s right now!\n", chan->dname);
@@ -206,7 +210,6 @@ static void cmd_kickban(struct userrec *u, int idx, char *par)
              " on %s.\n", chan->dname);
       return;
     }
-
 
     m = ismember(chan, nick);
     if (!m) {
@@ -303,6 +306,11 @@ static void cmd_voice(struct userrec *u, int idx, char *par)
       dprintf(idx, "No such channel.\n");
       return;
     }
+    else if (!chk_voice(user, chan) && !chk_op(user, chan)) {
+      if (all) goto next;
+      dprintf(idx, "You don't have access to voice on %s\n", chan->dname);
+      return;
+    }
 
     if (!channel_active(chan)) {
       if (all) goto next;
@@ -364,6 +372,11 @@ static void cmd_devoice(struct userrec *u, int idx, char *par)
   if (private(user, chan, PRIV_VOICE)) {
     if (all) goto next;
     dprintf(idx, "No such channel.\n");
+    return;
+  }
+  else if (!chk_voice(user, chan) && !chk_op(user, chan)) {
+    if (all) goto next;
+    dprintf(idx, "You don't have access to devoice on %s\n", chan->dname);
     return;
   }
 
@@ -429,6 +442,11 @@ static void cmd_op(struct userrec *u, int idx, char *par)
       dprintf(idx, "No such channel.\n");
     goto next;
   }
+  else if (!chk_op(user, chan)) {
+    if (all) goto next;
+    dprintf(idx, "You don't have access to op on %s\n", chan->dname);
+    return;
+  }
 
   if (!channel_active(chan)) {
     if (all) goto next;
@@ -450,7 +468,7 @@ static void cmd_op(struct userrec *u, int idx, char *par)
   egg_snprintf(s, sizeof s, "%s!%s", m->nick, m->userhost);
   u = get_user_by_host(s);
   get_user_flagrec(u, &victim, chan->dname);
-  if (chan_deop(victim) || (glob_deop(victim) && !glob_op(victim))) {
+  if (chk_deop(victim, chan)) {
     dprintf(idx, "%s is currently being auto-deopped  on %s.\n", m->nick, chan->dname);
     if (all) goto next;
     return;
@@ -769,6 +787,11 @@ static void cmd_deop(struct userrec *u, int idx, char *par)
       if (all) goto next;
       dprintf(idx, "No such channel.\n");
     }
+    else if (!chk_op(user, chan)) {
+      if (all) goto next;
+      dprintf(idx, "You don't have access to deop on %s\n", chan->dname);
+      return;
+    }
     if (!channel_active(chan)) {
       if (all) goto next;  
       dprintf(idx, "I'm not on %s right now!\n", chan->dname);
@@ -862,6 +885,11 @@ static void cmd_kick(struct userrec *u, int idx, char *par)
       dprintf(idx, "No such channel.\n");
       return;
     }
+    else if (!chk_op(user, chan)) {
+      if (all) goto next;
+      dprintf(idx, "You don't have access to kick on %s\n", chan->dname);
+      return;
+    }
 
     if (!channel_active(chan)) {
       if (all) goto next;
@@ -923,8 +951,12 @@ static void cmd_getkey(struct userrec *u, int idx, char *par)
 
   get_user_flagrec(dcc[idx].user, &user, chan->dname);
 
-  if (!glob_op(user) && !chan_op(user)) {
-    dprintf(idx, "You do not have access for %s\n");
+  if (private(user, chan, PRIV_OP)) {
+    dprintf(idx, "No such channel.\n");
+    return;
+  }
+  else if (!chk_op(user, chan)) {
+    dprintf(idx, "You don't have access for %s\n");
     return;
   }
 
@@ -1125,6 +1157,11 @@ static void cmd_invite(struct userrec *u, int idx, char *par)
     if (private(user, chan, PRIV_OP)) {
       if (all) goto next;
       dprintf(idx, "No such channel.\n");
+    }
+    else if (!chk_op(user, chan)) {
+      if (all) goto next;
+      dprintf(idx, "You don't have access to op on %s\n", chan->dname);
+      return;
     }
 
     if (!me_op(chan)) {
