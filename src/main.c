@@ -1393,7 +1393,6 @@ int main(int argc, char **argv)
   char buf[SGRAB + 9], s[25];
   FILE *f;
   struct sigaction sv;
-  struct chanset_t *chan;
 #ifdef LEAF
   int skip = 0;
   int ok = 1;
