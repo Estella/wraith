@@ -1553,31 +1553,7 @@ static int tcl_channels STDVAR
     Tcl_AppendElement(irp, chan->dname);
   return TCL_OK;
 }
-#ifdef HUB
-/* obsolete
-static int tcl_savechannels STDVAR
-{
-  BADARGS(1, 1, "");
-  if (!chanfile[0]) {
-    Tcl_AppendResult(irp, "no channel file");
-    return TCL_ERROR;
-  }
- //obsolete old .chan write_channels();
-  return TCL_OK;
-}
-static int tcl_loadchannels STDVAR
-{
-  BADARGS(1, 1, "");
-  if (!chanfile[0]) {
-    Tcl_AppendResult(irp, "no channel file");
-    return TCL_ERROR;
-  }
-  setstatic = 0;
-  read_channels(1);
-  return TCL_OK;
-}
-*/
-#endif
+
 static int tcl_validchan STDVAR
 {
   struct chanset_t *chan;
@@ -2026,12 +2002,6 @@ static tcl_cmds channels_cmds[] =
   {"exemptlist",	tcl_exemptlist},
   {"invitelist",	tcl_invitelist},
   {"banlist",		tcl_banlist},
-#ifdef HUB
-/* obsolete
-  {"savechannels",	tcl_savechannels},
-  {"loadchannels",	tcl_loadchannels},
-*/
-#endif
   {"validchan",		tcl_validchan},
   {"isdynamic",		tcl_isdynamic},
   {"getchaninfo",	tcl_getchaninfo},
