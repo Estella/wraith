@@ -9,7 +9,6 @@
 #include "garble.h"
 #include "main.h"
 
-#ifdef S_GARBLESTRINGS
 #define GARBLE_BUFFERS 40
 unsigned char *garble_buffer[GARBLE_BUFFERS] = {
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -37,5 +36,4 @@ char *degarble(int len, char *g)
   garble_buffer[garble_ptr][len] = 0;
   return (char *) garble_buffer[garble_ptr];
 }
-#endif /* S_GARBLESTRINGS */
 
