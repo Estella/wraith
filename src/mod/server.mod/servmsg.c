@@ -349,7 +349,7 @@ static int detect_flood(char *floodnick, char *floodhost, char *from, int which)
     return 0;
 
 #ifdef S_AUTH
-  if (isauthed(floodhost) > -1) 
+  if (findauth(floodhost) > -1) 
     return 0;
 #endif /* S_AUTH */
 
@@ -564,7 +564,7 @@ static int gotmsg(char *from, char *msg)
       code = newsplit(&msg);
       rmspace(msg);
 Context;
-      i = isauthed(uhost);
+      i = findauth(uhost);
       /* is it a cmd? */
 
 Context;

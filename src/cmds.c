@@ -767,8 +767,8 @@ Context;
       dprintf(idx, STR("Description: %s\n"), cmds[o].desc ? cmds[o].desc : "None");
       break;
     }
-  */
   }
+  */
   
   if (showall) {
     qsort(cmds, o, sizeof(mycmds), my_cmp);
