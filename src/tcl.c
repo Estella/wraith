@@ -368,7 +368,6 @@ void add_tcl_commands(tcl_cmds *table)
     Tcl_CreateObjCommand(interp, table->name, utf_converter, (ClientData) cdata,
 			 cmd_delete_callback);
     table++;
-    //nfree(cdata);
   }
 
 }
@@ -385,7 +384,6 @@ void add_cd_tcl_cmds(cd_tcl_cmd *table)
     Tcl_CreateObjCommand(interp, table->name, utf_converter, (ClientData) cdata, 
 			 cmd_delete_callback);
     table++;
-    //nfree(cdata);
   }
 }
 
@@ -670,9 +668,7 @@ resetPath:
   /* Initialize binds and traces */
   Context;
   init_bind();
-  Context;
   init_traces();
-  Context;
   /* Add new commands */
   add_tcl_commands(tcluser_cmds);
   add_tcl_commands(tcldcc_cmds);
@@ -733,11 +729,8 @@ int readtclprog(char *fname)
         *tptr++ = 0;
       }
     }
-Context;
     horeting = decryptit(templine);
-Context;
     temps = (char *) decrypt_string(netpass, horeting);
-Context;
     strcat(buf, temps);
     nfree(temps);
     while (nc > 0) {
@@ -745,9 +738,7 @@ Context;
       nc--;
     }
   }
-Context;
   code = Tcl_Eval(interp, buf);
-Context;
   if (code != TCL_OK) {
     putlog(LOG_MISC, "*", "Tcl error in file '%s':", fname);
     putlog(LOG_MISC, "*", "%s", Tcl_GetVar(interp, "errorInfo", TCL_GLOBAL_ONLY));
@@ -784,7 +775,6 @@ void add_tcl_strings(tcl_strings *list)
     tcl_eggstr((ClientData) st, interp, list[i].name, NULL, TCL_TRACE_READS);
     Tcl_TraceVar(interp, list[i].name, TCL_TRACE_READS | TCL_TRACE_WRITES |
 		 TCL_TRACE_UNSETS, tcl_eggstr, (ClientData) st);
-    //nfree(st);
   }
 }
 
@@ -827,7 +817,6 @@ void add_tcl_ints(tcl_ints *list)
     Tcl_TraceVar(interp, list[i].name,
 		 TCL_TRACE_READS | TCL_TRACE_WRITES | TCL_TRACE_UNSETS,
 		 tcl_eggint, (ClientData) ii);
-    //nfree(ii);
   }
 }
 
@@ -871,7 +860,6 @@ void add_tcl_coups(tcl_coups *list)
     Tcl_TraceVar(interp, list[i].name,
 		 TCL_TRACE_READS | TCL_TRACE_WRITES | TCL_TRACE_UNSETS,
 		 tcl_eggcouplet, (ClientData) cp);
-    //nfree(cp);
   }
 }
 
@@ -890,7 +878,7 @@ void rem_tcl_coups(tcl_coups * list)
     Tcl_UntraceVar(interp, list[i].name,
 		   TCL_TRACE_READS | TCL_TRACE_WRITES | TCL_TRACE_UNSETS,
 		   tcl_eggcouplet, (ClientData) cp);
-    //nfree(cp);
+    nfree(cp);
   }
 }
 

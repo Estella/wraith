@@ -1661,7 +1661,6 @@ void check_botnet_pings()
 	    killsock(dcc[i].sock);
 	    lostdcc(i);
 	  } else {
-//fix
             putlog(LOG_MISC, "*", "I am lame, and am now rejecting %s", bot->bot);
 	    botnet_send_reject(i, botnetnick, NULL, bot->bot,
 			       NULL, NULL);

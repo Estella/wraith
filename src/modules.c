@@ -10,7 +10,6 @@
 #include "main.h"
 #include "modules.h"
 #include "tandem.h"
-//#include "md5/md5.h"
 #include <ctype.h>
 
 extern struct dcc_t	*dcc;

@@ -583,7 +583,6 @@ struct userrec *adduser(struct userrec *bu, char *handle, char *host,
 			char *pass, int flags)
 {
   struct userrec *u, *x;
-//  struct xtra_key *xk;
   int oldshare = noshare;
 
   noshare = 1;
