@@ -69,14 +69,12 @@ bool def_kill(struct user_entry *e)
   return 1;
 }
 
-#ifdef HUB
 bool def_write_userfile(FILE * f, struct userrec *u, struct user_entry *e)
 {
   if (lfprintf(f, "--%s %s\n", e->type->name, e->u.string) == EOF)
     return 0;
   return 1;
 }
-#endif /* HUB */
 
 void *def_get(struct userrec *u, struct user_entry *e)
 {
@@ -121,9 +119,8 @@ bool def_set(struct userrec *u, struct user_entry *e, void *buf)
 
 bool def_gotshare(struct userrec *u, struct user_entry *e, char *data, int idx)
 {
-#ifdef HUB
-  putlog(LOG_DEBUG, "@", "%s: change %s %s", dcc[idx].nick, e->type->name, u->handle);
-#endif
+  if (conf.bot->hub)
+    putlog(LOG_DEBUG, "@", "%s: change %s %s", dcc[idx].nick, e->type->name, u->handle);
   return e->type->set(u, e, data);
 }
 
@@ -144,9 +141,7 @@ struct user_entry_type USERENTRY_COMMENT =
   0,				/* always 0 ;) */
   def_gotshare,
   def_unpack,
-#ifdef HUB
   def_write_userfile,
-#endif /* HUB */
   def_kill,
   def_get,
   def_set,
@@ -159,9 +154,7 @@ struct user_entry_type USERENTRY_INFO =
   0,				/* always 0 ;) */
   def_gotshare,
   def_unpack,
-#ifdef HUB
   def_write_userfile,
-#endif /* HUB */
   def_kill,
   def_get,
   def_set,
@@ -194,9 +187,7 @@ struct user_entry_type USERENTRY_ADDED = {
   0,				/* always 0 ;) */
   def_gotshare,
   def_unpack,
-#ifdef HUB
   def_write_userfile,
-#endif /* HUB */
   def_kill,
   def_get,
   def_set,
@@ -273,18 +264,18 @@ static bool config_unpack(struct userrec *u, struct user_entry *e)
 
 static void config_display(int idx, struct user_entry *e, struct userrec *u)
 {
-#ifdef HUB
-  struct xtra_key *xk = NULL;
-  struct flag_record fr = {FR_GLOBAL, 0, 0, 0 };
+  if (conf.bot->hub) {
+    struct xtra_key *xk = NULL;
+    struct flag_record fr = {FR_GLOBAL, 0, 0, 0 };
 
-  get_user_flagrec(dcc[idx].user, &fr, NULL);
-  /* scan thru xtra field, searching for matches */
-  for (xk = (struct xtra_key *) e->u.extra; xk; xk = xk->next) {
-    /* ok, it's a valid xtra field entry */
-    if (glob_owner(fr))
-      dprintf(idx, "  %s: %s\n", xk->key, xk->data);
+    get_user_flagrec(dcc[idx].user, &fr, NULL);
+    /* scan thru xtra field, searching for matches */
+    for (xk = (struct xtra_key *) e->u.extra; xk; xk = xk->next) {
+      /* ok, it's a valid xtra field entry */
+      if (glob_owner(fr))
+        dprintf(idx, "  %s: %s\n", xk->key, xk->data);
+    }
   }
-#endif /* HUB */
 }
 
 static bool config_gotshare(struct userrec *u, struct user_entry *e, char *buf, int idx)
@@ -329,7 +320,6 @@ static bool config_gotshare(struct userrec *u, struct user_entry *e, char *buf, 
   return 1;
 }
 
-#ifdef HUB
 static bool config_write_userfile(FILE *f, struct userrec *u, struct user_entry *e)
 {
   struct xtra_key *x = NULL;
@@ -338,7 +328,6 @@ static bool config_write_userfile(FILE *f, struct userrec *u, struct user_entry 
     lfprintf(f, "--CONFIG %s %s\n", x->key, x->data);
   return 1;
 }
-#endif /* HUB */
 
 static bool config_kill(struct user_entry *e)
 {
@@ -358,9 +347,7 @@ struct user_entry_type USERENTRY_CONFIG = {
   0,
   config_gotshare,
   config_unpack,
-#ifdef HUB
   config_write_userfile,
-#endif /* HUB */
   config_kill,
   def_get,
   config_set,
@@ -368,32 +355,26 @@ struct user_entry_type USERENTRY_CONFIG = {
   "CONFIG"
 };
 
-#ifdef HUB
 static void botmisc_display(int idx, struct user_entry *e, struct userrec *u)
 {
-  struct flag_record fr = {FR_GLOBAL, 0, 0, 0 };
+  if (conf.bot->hub) {
+    struct flag_record fr = {FR_GLOBAL, 0, 0, 0 };
 
-  get_user_flagrec(dcc[idx].user, &fr, NULL);
-  if (glob_admin(fr))
-    dprintf(idx, "  %s: %s\n", e->type->name, e->u.string ? e->u.string : "");
+    get_user_flagrec(dcc[idx].user, &fr, NULL);
+    if (glob_admin(fr))
+      dprintf(idx, "  %s: %s\n", e->type->name, e->u.string ? e->u.string : "");
+  }
 }
-#endif /* HUB */
 
 struct user_entry_type USERENTRY_USERNAME = {
  0,
  def_gotshare,
  def_unpack,
-#ifdef HUB
  def_write_userfile,
-#endif /* HUB */
  def_kill,
  def_get,
  def_set,
-#ifdef HUB
  botmisc_display,
-#else
- NULL,
-#endif /* HUB */
  "USERNAME"
 };
 
@@ -401,17 +382,11 @@ struct user_entry_type USERENTRY_NODENAME = {
  0,
  def_gotshare,
  def_unpack,
-#ifdef HUB
  def_write_userfile,
-#endif /* HUB */
  def_kill,
  def_get,
  def_set,
-#ifdef HUB
  botmisc_display,
-#else
- NULL,
-#endif /* HUB */
  "NODENAME"
 };
 
@@ -419,17 +394,11 @@ struct user_entry_type USERENTRY_OS = {
  0,
  def_gotshare,
  def_unpack,
-#ifdef HUB
  def_write_userfile,
-#endif /* HUB */
  def_kill,
  def_get,
  def_set,
-#ifdef HUB
  botmisc_display,
-#else
- NULL,
-#endif /* HUB */
  "OS"
 };
 
@@ -475,9 +444,7 @@ struct user_entry_type USERENTRY_STATS = {
   0,				/* always 0 ;) */
   def_gotshare,
   def_unpack,
-#ifdef HUB
   def_write_userfile,
-#endif /* HUB */
   def_kill,
   def_get,
   def_set,
@@ -517,9 +484,7 @@ struct user_entry_type USERENTRY_MODIFIED =
   0,
   def_gotshare,
   def_unpack,
-#ifdef HUB
   def_write_userfile,
-#endif /* HUB */
   def_kill,
   def_get,
   def_set,
@@ -565,9 +530,7 @@ struct user_entry_type USERENTRY_PASS =
   0,
   def_gotshare,
   def_unpack,
-#ifdef HUB
   def_write_userfile,
-#endif /* HUB */
   def_kill,
   def_get,
   pass_set,
@@ -607,9 +570,7 @@ struct user_entry_type USERENTRY_TMPPASS =
   0,
   def_gotshare,
   def_unpack,
-#ifdef HUB
   def_write_userfile,
-#endif /* HUB */
   def_kill,
   def_get,
   tmppass_set,
@@ -625,14 +586,14 @@ static void secpass_display(int idx, struct user_entry *e, struct userrec *u)
   get_user_flagrec(dcc[idx].user, &fr, NULL);
 
   if (!strcmp(u->handle, dcc[idx].nick) || (glob_admin(fr) && isowner(dcc[idx].nick))) {
-#ifdef HUB
-    dprintf(idx, "  %s: %s\n", e->type->name, e->u.string);
-#else
-    dprintf(idx, "  %s: Hidden on leaf bots.", e->type->name);
-    if (dcc[idx].u.chat->su_nick)
-      dprintf(idx, " Nice try, %s.", dcc[idx].u.chat->su_nick);
-    dprintf(idx, "\n");
-#endif /* HUB */
+    if (conf.bot->hub)
+      dprintf(idx, "  %s: %s\n", e->type->name, e->u.string);
+    else {
+      dprintf(idx, "  %s: Hidden on leaf bots.", e->type->name);
+      if (dcc[idx].u.chat->su_nick)
+        dprintf(idx, " Nice try, %s.", dcc[idx].u.chat->su_nick);
+      dprintf(idx, "\n");
+    }
   }
 }
 
@@ -641,9 +602,7 @@ struct user_entry_type USERENTRY_SECPASS =
   0,
   def_gotshare,
   def_unpack,
-#ifdef HUB
   def_write_userfile,
-#endif /* HUB */
   def_kill,
   def_get,
   def_set,
@@ -665,7 +624,6 @@ static bool laston_unpack(struct userrec *u, struct user_entry *e)
   return 1;
 }
 
-#ifdef HUB
 static bool laston_write_userfile(FILE * f, struct userrec *u, struct user_entry *e)
 {
   struct laston_info *li = (struct laston_info *) e->u.extra;
@@ -675,7 +633,6 @@ static bool laston_write_userfile(FILE * f, struct userrec *u, struct user_entry
     return 0;
   return 1;
 }
-#endif /* HUB */
 
 static bool laston_kill(struct user_entry *e)
 {
@@ -730,9 +687,7 @@ struct user_entry_type USERENTRY_LASTON =
   0,				/* always 0 ;) */
   laston_gotshare,
   laston_unpack,
-#ifdef HUB
   laston_write_userfile,
-#endif /* HUB */
   laston_kill,
   def_get,
   laston_set,
@@ -796,7 +751,6 @@ static bool botaddr_kill(struct user_entry *e)
   return 1;
 }
 
-#ifdef HUB
 static bool botaddr_write_userfile(FILE *f, struct userrec *u, struct user_entry *e)
 {
   register struct bot_addr *bi = (struct bot_addr *) e->u.extra;
@@ -806,7 +760,6 @@ static bool botaddr_write_userfile(FILE *f, struct userrec *u, struct user_entry
     return 0;
   return 1;
 }
-#endif /* HUB */
 
 static bool botaddr_set(struct userrec *u, struct user_entry *e, void *buf)
 {
@@ -836,25 +789,26 @@ static bool botaddr_set(struct userrec *u, struct user_entry *e, void *buf)
   return 1;
 }
 
-#ifdef HUB
 static void botaddr_display(int idx, struct user_entry *e, struct userrec *u)
 {
-  struct flag_record fr = {FR_GLOBAL, 0, 0, 0 };
+  if (conf.bot->hub) {
+    struct flag_record fr = {FR_GLOBAL, 0, 0, 0 };
 
-  get_user_flagrec(dcc[idx].user, &fr, NULL);
-  if (glob_admin(fr)) {
-    register struct bot_addr *bi = (struct bot_addr *) e->u.extra;
-    if (bi->address && bi->hublevel && bi->hublevel != 0) {
-      dprintf(idx, "  ADDRESS: %.70s\n", bi->address);
-      dprintf(idx, "     port: %d\n", bi->telnet_port);
+    get_user_flagrec(dcc[idx].user, &fr, NULL);
+    if (glob_admin(fr)) {
+      register struct bot_addr *bi = (struct bot_addr *) e->u.extra;
+
+      if (bi->address && bi->hublevel && bi->hublevel != 0) {
+        dprintf(idx, "  ADDRESS: %.70s\n", bi->address);
+        dprintf(idx, "     port: %d\n", bi->telnet_port);
+      }
+      if (bi->hublevel && bi->hublevel != 0)
+        dprintf(idx, "  HUBLEVEL: %d\n", bi->hublevel);
+      if (bi->uplink && bi->uplink[0])
+        dprintf(idx, "  UPLINK: %s\n", bi->uplink);
     }
-    if (bi->hublevel && bi->hublevel != 0)
-      dprintf(idx, "  HUBLEVEL: %d\n", bi->hublevel);
-    if (bi->uplink && bi->uplink[0])
-      dprintf(idx, "  UPLINK: %s\n", bi->uplink);
   }
 }
-#endif /* HUB */
 
 static bool botaddr_gotshare(struct userrec *u, struct user_entry *e, char *buf, int idx)
 {
@@ -881,21 +835,14 @@ struct user_entry_type USERENTRY_BOTADDR =
   0,				/* always 0 ;) */
   botaddr_gotshare,
   botaddr_unpack,
-#ifdef HUB
   botaddr_write_userfile,
-#endif /* HUB */
   botaddr_kill,
   def_get,
   botaddr_set,
-#ifdef HUB
   botaddr_display,
-#else
-  NULL,
-#endif /* HUB */
   "BOTADDR"
 };
 
-#ifdef HUB
 static bool hosts_write_userfile(FILE *f, struct userrec *u, struct user_entry *e)
 {
   struct list_type *h = NULL;
@@ -905,7 +852,6 @@ static bool hosts_write_userfile(FILE *f, struct userrec *u, struct user_entry *
       return 0;
   return 1;
 }
-#endif /* HUB */
 
 static bool hosts_null(struct userrec *u, struct user_entry *e)
 {
@@ -921,11 +867,10 @@ static bool hosts_kill(struct user_entry *e)
 
 static void hosts_display(int idx, struct user_entry *e, struct userrec *u)
 {
-#ifdef LEAF
   /* if this is a su, dont show hosts
    * otherwise, let users see their own hosts */
-  if (dcc[idx].simul || (!strcmp(u->handle,dcc[idx].nick) && !dcc[idx].u.chat->su_nick)) { 
-#endif /* LEAF */
+  if (conf.bot->hub || 
+     (!conf.bot->hub && (dcc[idx].simul || (!strcmp(u->handle,dcc[idx].nick) && !dcc[idx].u.chat->su_nick)))) { 
     char s[1024] = "";
     struct list_type *q = NULL;
 
@@ -947,14 +892,12 @@ static void hosts_display(int idx, struct user_entry *e, struct userrec *u)
     }
     if (s[0])
       dprintf(idx, "%s\n", s);
-#ifdef LEAF
-  } else {
+  } else if (!conf.bot->hub) {
     dprintf(idx, "  HOSTS:          Hidden on leaf bots.");
     if (dcc[idx].u.chat->su_nick)
       dprintf(idx, " Nice try, %s.", dcc[idx].u.chat->su_nick);
     dprintf(idx, "\n");
   }
-#endif /* LEAF */
 }
 
 static bool hosts_set(struct userrec *u, struct user_entry *e, void *buf)
@@ -1007,9 +950,7 @@ struct user_entry_type USERENTRY_HOSTS =
   0,
   hosts_gotshare,
   hosts_null,
-#ifdef HUB
   hosts_write_userfile,
-#endif /* HUB */
   hosts_kill,
   def_get,
   hosts_set,

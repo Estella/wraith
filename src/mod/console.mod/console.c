@@ -82,7 +82,6 @@ console_kill(struct user_entry *e)
   return 1;
 }
 
-#ifdef HUB
 static bool
 console_write_userfile(FILE * f, struct userrec *u, struct user_entry *e)
 {
@@ -98,7 +97,6 @@ console_write_userfile(FILE * f, struct userrec *u, struct user_entry *e)
     return 0;
   return 1;
 }
-#endif /* HUB */
 
 static bool
 console_set(struct userrec *u, struct user_entry *e, void *buf)
@@ -230,9 +228,7 @@ static struct user_entry_type USERENTRY_CONSOLE = {
   0,                            /* always 0 ;) */
   console_gotshare,
   console_unpack,
-#ifdef HUB
   console_write_userfile,
-#endif /* HUB */
   console_kill,
   def_get,
   console_set,
@@ -358,9 +354,8 @@ console_store(int idx, char *par)
   }
   set_user(&USERENTRY_CONSOLE, dcc[idx].user, i);
   dprintf(idx, "Console setting stored.\n");
-#ifdef HUB
-  write_userfile(idx);
-#endif /* HUB */
+  if (conf.bot->hub)
+    write_userfile(idx);
   return 0;
 }
 
