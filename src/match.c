@@ -37,6 +37,7 @@
 #define MATCH (match+sofar)
 #define PERMATCH (match+saved+sofar)
 
+/* binds matching */
 int _wild_match_per(register unsigned char *m, register unsigned char *n)
 {
   /* null strings should never match */
@@ -132,6 +133,8 @@ int _wild_match_per(register unsigned char *m, register unsigned char *n)
   return (*m) ? NOMATCH : PERMATCH;     /* End of both = match */
 }
 
+
+/* general/host matching */
 int _wild_match(register unsigned char *m, register unsigned char *n)
 {
   unsigned char *ma = m, *na = n;
