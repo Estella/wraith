@@ -709,8 +709,6 @@ static void channels_report(int idx, int details)
 	  i += my_strcpy(s + i, "bitch ");
 	if (channel_protectops(chan))
 	  i += my_strcpy(s + i, "protectops ");
-	if (channel_dontkickops(chan))
-	  i += my_strcpy(s + i, "dontkickops ");
 	if (channel_revenge(chan))
 	  i += my_strcpy(s + i, "revenge ");
 	if (channel_revenge(chan))
@@ -1047,7 +1045,6 @@ char *channels_start(Function * global_funcs)
 	 "-protectops "
 	 "-revenge "
 	 "+cycle "
-	 "+dontkickops "
 	 "-inactive "
 	 "+userexempts "
 	 "-dynamicexempts "
