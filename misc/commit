@@ -1,6 +1,6 @@
 #!/bin/sh
 # $Id$
-utctime="./utctime"
+utctime=./utctime
 if ! test -f "$utctime"; then
   gcc -Wall -O2 -o utctime src/utc-time.c
 fi
