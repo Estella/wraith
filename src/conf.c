@@ -18,6 +18,7 @@ static const char rcsid[] = "$Id$";
 #include "crypt.h"
 #include "main.h"
 #include "settings.h"
+#include "src/mod/irc.mod/irc.h"
 #include "misc.h"
 #include "users.h"
 #include "misc_file.h"
@@ -132,16 +133,16 @@ spawnbots()
 }
 
 int
-killbot(char *botnick, int signal)
+killbot(char *botnick, conf_bot *bot, int signal)
 {
-  conf_bot *bot = NULL;
-
-  for (bot = conf.bots; bot && bot->nick; bot = bot->next) {
-    if (!egg_strcasecmp(botnick, bot->nick)) {
-      if (bot->pid)
-        return kill(bot->pid, signal);
-    }
+  if (!bot) {
+    for (bot = conf.bots; bot && bot->nick; bot = bot->next)
+      if (!egg_strcasecmp(botnick, bot->nick))
+        break;
   }
+  if (bot)
+    if (bot->pid)
+      return kill(bot->pid, signal);
   return -1;
 }
 
@@ -458,7 +459,7 @@ conf_delbot(char *botn)
   for (bot = conf.bots; bot && bot->nick; bot = bot->next) {
     if (!strcmp(bot->nick, botn)) {     /* found it! */
       bot->pid = checkpid(bot->nick, bot);
-      killbot(bot->nick, SIGKILL);
+      killbot(NULL, bot, SIGKILL);
       free_bot(bot);
       return 0;
     }
@@ -469,7 +470,7 @@ conf_delbot(char *botn)
 void
 free_conf()
 {
-  free_conf_bots();
+  free_conf_bots(conf.bots);
   free_bot(conf.bot);
   conf.bot = NULL;
   free(conf.localhub);
@@ -481,15 +482,17 @@ free_conf()
 }
 
 void
-free_conf_bots(void)
+free_conf_bots(conf_bot *list)
 {
-  conf_bot *bot = NULL, *bot_n = NULL;
+  if (list) {
+    conf_bot *bot = NULL, *bot_n = NULL;
 
-  for (bot = conf.bots; bot; bot = bot_n) {
-    bot_n = bot->next;
-    free_bot(bot);
+    for (bot = list; bot; bot = bot_n) {
+      bot_n = bot->next;
+      free_bot(bot);
+    }
+    list = NULL;
   }
-  conf.bots = NULL;
 }
 
 int
@@ -541,7 +544,7 @@ readconf(const char *fname, int bits)
   if (!(f = fopen(fname, "r")))
     fatal("Cannot read config", 0);
 
-  free_conf_bots();
+  free_conf_bots(conf.bots);
   inbuf = (char *) my_calloc(1, 201);
   while (fgets(inbuf, 201, f) != NULL) {
     char *line = NULL, *temp_ptr = NULL;
@@ -806,6 +809,51 @@ conf_bot_dup(conf_bot *dest, conf_bot *src)
   }
 }
 
+conf_bot *conf_bots_dup(conf_bot *src)
+{
+  conf_bot *ret = NULL;
+  if (src) {
+    conf_bot *bot = NULL, *newbot = NULL;
+
+    for (bot = src; bot && bot->nick; bot = bot->next) {
+      newbot = (conf_bot *) my_calloc(1, sizeof(conf_bot));
+      conf_bot_dup(newbot, bot);
+      list_append((struct list_type **) &(ret), (struct list_type *) newbot);
+    }
+  }
+  return ret;
+}
+
+void kill_removed_bots(conf_bot *oldlist, conf_bot *newlist)
+{
+  if (oldlist && newlist) {
+    conf_bot *botold = NULL, *botnew = NULL;
+    bool found = 0;
+    struct userrec *u = NULL;
+
+    for (botold = oldlist; botold && botold->nick; botold = botold->next) {
+      found = 0;
+      for (botnew = newlist; botnew && botnew->nick; botnew = botnew->next) {
+        if (!egg_strcasecmp(botold->nick, botnew->nick)) {
+          found = 1;
+          break;
+        }
+      }
+      if (!found) {
+        killbot(NULL, botold, SIGKILL);
+        if ((u = get_user_by_handle(userlist, botold->nick))) {
+          putlog(LOG_MISC, "*", "Removing '%s' as it has been removed from the binary config.", botold->nick);
+          if (!conf.bot->hub)
+            check_this_user(botold->nick, 1, NULL);
+          if (deluser(botold->nick)) {
+            if (conf.bot->hub)
+              write_userfile(-1);
+          }
+        }
+      }
+    }
+  }
+}
 
 void
 fill_conf_bot()
@@ -913,6 +961,7 @@ void conf_add_userlist_bots()
       u = get_user_by_handle(userlist, bot->nick);
       if (!u) {
         userlist = adduser(userlist, bot->nick, "none", "-", USER_OP, 1);
+        putlog(LOG_MISC, "*", "Adding '%s' as it has been added to the binary config.", bot->nick);
         u = get_user_by_handle(userlist, bot->nick);
 
         egg_snprintf(tmp, sizeof(tmp), "%li [internal]", now);
