@@ -34,7 +34,7 @@ static void cmd_pls_mask(const char type, int idx, char *par)
     get_user_flagrec(dcc[idx].user, &user, chname);
     chan = findchan_by_dname(chname);
     /* *shrug* ??? (guppy:10Feb1999) */
-    if (!chan || (chan && private(user, chan, PRIV_OP))) {
+    if (!chan || (chan && privchan(user, chan, PRIV_OP))) {
       dprintf(idx, "No such channel.\n");
       return;
     } else if (!chk_op(user, chan)) {
@@ -194,7 +194,7 @@ static void cmd_mns_mask(char type, int idx, char *par)
       chname = dcc[idx].u.chat->con_chan;
     get_user_flagrec(dcc[idx].user, &user, chname);
 
-    if (strchr(CHANMETA, chname[0]) && private(user, findchan_by_dname(chname), PRIV_OP)) {
+    if (strchr(CHANMETA, chname[0]) && privchan(user, findchan_by_dname(chname), PRIV_OP)) {
       dprintf(idx, "No such channel.\n");
       return;
     }
@@ -661,7 +661,7 @@ static void cmd_stick_yn(int idx, char *par, int yn)
       return;
     }
     get_user_flagrec(dcc[idx].user, &user, chan->dname);
-    if (private(user, chan, PRIV_OP)) {
+    if (privchan(user, chan, PRIV_OP)) {
       dprintf(idx, "No such channel.\n");
       return;
     }
@@ -703,7 +703,7 @@ static void cmd_stick_yn(int idx, char *par, int yn)
       return;
     }
     get_user_flagrec(dcc[idx].user, &user, chan->dname);
-    if (private(user, chan, PRIV_OP)) {
+    if (privchan(user, chan, PRIV_OP)) {
       dprintf(idx, "No such channel.\n");
       return;
     }
@@ -746,7 +746,7 @@ static void cmd_stick_yn(int idx, char *par, int yn)
     return;
   }
   get_user_flagrec(dcc[idx].user, &user, chan->dname);
-  if (private(user, chan, PRIV_OP)) {
+  if (privchan(user, chan, PRIV_OP)) {
     dprintf(idx, "No such channel.\n");
     return;
   }
@@ -808,7 +808,7 @@ static void cmd_pls_chrec(int idx, char *par)
   }
   get_user_flagrec(dcc[idx].user, &user, chan->dname);
   get_user_flagrec(u1, &victim, chan->dname);
-  if (private(user, chan, PRIV_OP)) {
+  if (privchan(user, chan, PRIV_OP)) {
     dprintf(idx, "No such channel.\n");
     return;
   }
@@ -859,7 +859,7 @@ static void cmd_mns_chrec(int idx, char *par)
     chn = newsplit(&par);
   get_user_flagrec(dcc[idx].user, &user, chn);
   get_user_flagrec(u1, &victim, chn);
-  if (private(user, findchan_by_dname(chn), PRIV_OP)) {
+  if (privchan(user, findchan_by_dname(chn), PRIV_OP)) {
     dprintf(idx, "No such channel.\n");
     return;
   }
@@ -1228,7 +1228,7 @@ static void cmd_chaninfo(int idx, char *par)
     SHOW_FLAG("manop",		channel_manop(chan));
     SHOW_FLAG("nodesynch",	channel_nodesynch(chan));
     SHOW_FLAG("nomop",		channel_nomop(chan));
-    SHOW_FLAG("private",	channel_private(chan));
+    SHOW_FLAG("private",	channel_privchan(chan));
     SHOW_FLAG("protectops",	channel_protectops(chan));
     SHOW_FLAG("revenge",	channel_revenge(chan));
     SHOW_FLAG("revengebot",	channel_revengebot(chan));

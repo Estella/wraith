@@ -534,7 +534,7 @@ static void tell_bans(int idx, int show_inact, char *match)
       !(chan = chanset))
     chan = NULL;
   get_user_flagrec(dcc[idx].user, &user, chan->dname);
-  if (private(user, chan, PRIV_OP)) {
+  if (privchan(user, chan, PRIV_OP)) {
     dprintf(idx, "%s.\n", CHAN_NOSUCH);
     return;
   }
@@ -633,7 +633,7 @@ static void tell_exempts(int idx, int show_inact, char *match)
     chan = NULL;
 
   get_user_flagrec(dcc[idx].user, &user, chan->dname);
-  if (private(user, chan, PRIV_OP)) {
+  if (privchan(user, chan, PRIV_OP)) {
     dprintf(idx, "%s.\n", CHAN_NOSUCH);
     return;
   }
@@ -732,7 +732,7 @@ static void tell_invites(int idx, int show_inact, char *match)
     chan = NULL;
 
   get_user_flagrec(dcc[idx].user, &user, chan->dname);
-  if (private(user, chan, PRIV_OP)) {
+  if (privchan(user, chan, PRIV_OP)) {
     dprintf(idx, "%s.\n", CHAN_NOSUCH);
     return;
   }
@@ -1058,7 +1058,7 @@ exempt-time %d invite-time %d ",
 	PLSMNS(channel_protectops(chan)),
 	PLSMNS(channel_revenge(chan)),
 	PLSMNS(channel_revengebot(chan)),
-	PLSMNS(channel_private(chan)),
+	PLSMNS(channel_privchan(chan)),
 	PLSMNS(channel_cycle(chan)),
         inactive,
 	PLSMNS(channel_dynamicexempts(chan)),
