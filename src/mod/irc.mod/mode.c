@@ -1074,7 +1074,7 @@ gotmode(char *from, char *msg)
                     if (!n) {
                       memberlist *mo = NULL;
 
-                      strncpyz(trg, (char *) &modes[i][3], NICKLEN);
+                      strlcpy(trg, (char *) &modes[i][3], NICKLEN);
                       mo = ismember(chan, trg);
                       if (mo) {
                         if (!(mo->flags & CHANOP)) {
@@ -1127,7 +1127,7 @@ gotmode(char *from, char *msg)
                       i++;
                   }
                   if (!n) {
-                    strncpyz(trg, (char *) &modes[i][3], NICKLEN);
+                    strlcpy(trg, (char *) &modes[i][3], NICKLEN);
                     mv = ismember(chan, trg);
                     if (mv) {
                       if (!(mv->flags & CHANOP) && !match_my_nick(mv->nick)) {

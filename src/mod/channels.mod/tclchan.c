@@ -303,7 +303,7 @@ int channel_modify(char *result, struct chanset_t *chan, int items, char **item)
           sprintf(result, "channel temp needs argument");
         return ERROR;
       }
-      strncpyz(chan->temp, item[i], sizeof(chan->temp));
+      strlcpy(chan->temp, item[i], sizeof(chan->temp));
       check_temp(chan);
  */
     if (!strcmp(item[i], "chanmode")) {
@@ -313,7 +313,7 @@ int channel_modify(char *result, struct chanset_t *chan, int items, char **item)
 	  sprintf(result, "channel chanmode needs argument");
 	return ERROR;
       }
-      strncpyz(s, item[i], 121);
+      strlcpy(s, item[i], 121);
       set_mode_protect(chan, s);
     } else if (!strcmp(item[i], "topic")) {
       char *p = NULL;
@@ -326,7 +326,7 @@ int channel_modify(char *result, struct chanset_t *chan, int items, char **item)
       }
       p = replace(item[i], "{", "[");
       p = replace(p, "}", "]");
-      strncpyz(chan->topic, p, 121);
+      strlcpy(chan->topic, p, 121);
     } else if (!strcmp(item[i], "addedby")) {
       i++;
       if (i >= items) {
@@ -334,7 +334,7 @@ int channel_modify(char *result, struct chanset_t *chan, int items, char **item)
 	  sprintf(result, "addedby needs argument");
 	return ERROR;
       }
-      strncpyz(chan->added_by, item[i], NICKLEN);
+      strlcpy(chan->added_by, item[i], NICKLEN);
     } else if (!strcmp(item[i], "addedts")) {
       i++;
       if (i >= items) {
@@ -825,7 +825,7 @@ int channel_add(char *result, char *newname, char *options)
      * any code later on. chan->name gets updated with the channel name as
      * the server knows it, when we join the channel. <cybah>
      */
-    strncpyz(chan->dname, newname, 81);
+    strlcpy(chan->dname, newname, 81);
 
     /* Initialize chan->channel info */
     init_channel(chan, 0);

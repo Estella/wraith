@@ -303,7 +303,7 @@ void eggContext(const char *file, int line)
 {
   char x[31] = "", *p = strrchr(file, '/');
 
-  strncpyz(x, p ? p + 1 : file, sizeof x);
+  strlcpy(x, p ? p + 1 : file, sizeof x);
   cx_ptr = ((cx_ptr + 1) & 15);
   strcpy(cx_file[cx_ptr], x);
   cx_line[cx_ptr] = line;
@@ -316,11 +316,11 @@ void eggContextNote(const char *file, int line, const char *note)
 {
   char x[31] = "", *p = strrchr(file, '/');
 
-  strncpyz(x, p ? p + 1 : file, sizeof x);
+  strlcpy(x, p ? p + 1 : file, sizeof x);
   cx_ptr = ((cx_ptr + 1) & 15);
   strcpy(cx_file[cx_ptr], x);
   cx_line[cx_ptr] = line;
-  strncpyz(cx_note[cx_ptr], note, sizeof cx_note[cx_ptr]);
+  strlcpy(cx_note[cx_ptr], note, sizeof cx_note[cx_ptr]);
 }
 #endif
 

@@ -303,7 +303,7 @@ static void dtx_arg(int argc, char *argv[])
       case 'B':
         localhub = 0;
         used_B = 1;
-        strncpyz(origbotname, optarg, NICKLEN + 1);
+        strlcpy(origbotname, optarg, NICKLEN + 1);
         break;
 #endif /* LEAF */
       case 'C':
@@ -313,7 +313,7 @@ static void dtx_arg(int argc, char *argv[])
         show_help();
 #ifdef LEAF
       case 'k':		/* kill bot */
-        strncpyz(do_killbot, optarg, sizeof do_killbot);
+        strlcpy(do_killbot, optarg, sizeof do_killbot);
 #endif /* LEAF */
       case 'n':
 	backgrd = 0;
@@ -488,7 +488,7 @@ static void core_secondly()
       if (!miltime) {	/* At midnight */
 	char s[25] = "";
 
-	strncpyz(s, ctime(&now), sizeof s);
+	strlcpy(s, ctime(&now), sizeof s);
 #ifdef HUB
 	putlog(LOG_ALL, "*", "--- %.11s%s", s, s + 20);
         backup_userfile();

@@ -333,7 +333,7 @@ set_user_flagrec(struct userrec *u, struct flag_record *fr, const char *chname)
 
       cr->next = u->chanrec;
       u->chanrec = cr;
-      strncpyz(cr->channel, chname, sizeof cr->channel);
+      strlcpy(cr->channel, chname, sizeof cr->channel);
     }
     if (cr && ch) {
       cr->flags = fr->chan;
