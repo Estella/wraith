@@ -271,7 +271,7 @@ share_chattr(int idx, char *par)
           shareout_but(cst, idx, "a %s %s %s\n", hand, atr, par);
         noshare = 1;
         if (par[0] && cst) {
-          fr.match = (FR_CHAN | FR_BOT);
+          fr.match = (FR_CHAN);
           get_user_flagrec(dcc[idx].user, &fr, par);
           fr.match = FR_CHAN;
           fr2.match = FR_CHAN;
@@ -328,8 +328,6 @@ share_pls_chrec(int idx, char *par)
     user = newsplit(&par);
     if ((u = get_user_by_handle(userlist, user))) {
       chan = findchan_by_dname(par);
-      fr.match = (FR_CHAN | FR_BOT);
-      get_user_flagrec(dcc[idx].user, &fr, par);
       noshare = 1;
       shareout_but(chan, idx, "+cr %s %s\n", user, par);
       if (!get_chanrec(u, par)) {
@@ -352,8 +350,6 @@ share_mns_chrec(int idx, char *par)
     user = newsplit(&par);
     if ((u = get_user_by_handle(userlist, user))) {
       chan = findchan_by_dname(par);
-      fr.match = (FR_CHAN | FR_BOT);
-      get_user_flagrec(dcc[idx].user, &fr, par);
       noshare = 1;
       del_chanrec(u, par);
       shareout_but(chan, idx, "-cr %s %s\n", user, par);
@@ -550,8 +546,6 @@ share_chchinfo(int idx, char *par)
     if ((u = get_user_by_handle(userlist, hand))) {
       chan = newsplit(&par);
       cst = findchan_by_dname(chan);
-      fr.match = (FR_CHAN | FR_BOT);
-      get_user_flagrec(dcc[idx].user, &fr, chan);
       shareout_but(cst, idx, "chchinfo %s %s %s\n", hand, chan, par);
       noshare = 1;
       set_handle_chaninfo(userlist, hand, chan, par);
@@ -630,8 +624,6 @@ share_mns_banchan(int idx, char *par)
   if (dcc[idx].status & STAT_SHARE) {
     chname = newsplit(&par);
     chan = findchan_by_dname(chname);
-    fr.match = (FR_CHAN | FR_BOT);
-    get_user_flagrec(dcc[idx].user, &fr, chname);
     shareout_but(chan, idx, "-bc %s %s\n", chname, par);
     putlog(LOG_CMDS, "@", "%s: cancel ban %s on %s", dcc[idx].nick, par, chname);
     str_unescape(par, '\\');
@@ -656,8 +648,6 @@ share_mns_exemptchan(int idx, char *par)
   if (dcc[idx].status & STAT_SHARE) {
     chname = newsplit(&par);
     chan = findchan_by_dname(chname);
-    fr.match = (FR_CHAN | FR_BOT);
-    get_user_flagrec(dcc[idx].user, &fr, chname);
     shareout_but(chan, idx, "-ec %s %s\n", chname, par);
     putlog(LOG_CMDS, "@", "%s: cancel exempt %s on %s", dcc[idx].nick, par, chname);
     str_unescape(par, '\\');
@@ -683,8 +673,6 @@ share_mns_invitechan(int idx, char *par)
   if (dcc[idx].status & STAT_SHARE) {
     chname = newsplit(&par);
     chan = findchan_by_dname(chname);
-    fr.match = (FR_CHAN | FR_BOT);
-    get_user_flagrec(dcc[idx].user, &fr, chname);
     shareout_but(chan, idx, "-invc %s %s\n", chname, par);
     putlog(LOG_CMDS, "@", "%s: cancel invite %s on %s", dcc[idx].nick, par, chname);
     str_unescape(par, '\\');
@@ -762,8 +750,6 @@ share_pls_banchan(int idx, char *par)
     tm = newsplit(&par);
     chname = newsplit(&par);
     chan = findchan_by_dname(chname);
-    fr.match = (FR_CHAN | FR_BOT);
-    get_user_flagrec(dcc[idx].user, &fr, chname);
     shareout_but(chan, idx, "+bc %s %s %s %s\n", ban, tm, chname, par);
     str_unescape(ban, '\\');
     from = newsplit(&par);
@@ -830,8 +816,6 @@ share_pls_exemptchan(int idx, char *par)
     tm = newsplit(&par);
     chname = newsplit(&par);
     chan = findchan_by_dname(chname);
-    fr.match = (FR_CHAN | FR_BOT);
-    get_user_flagrec(dcc[idx].user, &fr, chname);
     shareout_but(chan, idx, "+ec %s %s %s %s\n", exempt, tm, chname, par);
     str_unescape(exempt, '\\');
     from = newsplit(&par);
@@ -895,8 +879,6 @@ share_pls_invitechan(int idx, char *par)
     tm = newsplit(&par);
     chname = newsplit(&par);
     chan = findchan_by_dname(chname);
-    fr.match = (FR_CHAN | FR_BOT);
-    get_user_flagrec(dcc[idx].user, &fr, chname);
     shareout_but(chan, idx, "+invc %s %s %s %s\n", invite, tm, chname, par);
     str_unescape(invite, '\\');
     from = newsplit(&par);
@@ -1190,10 +1172,6 @@ shareout(struct chanset_t *chan, ...)
     s[2 + (l = 509)] = 0;
   for (i = 0; i < dcc_total; i++)
     if ((dcc[i].type->flags & DCT_BOT) && (dcc[i].status & STAT_SHARE) && !(dcc[i].status & (STAT_GETTING | STAT_SENDING))) {
-      if (chan) {
-        fr.match = (FR_CHAN | FR_BOT);
-        get_user_flagrec(dcc[i].user, &fr, chan->dname);
-      }
       tputs(dcc[i].sock, s, l + 2);
     }
   va_end(va);
@@ -1216,10 +1194,6 @@ shareout_but(struct chanset_t *chan, ...)
   for (i = 0; i < dcc_total; i++)
     if ((dcc[i].type->flags & DCT_BOT) && (i != x) &&
         (dcc[i].status & STAT_SHARE) && (!(dcc[i].status & STAT_GETTING)) && (!(dcc[i].status & STAT_SENDING))) {
-      if (chan) {
-        fr.match = (FR_CHAN | FR_BOT);
-        get_user_flagrec(dcc[i].user, &fr, chan->dname);
-      }
       tputs(dcc[i].sock, s, l + 2);
     }
   va_end(va);
@@ -1334,7 +1308,6 @@ finish_share(int idx)
    */
 
   noshare = 1;
-  fr.match = (FR_CHAN | FR_BOT);
 
   while (global_bans)
     u_delmask('b', NULL, global_bans->mask, 1);
