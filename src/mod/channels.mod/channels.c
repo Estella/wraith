@@ -12,10 +12,7 @@
 
 static Function *global		= NULL;
 
-static int  setstatic;
 static int  use_info;
-static char chanfile[121];
-static int  chan_hack;
 static int  quiet_save;
 static char glob_chanmode[64];		/* Default chanmode (drummer,990731) */
 static char *lastdeletedmask;
@@ -654,6 +651,7 @@ static void channels_report(int idx, int details)
       if (details) {
 	s[0] = 0;
 	i = 0;
+	i += my_strcpy(s + i, "dynamic ");
 	if (channel_enforcebans(chan))
 	  i += my_strcpy(s + i, "enforcebans ");
 	if (channel_dynamicbans(chan))
@@ -672,8 +670,6 @@ static void channels_report(int idx, int details)
 	  i += my_strcpy(s + i, "revengebot ");
 	if (channel_secret(chan))
 	  i += my_strcpy(s + i, "secret ");
-	if (!channel_static(chan))
-	  i += my_strcpy(s + i, "dynamic ");
 	if (channel_cycle(chan))
 	  i += my_strcpy(s + i, "cycle ");
 #ifdef S_IRCNET
@@ -874,7 +870,6 @@ static tcl_coups mychan_tcl_coups[] =
 
 static tcl_strings my_tcl_strings[] =
 {
-  {"chanfile",		chanfile,	120,	STR_PROTECT},
   {"global-chanmode",	glob_chanmode,	64,	0},
   {NULL,		NULL,		0,	0}
 };
@@ -891,7 +886,6 @@ static char *channels_close()
   rem_tcl_strings(my_tcl_strings);
   rem_tcl_ints(my_tcl_ints);
   rem_tcl_coups(mychan_tcl_coups);
-  del_hook(HOOK_SWITCH_STATIC, (Function) switch_static);
   del_hook(HOOK_USERFILE, (Function) channels_writeuserfile);
   del_hook(HOOK_MINUTELY, (Function) check_expired_bans);
 #ifdef S_IRCNET
@@ -1011,11 +1005,8 @@ char *channels_start(Function * global_funcs)
   gfld_ctcp_thr = 0;
   gfld_ctcp_time = 0;
   global_idle_kick = 0;
-  setstatic = 0;
   lastdeletedmask = 0;
   use_info = 1;
-  strcpy(chanfile, "chanfile");
-  chan_hack = 0;
   quiet_save = 0;
   strcpy(glob_chanmode, "nt");
   udef = NULL;
@@ -1049,7 +1040,6 @@ char *channels_start(Function * global_funcs)
          "-private "
 	 "-fastop ");
   module_register(MODULE_NAME, channels_table, 1, 0);
-  add_hook(HOOK_SWITCH_STATIC, (Function) switch_static);
 #ifdef LEAF
   add_hook(HOOK_MINUTELY, (Function) check_limitraise);
 #endif
@@ -1074,6 +1064,5 @@ char *channels_start(Function * global_funcs)
   my_tcl_ints[0].val = &share_greet;
   add_tcl_ints(my_tcl_ints);
   add_tcl_coups(mychan_tcl_coups);
-  setstatic = 1;
   return NULL;
 }
