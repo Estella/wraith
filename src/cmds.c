@@ -1687,7 +1687,7 @@ static void cmd_comment(int idx, char *par)
     dprintf(idx, "No such user!\n");
     return;
   }
-  if (whois_access(dcc[idx].user, u1)) {
+  if (!whois_access(dcc[idx].user, u1)) {
     dprintf(idx, "You can't change comment on higher level users.\n");
     return;
   }
