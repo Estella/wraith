@@ -1355,6 +1355,7 @@ static int got341(char *from, char *msg)
         cache->timeval = now;
         notice_invite(chan, cache->handle[0] ? cache->handle : NULL, nick, cache->uhost, cchan->op);
 
+//        cache_del_chan_parm(cache, cache->cchan);
         break;
       }
     }
