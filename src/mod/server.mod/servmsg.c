@@ -546,7 +546,7 @@ static int gotmsg(char *from, char *msg)
 static int gotnotice(char *from, char *msg)
 {
   char *to = NULL, *nick = NULL, ctcpbuf[512] = "", *p = NULL, *p1 = NULL, buf[512] = "", 
-       *uhost = buf, *ctcp = NULL;
+       *uhost = buf, *ctcp = NULL, *ctcpmsg = NULL, *ptr = NULL;
   struct userrec *u = NULL;
   int ignoring;
 
@@ -555,7 +555,6 @@ static int gotnotice(char *from, char *msg)
     return 0;
   ignoring = match_ignore(from);
   to = newsplit(&msg);
-/* FIXME: This fixcolon() breaks the server notice display later */
   fixcolon(msg);
   strcpy(uhost, from);
   nick = splitnick(&uhost);
@@ -566,7 +565,8 @@ static int gotnotice(char *from, char *msg)
     return 0;
   }
   /* Check for CTCP: */
-  p = strchr(msg, 1);
+  ctcpmsg = ptr = strdup(msg);
+  p = strchr(ctcpmsg, 1);
   while ((p != NULL) && (*p)) {
     p++;
     p1 = p;
@@ -578,7 +578,7 @@ static int gotnotice(char *from, char *msg)
       strcpy(p1 - 1, p + 1);
       if (!ignoring)
 	detect_flood(nick, uhost, from, FLOOD_CTCP);
-      p = strchr(msg, 1);
+      p = strchr(ctcpmsg, 1);
       if (ctcp[0] != ' ') {
 	char *code = newsplit(&ctcp);
 
@@ -598,6 +598,7 @@ static int gotnotice(char *from, char *msg)
       }
     }
   }
+  free(ptr);
   if (msg[0]) {
     if (((to[0] == '$') || strchr(to, '.')) && !ignoring) {
       detect_flood(nick, uhost, from, FLOOD_NOTICE);
