@@ -9,6 +9,7 @@
 
 #include "eggmain.h"
 #include "dcc.h"
+#include "color.h"
 #include "salt.h"
 #include "net.h"
 #include "misc.h"

@@ -14,7 +14,6 @@
 #endif
 
 #include "conf.h"
-#include "color.h"
 #include "garble.h"
 
 #include "lush.h"
