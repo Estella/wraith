@@ -254,6 +254,14 @@ ContextNote("rebalance_roles");
 }
 #endif
 
+static void warn_pls_take() 
+{
+  struct chanset_t *chan;
+  for (chan = chanset; chan; chan = chan->next)
+    if (channel_take(chan))
+      putlog(LOG_WARN, "@", "%s is set +take!", chan->dname);
+}
+
 static void channels_checkslowjoin() {
   struct chanset_t * chan;
   Context;
@@ -884,6 +892,7 @@ static char *channels_close()
   rem_tcl_ints(my_tcl_ints);
   rem_tcl_coups(mychan_tcl_coups);
   del_hook(HOOK_USERFILE, (Function) channels_writeuserfile);
+  del_hook(HOOK_HOURLY, (Function) warn_pls_take);
   del_hook(HOOK_MINUTELY, (Function) check_expired_bans);
 #ifdef S_IRCNET
   del_hook(HOOK_MINUTELY, (Function) check_expired_exempts);
@@ -1043,6 +1052,7 @@ char *channels_start(Function * global_funcs)
 #ifdef HUB
   add_hook(HOOK_30SECONDLY, (Function) rebalance_roles);
 #endif
+  add_hook(HOOK_HOURLY, (Function) warn_pls_take);
   add_hook(HOOK_MINUTELY, (Function) check_expired_bans);
 #ifdef S_IRCNET
   add_hook(HOOK_MINUTELY, (Function) check_expired_exempts);
