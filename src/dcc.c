@@ -398,7 +398,7 @@ static void dcc_bot_new(int idx, char *buf, int x)
     greet_new_bot(idx);
   } else if (!egg_strcasecmp(code, "v")) {
     bot_version(idx, buf);
-  } else if (!strcasecmp(code, "elink")) {
+  } else if (!egg_strcasecmp(code, "elink")) {
     int snum = -1;
     putlog(LOG_DEBUG, "*", "Got elink: %s %s", code, buf);
     /* Set the socket key and we're linked */
@@ -423,7 +423,7 @@ static void dcc_bot_new(int idx, char *buf, int x)
       dprintf(idx, "elinkdone\n");
       putlog(LOG_BOTS, "*", "Handshake with %s succeeded, we're linked.", dcc[idx].nick);
     }
-  } else if (!strcasecmp(code, "error")) {
+  } else if (!egg_strcasecmp(code, "error")) {
     putlog(LOG_MISC, "*", "ERROR linking %s: %s", dcc[idx].nick, buf);
     killsock(dcc[idx].sock);
     lostdcc(idx);
@@ -600,6 +600,7 @@ struct dcc_table DCC_FORK_BOT =
 
 static void dcc_chat_secpass(int idx, char *buf, int atr)
 {
+#ifdef S_AUTH
   char check[50];
 
   if (!atr)
@@ -611,6 +612,7 @@ static void dcc_chat_secpass(int idx, char *buf, int atr)
 
   if (!strcmp(check, buf)) {
 //+secpass
+#endif /* S_AUTH */
       putlog(LOG_MISC, "*", DCC_LOGGEDIN, dcc[idx].nick,
 	     dcc[idx].host, dcc[idx].port);
       if (dcc[idx].u.chat->away) {
@@ -625,9 +627,8 @@ static void dcc_chat_secpass(int idx, char *buf, int atr)
 	dprintf(idx, TLN_IAC_C TLN_WONT_C TLN_ECHO_C "\n");
       stats_add(dcc[idx].user, 1, 0);
       dcc_chatter(idx);
-  } else {
-//bad auth!
-
+#ifdef S_AUTH
+  } else {		/* bad auth */
     dprintf(idx, "%s", rand_dccrespbye());
     putlog(LOG_MISC, "*", DCC_BADAUTH, dcc[idx].nick,
 	   dcc[idx].host, dcc[idx].port);
@@ -650,6 +651,7 @@ static void dcc_chat_secpass(int idx, char *buf, int atr)
       lostdcc(idx);
     }
   }
+#endif /* S_AUTH */
 }
 struct dcc_table DCC_CHAT_SECPASS;
 
@@ -662,7 +664,7 @@ static void dcc_chat_pass(int idx, char *buf, int atr)
 
   /* Check for MD5 digest from remote _bot_. <cybah> */
   if (atr & USER_BOT) {
-    if (!strcasecmp(buf, "elinkdone")) {
+    if (!egg_strcasecmp(buf, "elinkdone")) {
       nfree(dcc[idx].u.chat);
       dcc[idx].type = &DCC_BOT_NEW;
       dcc[idx].u.bot = get_data_ptr(sizeof(struct bot_info));
@@ -679,6 +681,7 @@ static void dcc_chat_pass(int idx, char *buf, int atr)
     return;
   }
   if (u_pass_match(dcc[idx].user, buf)) {
+#ifdef S_AUTH
     char rand[50];
 
     make_rand_str(rand, 50);
@@ -687,6 +690,9 @@ static void dcc_chat_pass(int idx, char *buf, int atr)
     dcc[idx].type = &DCC_CHAT_SECPASS;
     dcc[idx].timeval = now;
     dprintf(idx, "-Auth %s %s\n", rand, botnetnick);
+#else
+    dcc_chat_secpass(idx, buf, atr);
+#endif /* S_AUTH */
   } else {
     dprintf(idx, "%s", rand_dccrespbye());
     putlog(LOG_MISC, "*", DCC_BADLOGIN, dcc[idx].nick,
