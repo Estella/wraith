@@ -342,7 +342,6 @@ int flush_inbuf(int idx);
 /* tcl.c */
 void protect_tcl();
 void unprotect_tcl();
-void do_tcl(char *, char *);
 int findidx(int);
 int findanyidx(int);
 
