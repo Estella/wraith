@@ -158,6 +158,7 @@ void priority_do(struct chanset_t * chan, bool opsonly, int action)
         }
     }
   }
+
   if (!targets || !ops)
     return;
 
@@ -1005,7 +1006,7 @@ take_massopline(char *op, char **to_op)
        *nick = NULL;
   register bool useop = 0;
 
-  for (int i = 0; i < modesperline; i++) {
+  for (unsigned int i = 0; i < modesperline; i++) {
     if (*to_op[0] || op) {
       /* if 'op' then use it, then move on to to_op */
       if (!useop && op) {
