@@ -994,7 +994,7 @@ void restart_chons();
 void check_static(char *, char *(*)());
 
 #include "mod/static.h"
-int init_userrec(), init_mem(), init_dcc_max(), init_userent(), init_misc(), init_auth(), init_config(), init_bots(),
+int init_mem(), init_dcc_max(), init_userent(), init_misc(), init_auth(), init_config(), init_bots(),
  init_net(), init_modules(), init_tcl(int, char **), init_botcmd(), init_settings();
 
 void got_ed(char *which, char *in, char *out)
@@ -1481,7 +1481,6 @@ int main(int argc, char **argv)
   init_tcl(argc, argv);
   init_auth();
   init_config();
-  init_userrec();
   if (backgrd)
     bg_prepare_split();
   init_botcmd();
