@@ -102,10 +102,8 @@ $(EGGEXEC): stringfix ../$(EGGEXEC)
 clean:
 	@rm -f .depend *.o *~ _*.c
 
-
 build_msg:
 	@echo "[*] Compiling core components"
-
 
 compatability:
 	@echo "[*] Compiling compatability components"
@@ -115,10 +113,6 @@ compatability:
 mycrypto:
 	@echo "[*] Compiling crypto"
 	+@cd crypto && $(MAKE_GENERIC) crypto
-
-eggdrop.h:
-	@echo "You do not have the eggdrop source!"
-	@exit 1
 
 include ./.deps/includes
 
