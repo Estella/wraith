@@ -903,7 +903,7 @@ Context;
   if (local && (me = module_find("channels", 0, 0))) {
   /* tcl_channel_modify(0, chan, 1, options) */
     Function *func = me->funcs;
-    char *list[2], *buf2, *bak;
+    char *buf2, *bak;
     struct chanset_t *ch;
     int all = 0;
 
@@ -917,6 +917,7 @@ Context;
     buf2 = nmalloc(strlen(options) + 1);
 
     while (ch) {
+      char *list[2];
       strcpy(buf2, bak);
       options = buf2;
       list[0] = newsplit(&options);
@@ -928,10 +929,8 @@ Context;
         }
 	/* chanints */
         list[1] = options;
-        /* Par gets modified in tcl channel_modify under some
-         * circumstances, so save it now.
-         */
-         (func[38]) (0, ch, 2, list);			/* tcl_channel_modify() */
+        (func[38]) (0, ch, 2, list);			/* tcl_channel_modify() */
+        break;
       }
       if (all)
         ch = ch->next;
