@@ -369,7 +369,7 @@ static void cmd_botconfig(int idx, char *par)
   if (!par[0]) {
     for (i = 0; i < cfg_count; i++) {
       if ((cfg[i]->flags & CFGF_LOCAL) && (cfg[i]->describe)) {
-	k = get_user(&USERENTRY_CONFIG, u2);
+	k = (struct xtra_key *) get_user(&USERENTRY_CONFIG, u2);
 	while (k && strcmp(k->key, cfg[i]->name))
 	  k=k->next;
 	if (k)
@@ -403,7 +403,7 @@ static void cmd_botconfig(int idx, char *par)
     if (cfgent->describe)
       cfgent->describe(cfgent, idx);
   }
-  k = get_user(&USERENTRY_CONFIG, u2);
+  k = (struct xtra_key *) get_user(&USERENTRY_CONFIG, u2);
   while (k && strcmp(k->key, cfgent->name))
     k = k->next;
   if (k)
@@ -1423,7 +1423,7 @@ static void cmd_handle(int idx, char *par)
 #ifdef HUB
 static void cmd_chpass(int idx, char *par)
 {
-  char *handle = NULL, *new = NULL, pass[MAXPASSLEN] = "";
+  char *handle = NULL, *newpass = NULL, pass[MAXPASSLEN] = "";
   int atr = dcc[idx].user ? dcc[idx].user->flags : 0, l;
   struct userrec *u = NULL;
 
@@ -1450,15 +1450,15 @@ static void cmd_chpass(int idx, char *par)
       dprintf(idx, "Removed password.\n");
     } else {
       int good = 0;
-      l = strlen(new = newsplit(&par));
+      l = strlen(newpass = newsplit(&par));
       if (l > MAXPASSLEN)
-	new[MAXPASSLEN] = 0;
-      if (!strcmp(new, "rand")) {
+	newpass[MAXPASSLEN] = 0;
+      if (!strcmp(newpass, "rand")) {
         make_rand_str(pass, MAXPASSLEN);
         good = 1;
       } else {
-        if (goodpass(new, idx, NULL)) {
-          egg_snprintf(pass, sizeof pass, "%s", new);
+        if (goodpass(newpass, idx, NULL)) {
+          egg_snprintf(pass, sizeof pass, "%s", newpass);
           good = 1;
         }
       }
@@ -1479,7 +1479,7 @@ static void cmd_chpass(int idx, char *par)
 
 static void cmd_chsecpass(int idx, char *par)
 {
-  char *handle = NULL, *new = NULL, pass[MAXPASSLEN + 1] = "";
+  char *handle = NULL, *newpass = NULL, pass[MAXPASSLEN + 1] = "";
   int atr = dcc[idx].user ? dcc[idx].user->flags : 0, l;
   struct userrec *u = NULL;
 
@@ -1506,17 +1506,17 @@ static void cmd_chsecpass(int idx, char *par)
       dprintf(idx, "Removed secpass.\n");
     } else {
 
-      l = strlen(new = newsplit(&par));
+      l = strlen(newpass = newsplit(&par));
       if (l > MAXPASSLEN)
-	new[MAXPASSLEN] = 0;
-      if (!strcmp(new, "rand")) {
+	newpass[MAXPASSLEN] = 0;
+      if (!strcmp(newpass, "rand")) {
         make_rand_str(pass, MAXPASSLEN);
       } else {
-        if (strlen(new) < 6) {
+        if (strlen(newpass) < 6) {
           dprintf(idx, "Please use at least 6 characters.\n");
           return;
         } else {
-          egg_snprintf(pass, sizeof pass, "%s", new);
+          egg_snprintf(pass, sizeof pass, "%s", newpass);
         }
       }
       if (strlen(pass) > MAXPASSLEN)
@@ -1568,7 +1568,7 @@ static void cmd_botcmd(int idx, char *par)
       continue;
     cnt++;
     if ((rleaf != -1 && cnt == rleaf) || (rleaf == -1 && wild_match(botm, tbot->bot))) {
-      send_remote_simul(idx, tbot->bot, cmd, par ? par : "");
+      send_remote_simul(idx, tbot->bot, cmd, par ? par : (char *) "");
       found++;
     }
   }
@@ -1598,7 +1598,7 @@ static void cmd_hublevel(int idx, char *par)
     return;
   }
   dprintf(idx, "Changed bot's hublevel.\n");
-  obi = get_user(&USERENTRY_BOTADDR, u1);
+  obi = (struct bot_addr *) get_user(&USERENTRY_BOTADDR, u1);
   bi = (struct bot_addr *) calloc(1, sizeof(struct bot_addr));
 
   bi->uplink = strdup(obi->uplink);
@@ -1636,8 +1636,8 @@ static void cmd_uplink(int idx, char *par)
     dprintf(idx, "Changed bot's uplink.\n");
   else
     dprintf(idx, "Cleared bot's uplink.\n");
-  obi = get_user(&USERENTRY_BOTADDR, u1);
-  bi = (struct bot_addry *) calloc(1, sizeof(struct bot_addr));
+  obi = (struct bot_addr *) get_user(&USERENTRY_BOTADDR, u1);
+  bi = (struct bot_addr *) calloc(1, sizeof(struct bot_addr));
 
   bi->uplink = strdup(uplink);
   bi->address = strdup(obi->address);
