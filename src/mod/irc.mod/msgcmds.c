@@ -470,6 +470,7 @@ static cmd_t C_msg[] =
 };
 
 #ifdef S_AUTH
+/*
 static int msgc_test(char *nick, char *host, struct userrec *u, char *par, char *chname)
 {
   char *chn, *hand;
@@ -490,7 +491,7 @@ static int msgc_test(char *nick, char *host, struct userrec *u, char *par, char 
 //  dprintf(DP_HELP, "NOTICE %s :Works :)\n", nick);
   return 0;
 }
-
+*/
 static int msgc_op(char *nick, char *host, struct userrec *u, char *par, char *chname)
 {
   struct chanset_t *chan = NULL;
@@ -716,7 +717,7 @@ static int msgc_invite(char *nick, char *host, struct userrec *u, char *par, cha
 
 static cmd_t C_msgc[] =
 {
-  {"test",		"a",	(Function) msgc_test,		NULL},
+/*  {"test",		"a",	(Function) msgc_test,		NULL}, */
   {"op",		"",	(Function) msgc_op,		NULL},
   {"voice",		"",	(Function) msgc_voice,		NULL},
   {"channels",		"",	(Function) msgc_channels,	NULL},
