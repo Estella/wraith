@@ -101,6 +101,7 @@ int	use_stderr = 1;		/* Send stuff to stderr instead of logfiles? */
 int	do_restart = 0;		/* .restart has been called, restart asap */
 char	quit_msg[1024];		/* quit message */
 time_t	now;			/* duh, now :) */
+egg_timeval_t egg_timeval_now;	/* Same thing, but seconds and microseconds. */
 
 extern struct cfg_entry CFG_FORKINTERVAL;
 
@@ -370,7 +371,6 @@ static void dtx_arg(int argc, char *argv[])
 
 /* Timer info */
 static int		lastmin = 99;
-static time_t		then;
 static struct tm	nowtm;
 
 int curcheck = 0;
@@ -684,7 +684,9 @@ int main(int argc, char **argv)
 
   Context;
   /* Initialize variables and stuff */
-  now = time(NULL);
+  timer_update_now(&egg_timeval_now);
+  now = egg_timeval_now.sec;
+
 #ifdef S_UTCTIME
   egg_memcpy(&nowtm, gmtime(&now), sizeof(struct tm));
 #else /* !S_UTCTIME */
@@ -842,12 +844,11 @@ int main(int argc, char **argv)
     dcc_chatter(n);
   }
 
-  then = now;
   online_since = now;
   autolink_cycle(NULL);		/* Hurry and connect to tandem bots */
   howlong.sec = 1;
   howlong.usec = 0;
-  timer_create_repeater(&howlong, (Function) core_secondly);
+  timer_create_repeater(&howlong, "core_secondly()", (Function) core_secondly);
   add_hook(HOOK_10SECONDLY, (Function) core_10secondly);
   add_hook(HOOK_30SECONDLY, (Function) expire_simuls);
   add_hook(HOOK_MINUTELY, (Function) core_minutely);
@@ -867,12 +868,10 @@ int main(int argc, char **argv)
     /* Lets move some of this here, reducing the numer of actual
      * calls to periodic_timers
      */
-    now = time(NULL);
+    timer_update_now(&egg_timeval_now);
+    now = egg_timeval_now.sec;
+    random();			/* jumble things up o_O */
     timer_run();
-    if (now != then) {		/* Once a second */
-/*      call_hook(HOOK_SECONDLY); */
-      then = now;
-    }
 
     /* Only do this every so often. */
     if (!socket_cleanup) {
@@ -887,7 +886,7 @@ int main(int argc, char **argv)
       socket_cleanup--;
 
     xx = sockgets(buf, &i); 
-    /* "chanprog()" bug is down here somewhere.... */
+
     if (xx >= 0) {		/* Non-error */
       int idx;
 
