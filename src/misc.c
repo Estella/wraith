@@ -76,7 +76,7 @@ struct cfg_entry CFG_MOTD = {
 };
 
 void authkey_describe(struct cfg_entry * entry, int idx) {
-  dprintf(idx, "authkey is used for authing, give to your users if they are to use DCC chat or IRC cmds. (can be bot specific)\n");
+  dprintf(idx, STR("authkey is used for authing, give to your users if they are to use DCC chat or IRC cmds. (can be bot specific)\n"));
 }
 
 void authkey_changed(struct cfg_entry * entry, char * olddata, int * valid) {
@@ -93,7 +93,7 @@ struct cfg_entry CFG_AUTHKEY = {
 };
 
 void cmdprefix_describe(struct cfg_entry *entry, int idx) {
-  dprintf(idx, "cmdprefix is the prefix used for msg cmds, ie: !op or .op\n");
+  dprintf(idx, STR("cmdprefix is the prefix used for msg cmds, ie: !op or .op\n"));
 }
 
 void cmdprefix_changed(struct cfg_entry * entry, char * olddata, int * valid) {
@@ -254,7 +254,7 @@ void servers6_describe(struct cfg_entry * entry, int idx) {
 void servers6_changed(struct cfg_entry * entry, char * olddata, int * valid) {
 }
 void nick_describe(struct cfg_entry * entry, int idx) {
-  dprintf(idx, "nick is the bots preferred nick when connecting/using .resetnick\n");
+  dprintf(idx, STR("nick is the bots preferred nick when connecting/using .resetnick\n"));
 }
 void nick_changed(struct cfg_entry * entry, char * olddata, int * valid) {
 }
@@ -931,7 +931,7 @@ void show_channels(int idx, char *handle)
     }
   }
   if (!first)
-    dprintf(idx, "%s %s not have access to any channels.\n", handle ? u->handle : "You", handle ? "does" : "do");
+    dprintf(idx, STR("%s %s not have access to any channels.\n"), handle ? u->handle : "You", handle ? "does" : "do");
 }
 
 int getting_users()
@@ -1924,7 +1924,7 @@ int updatebin (int idx, char *par, int autoi)
   par = path;
   if (!par[0]) {
     if (idx)
-      dprintf(idx, "Not enough parameters.\n");
+      dprintf(idx, STR("Not enough parameters.\n"));
     return 1;
   }
   path = nmalloc(strlen(binname) + strlen(par));
@@ -1933,14 +1933,14 @@ int updatebin (int idx, char *par, int autoi)
   if (!newbin) {
     nfree(path);
     if (idx)
-      dprintf(idx, "Don't know current binary name\n");
+      dprintf(idx, STR("Don't know current binary name\n"));
     return 1;
   }
   newbin++;
   if (strchr(par, '/')) {
     *newbin = 0;
     if (idx)
-      dprintf(idx, "New binary must be in %s and name must be specified without path information\n", path);
+      dprintf(idx, STR("New binary must be in %s and name must be specified without path information\n"), path);
     nfree(path);
     return 1;
   }
@@ -1948,18 +1948,18 @@ int updatebin (int idx, char *par, int autoi)
   if (!strcmp(path, binname)) {
     nfree(path);
     if (idx)
-      dprintf(idx, "Can't update with the current binary\n");
+      dprintf(idx, STR("Can't update with the current binary\n"));
     return 1;
   }
   if (stat(path, &sb)) {
     if (idx)
-      dprintf(idx, "%s can't be accessed\n", path);
+      dprintf(idx, STR("%s can't be accessed\n"), path);
     nfree(path);
     return 1;
   }
   if (chmod(path, S_IRUSR | S_IWUSR | S_IXUSR)) {
     if (idx)
-      dprintf(idx, "Can't set mode 0600 on %s\n", path);
+      dprintf(idx, STR("Can't set mode 0600 on %s\n"), path);
     nfree(path);
     return 1;
   }
@@ -1971,7 +1971,7 @@ int updatebin (int idx, char *par, int autoi)
 
   if (movefile(path, binname)) {
     if (idx)
-      dprintf(idx, "Can't rename %s to %s\n", path, binname);
+      dprintf(idx, STR("Can't rename %s to %s\n"), path, binname);
     nfree(path);
     return 1;
   }
@@ -1998,8 +1998,8 @@ int updatebin (int idx, char *par, int autoi)
   i = system(buf);
   if (i == -1 || i == 1) {
     if (idx)
-      dprintf(idx, "Couldn't restart new binary (error %d)\n", i);
-      putlog(LOG_MISC, "*", "Couldn't restart new binary (error %d)\n", i);
+      dprintf(idx, STR("Couldn't restart new binary (error %d)\n"), i);
+      putlog(LOG_MISC, "*", STR("Couldn't restart new binary (error %d)\n"), i);
     return i;
 
   } else {
@@ -2013,8 +2013,8 @@ int updatebin (int idx, char *par, int autoi)
       }
 #endif
       if (idx)
-        dprintf(idx, "Updating...bye\n");
-      putlog(LOG_MISC, "*", "Updating...\n");
+        dprintf(idx, STR("Updating...bye\n"));
+      putlog(LOG_MISC, "*", STR("Updating...\n"));
       botnet_send_chat(-1, botnetnick, "Updating...");
       botnet_send_bye();
       fatal("Updating...", 1);
@@ -2463,7 +2463,7 @@ int goodpass(char *pass, int idx, char *nick)
     if (idx)
       dprintf(idx, "%s\n", tell);
     else if (nick[0])
-      dprintf(DP_HELP, "NOTICE %s :%s\n", nick, tell);
+      dprintf(DP_HELP, STR("NOTICE %s :%s\n"), nick, tell);
     
     return 0;
   }
@@ -2481,7 +2481,7 @@ char *makehash(struct userrec *u, char *rand)
 Context;
   sprintf(hash, "%s%s%s", rand, (char *) get_user(&USERENTRY_SECPASS, u), authkey ? authkey : "");
 
-//  putlog(LOG_DEBUG, "*", "Making hash from %s %s: %s", rand, get_user(&USERENTRY_SECPASS, u), hash);
+//  putlog(LOG_DEBUG, "*", STR("Making hash from %s %s: %s"), rand, get_user(&USERENTRY_SECPASS, u), hash);
 
   MD5_Init(&ctx);
   MD5_Update(&ctx, hash, strlen(hash));
@@ -2490,7 +2490,7 @@ Context;
   for(i=0; i<16; i++)
     sprintf(md5string + (i*2), "%.2x", md5out[i]);
    
-//  putlog(LOG_DEBUG, "*", "MD5 of hash: %s", md5string);
+//  putlog(LOG_DEBUG, "*", STR("MD5 of hash: %s"), md5string);
   ret = md5string;
   return ret;
 }
@@ -2517,7 +2517,7 @@ Context;
     return -1;
   for (i = 0; i < auth_total; i++) {
     if (auth[i].host[0] && !strcmp(auth[i].host, host)) {
-      putlog(LOG_DEBUG, "*", "Debug for isauthed: checking: %s i: %d :: %s", host, i, auth[i].host);
+      putlog(LOG_DEBUG, "*", STR("Debug for isauthed: checking: %s i: %d :: %s"), host, i, auth[i].host);
       return i;
     }
   }
@@ -2686,9 +2686,9 @@ char *werr_tostr(int errnum)
 
 void werr(int errnum)
 {
-  putlog(LOG_MISC, "*", "error #%d", errnum);
-  sdprintf("error translates to: %s", werr_tostr(errnum));
-  printf("(segmentation fault)\n");
+  putlog(LOG_MISC, "*", STR("error #%d"), errnum);
+  sdprintf(STR("error translates to: %s"), werr_tostr(errnum));
+  printf(STR("(segmentation fault)\n"));
   fatal("", 0);
 }
 
