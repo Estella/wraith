@@ -15,6 +15,7 @@
 
 #include "conf.h"
 #include "salt.h"
+#include "color.h"
 
 #include "lush.h" /* We seem to need this everywhere... */
 
