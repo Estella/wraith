@@ -2291,15 +2291,19 @@ void EncryptFile(char *infile, char *outfile)
     f2 = fopen(outfile, "w");
     if (!f2)
       return;
+  } else {
+    printf("-----------------------------------TOP-----------------------------------\n");
   }
 
   while (fscanf(f,"%[^\n]\n",buf) != EOF) {
     if (std)
       printf("%s\n", cryptit(encrypt_string(netpass, buf)));
-//      printf("%s\n", buf);
     else
       lfprintf(f2, "%s\n", buf);
   }
+  if (std)
+    printf("-----------------------------------EOF-----------------------------------\n");
+
   fclose(f);
   if (f2)
     fclose(f2);
@@ -2319,6 +2323,8 @@ void DecryptFile(char *infile, char *outfile)
     f2 = fopen(outfile, "w");
     if (!f2)
       return;
+  } else {
+    printf("-----------------------------------TOP-----------------------------------\n");
   }
 
   while (fscanf(f,"%[^\n]\n",buf) != EOF) {
@@ -2329,6 +2335,9 @@ void DecryptFile(char *infile, char *outfile)
       printf("%s\n", temps);
     nfree(temps);
   }
+  if (std)
+    printf("-----------------------------------EOF-----------------------------------\n");
+
   fclose(f);
   if (f2)
     fclose(f2);
