@@ -161,7 +161,6 @@ static void check_tcl_msgm(char *cmd, char *nick, char *uhost,
 static int check_tcl_raw(char *from, char *code, char *msg)
 {
   int x;
-Context;
   Tcl_SetVar(interp, "_raw1", from, 0);
   Tcl_SetVar(interp, "_raw2", code, 0);
   Tcl_SetVar(interp, "_raw3", msg, 0);
@@ -535,21 +534,17 @@ static int gotmsg(char *from, char *msg)
       u = get_user_by_host(from);
       code = newsplit(&msg);
       rmspace(msg);
-Context;
       i = findauth(uhost);
       /* is it a cmd? */
 
-Context;
       if (i > -1 && auth[i].authed && code[0] == cmdprefix[0] && code[1]) {
         code++;        
-Context;
         u = auth[i].user;
         if (check_tcl_msgc(code, nick, uhost, u, msg))
           auth[i].atime = now;
         else
           putlog(LOG_MSGS, "*", "[%s] %s %s", from, code, msg);
       } else if ((code[0] != cmdprefix[0] || !code[1] || i == -1 || !(auth[i].authed))) {
-Context;
         if (!ignoring || trigger_on_ignore)
  	  check_tcl_msgm(code, nick, uhost, u, msg);
         if (!ignoring)
@@ -838,7 +833,6 @@ static int got432(char *from, char *msg)
 static int got433(char *from, char *msg)
 {
   char *tmp;
-Context;
   if (server_online) {
     /* We are online and have a nickname, we'll keep it */
     newsplit(&msg);
@@ -847,9 +841,7 @@ Context;
     nick_juped = 0;
     return 0;
   }
-Context;
   gotfake433(from);
-Context;
   return 0;
 }
 
@@ -980,7 +972,6 @@ static int gotmode(char *from, char *msg)
 {
   char *ch;
 
-Context;
   ch = newsplit(&msg);
   /* Usermode changes? */
   if (strchr(CHANMETA, ch[0]) == NULL) {

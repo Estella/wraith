@@ -238,7 +238,7 @@
 #define debug_output (*(int *)(global[106]))
 #define noshare (*(int *)(global[107]))
 /* 108 - 111 */
-/* 108: gban_total -- UNUSED (Eule) */
+#define do_chanset ((void (*)(struct chanset_t *, char *, int))global[108])
 /* 109: make_userfile -- UNUED (lordares) */
 #define default_flags (*(int*)global[110])
 #define dcc_total (*(int*)global[111])
@@ -289,7 +289,7 @@
 #define copyfile ((int (*) (char *, char *))global[147])
 /* 148 - 151 */
 #define do_tcl ((void (*)(char *, char *))global[148])
-#define readtclprog ((int (*)(const char *))global[149])
+/* 149 -- UNUSED */
 /* #define get_language ((char *(*)(int))global[150]) */
 #define def_get ((void *(*)(struct userrec *, struct user_entry *))global[151])
 /* 152 - 155 */
@@ -358,9 +358,9 @@
 #define stripmodes ((int(*)(char *))global[202])
 #define stripmasktype ((const char *(*)(int))global[203])
 /* 204 - 207 */
-/* 204: sub_lang -- UNUSED (lordares) */
-#define online_since (*(int *)(global[205]))
-/* 206: cmd_loadlanguage -- UNUSED (lordares) */
+#define online_since (*(int *)(global[204]))
+/* 205 -- UNUSED */
+/* 206 -- UNUSED */
 #define check_dcc_attrs ((int (*)(struct userrec *,int))global[207])
 /* 208 - 211 */
 #define check_dcc_chanattrs ((int (*)(struct userrec *,char *,int,int))global[208])

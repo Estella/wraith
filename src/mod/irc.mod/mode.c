@@ -1332,6 +1332,9 @@ static int gotmode(char *from, char *msg)
 	  }
 	  break;
 	case 'o':
+#ifdef S_AUTOLOCK
+          chan->channel.fighting++;
+#endif /* S_AUTOLOCK */
 	  op = newsplit(&msg);
 	  fixcolon(op);
 	  if (ms2[0] == '+')
@@ -1398,6 +1401,9 @@ static int gotmode(char *from, char *msg)
 	  }
 	  break;
 	case 'b':
+#ifdef S_AUTOLOCK
+          chan->channel.fighting++;
+#endif /* S_AUTOLOCK */
 	  op = newsplit(&msg);
 	  fixcolon(op);
 	  if (ms2[0] == '+')
@@ -1407,6 +1413,9 @@ static int gotmode(char *from, char *msg)
 	  break;
 #ifdef S_IRCNET
 	case 'e':
+#ifdef S_AUTOLOCK
+          chan->channel.fighting++;
+#endif /* S_AUTOLOCK */
 	  op = newsplit(&msg);
 	  fixcolon(op);
 	  if (ms2[0] == '+')
@@ -1415,6 +1424,9 @@ static int gotmode(char *from, char *msg)
 	    got_unexempt(chan, nick, from, op, u);
 	  break;
 	case 'I':
+#ifdef S_AUTOLOCK
+          chan->channel.fighting++;
+#endif /* S_AUTOLOCK */
 	  op = newsplit(&msg);
 	  fixcolon(op);
 	  if (ms2[0] == '+')
