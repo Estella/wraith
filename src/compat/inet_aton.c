@@ -4,7 +4,7 @@
  * $Id$
  */
 
-#include "eggmain.h"
+#include "common.h"
 #include "inet_aton.h"
 
 #ifndef HAVE_ISASCII

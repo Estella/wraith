@@ -7,7 +7,7 @@
  * $Id$
  */
 
-#include "eggmain.h"
+#include "common.h"
 #include "dcc.h"
 #include "tclhash.h"
 #include "cmds.h"

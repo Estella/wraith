@@ -7,7 +7,7 @@
  * $Id$
  */
 
-#include "eggmain.h"
+#include "common.h"
 #include "dccutil.h"
 #include "net.h"
 #include "misc.h"

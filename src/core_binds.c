@@ -6,7 +6,7 @@
  * $Id$
  */
 
-#include "eggmain.h"
+#include "common.h"
 #include "dccutil.h"
 #include "userrec.h"
 #include "users.h"

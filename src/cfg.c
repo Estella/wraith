@@ -5,7 +5,7 @@
  * $Id$
  */
 
-#include "eggmain.h"
+#include "common.h"
 #include "cfg.h"
 #include "userrec.h"
 #include "misc.h"

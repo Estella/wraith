@@ -5,7 +5,7 @@
  * $Id$
  */
 
-#include "eggmain.h"
+#include "common.h"
 #include "garble.h"
 #include "main.h"
 

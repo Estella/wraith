@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "eggmain.h"
+#include "common.h"
 #include "users.h"
 #include "rfc1459.h"
 #include "dcc.h"

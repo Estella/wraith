@@ -6,7 +6,7 @@
  * $Id$
  */
 
-#include "eggmain.h"
+#include "common.h"
 #include "cmds.h"
 #include "debug.h"
 #include "dcc.h"

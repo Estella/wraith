@@ -10,7 +10,7 @@
  * $Id$
  */
 
-#include "eggmain.h"
+#include "common.h"
 #include "botnet.h"
 #include "net.h"
 #include "users.h"

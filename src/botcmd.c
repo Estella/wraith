@@ -6,7 +6,7 @@
  * $Id$
  */
 
-#include "eggmain.h"
+#include "common.h"
 #include "botcmd.h"
 #include "net.h"
 #include "tclhash.h"

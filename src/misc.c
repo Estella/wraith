@@ -8,7 +8,7 @@
  * $Id$
  */
 
-#include "eggmain.h"
+#include "common.h"
 #include "misc.h"
 #include "rfc1459.h"
 #include "misc_file.h"
