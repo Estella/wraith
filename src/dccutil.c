@@ -289,7 +289,7 @@ void dcc_chatter(int idx)
 
   j = dcc[idx].sock;
   strcpy(dcc[idx].u.chat->con_chan, "***");
-  check_tcl_chon(dcc[idx].nick, idx);
+  check_chon(dcc[idx].nick, idx);
   dcc[idx].u.chat->channel = 234567;
   /* Still there? */
 
@@ -315,7 +315,7 @@ void dcc_chatter(int idx)
 	  botnet_send_join_idx(idx, -1);
 	}
       }
-      check_tcl_chjn(botnetnick, dcc[idx].nick, dcc[idx].u.chat->channel,
+      check_chjn(botnetnick, dcc[idx].nick, dcc[idx].u.chat->channel,
 		     geticon(idx), dcc[idx].sock, dcc[idx].host);
     }
     /* But *do* bother with sending it locally */
@@ -447,7 +447,7 @@ void not_away(int idx)
   dprintf(idx, "You're not away any more.\n");
   nfree(dcc[idx].u.chat->away);
   dcc[idx].u.chat->away = NULL;
-  check_tcl_away(botnetnick, dcc[idx].sock, NULL);
+  check_away(botnetnick, dcc[idx].sock, NULL);
 }
 
 void set_away(int idx, char *s)
@@ -472,7 +472,7 @@ void set_away(int idx, char *s)
     }
   }
   dprintf(idx, "You are now away.\n");
-  check_tcl_away(botnetnick, dcc[idx].sock, s);
+  check_away(botnetnick, dcc[idx].sock, s);
 }
 
 /* This helps the memory debugging
@@ -587,7 +587,7 @@ int detect_dcc_flood(time_t * timer, struct chat_info *chat, int idx)
 	if (chat->channel < GLOBAL_CHANS)
 	  botnet_send_part_idx(idx, x);
       }
-      check_tcl_chof(dcc[idx].nick, idx);
+      check_chof(dcc[idx].nick, idx);
       if ((dcc[idx].sock != STDOUT) || backgrd) {
 	killsock(dcc[idx].sock);
 	lostdcc(idx);
@@ -623,7 +623,7 @@ void do_boot(int idx, char *by, char *reason)
     if (dcc[idx].u.chat->channel < GLOBAL_CHANS)
       botnet_send_part_idx(idx, x);
   }
-  check_tcl_chof(dcc[idx].nick, idx);
+  check_chof(dcc[idx].nick, idx);
   if ((dcc[idx].sock != STDOUT) || backgrd) {
     killsock(dcc[idx].sock);
     lostdcc(idx);
