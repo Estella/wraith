@@ -128,7 +128,7 @@ void processline(char *line)
   strcat(outbuf, "\n");
 }
 
-int main(int argc, char *argv[0])
+int main(int argc, char *argv[])
 {
   FILE *f = NULL;
   char *ln = NULL, *nln = NULL, *buf = NULL;

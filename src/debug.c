@@ -213,7 +213,7 @@ canaccess(void *addr)
     if (errno != EACCES)
       return 0;
   return 1;
-};
+}
 
 struct stackframe *sf = NULL;
 int stackdepth = 0;
@@ -239,7 +239,7 @@ stackdump(int idx)
   stackdepth = 0;
   sf = NULL;
   sleep(1);
-};
+}
 #endif /* !CYGWIN_HACKS */
 
 #ifndef DEBUG_CONTEXT

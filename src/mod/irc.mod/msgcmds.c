@@ -503,7 +503,7 @@ static int msgc_test(char *nick, char *host, struct userrec *u, char *chname, ch
     dcc[idx].addr = 0L;
     dcc[idx].user = u;
   }
-//  rmspace(par);
+  /* rmspace(par); */
 
   check_bind_dcc(cmd, idx, par);
 
