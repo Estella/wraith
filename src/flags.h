@@ -14,7 +14,7 @@
 #define PRIV_VOICE 2
 
 
-typedef unsigned long flag_t;
+typedef long flag_t;
 
 struct flag_record {
   flag_t match;

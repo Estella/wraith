@@ -146,8 +146,7 @@ void break_down_flags(const char *string, struct flag_record *plus, struct flag_
       if ((*string >= 'a') && (*string <= 'z')) {
 	switch (mode) {
 	case 0:
-	  which->global |=1 << (*string - 'a');
-
+	  which->global |= 1 << (*string - 'a');
 	  break;
 	case 1:
 	  which->chan |= 1 << (*string - 'a');
@@ -199,7 +198,7 @@ void break_down_flags(const char *string, struct flag_record *plus, struct flag_
   }
 }
 
-static int flag2str(char *string, int bot)
+static int flag2str(char *string, flag_t bot)
 {
   char x = 'a', *old = string;
 
