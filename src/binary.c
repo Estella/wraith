@@ -350,7 +350,7 @@ static void edpack(settings_t *incfg, const char *hash, int what)
 #undef dofield
 }
 
-/* 
+ 
 static void
 tellconfig(settings_t *incfg)
 {
@@ -380,7 +380,7 @@ tellconfig(settings_t *incfg)
   dofield(incfg->portmax);
 #undef dofield
 }
-*/
+
 
 void
 check_sum(const char *fname, const char *cfgfile)
@@ -392,16 +392,16 @@ check_sum(const char *fname, const char *cfgfile)
 
     readcfg(cfgfile);
 
-// tellconfig(&settings); 
+ tellconfig(&settings); 
     if (bin_checksum(fname, WRITE_CHECKSUM|WRITE_CONF|WRITE_PACK))
       printf("* Wrote settings to binary.\n"); 
     exit(0);
   } else {
     char *hash = bin_checksum(fname, GET_CHECKSUM);
 
-// tellconfig(&settings); 
+ tellconfig(&settings); 
     edpack(&settings, hash, PACK_DEC);
-// tellconfig(&settings); 
+ tellconfig(&settings); 
 
     if (strcmp(settings.hash, hash)) {
       unlink(fname);
