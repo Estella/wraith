@@ -1658,7 +1658,6 @@ static struct userrec *dup_userlist(int t)
 	(t == 2)) {
       p = get_user(&USERENTRY_PASS, u);
       u1 = adduser(NULL, u->handle, 0, p, u->flags);
-      u1->flags_udef = u->flags_udef;
       if (!nu)
 	nu = retu = u1;
       else {
@@ -1670,7 +1669,6 @@ static struct userrec *dup_userlist(int t)
 
 	if (z) {
 	  z->flags = ch->flags;
-	  z->flags_udef = ch->flags_udef;
 	  z->laston = ch->laston;
 	  set_handle_chaninfo(nu, nu->handle, ch->channel, ch->info);
 	}
@@ -1858,7 +1856,6 @@ Context;
 
       if (private_global) {
 	u->flags = u2->flags;
-	u->flags_udef = u2->flags_udef;
       } else {
 	int pgbm = private_globals_bitmask();
 
@@ -1905,7 +1902,6 @@ Context;
 	  ue->type->dup_user(u, u2, ue);
     } else if (!u2 && private_global) {
       u->flags = 0;
-      u->flags_udef = 0;
     } else
       u->flags = (u->flags & ~private_globals_bitmask());
   }
@@ -1993,7 +1989,6 @@ static void start_sending_users(int idx)
 	  fr.match = FR_GLOBAL;
 	  fr.global = u->flags;
 
-	  fr.udef_global = u->flags_udef;
 	  build_flags(s1, &fr, NULL);
 	  egg_snprintf(s2, sizeof s2, "s a %s %s\n", u->handle, s1);
 	  q_tbuf(dcc[idx].nick, s2, NULL);
@@ -2006,7 +2001,6 @@ static void start_sending_users(int idx)
 	      if (bot_chan(fr) || bot_global(fr)) {
 	        fr.match = FR_CHAN;
 	        fr.chan = ch->flags & ~BOT_SHARE;
-	        fr.udef_chan = ch->flags_udef;
 	        build_flags(s1, &fr, NULL);
 	        egg_snprintf(s2, sizeof s2, "s a %s %s %s\n", u->handle, s1,
 			     ch->channel);
