@@ -1,9 +1,7 @@
 #!/bin/sh
 # $Id$
-utctime=./utctime
-if ! test -f "$utctime"; then
-  gcc -Wall -O2 -o utctime src/utc-time.c
-fi
+utctime="./utctime"
+gcc -Wall -O2 -o utctime src/utc-time.c
 if cvs commit "$@"; then
   unixtime=`${utctime}`
   if echo "#define CVSBUILD ${unixtime}			/* utc unixtime of cvs commit */" > src/build.h; then
