@@ -2,11 +2,9 @@
  * inet_ntop.c --
  *
  *	provides inet_ntop()
+ * $Id$
  */
 
-#ifndef lint
-static const char rcsid[] = "$Id$";
-#endif
 
 #include "main.h"
 #include "inet_ntop.h"
