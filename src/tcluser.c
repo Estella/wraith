@@ -9,6 +9,8 @@
 #include "users.h"
 #include "chan.h"
 #include "tandem.h"
+#include "modules.h"
+
 
 extern Tcl_Interp	*interp;
 extern struct userrec	*userlist;
@@ -496,6 +498,7 @@ static int tcl_setuser STDVAR
   struct userrec *u;
   struct user_entry *e;
   int r;
+  module_entry *me;
 
   BADARGS(3, 999, " handle type ?setting....?");
   if (!(et = find_entry_type(argv[2]))) {
@@ -508,6 +511,12 @@ static int tcl_setuser STDVAR
       return TCL_ERROR;
     } else
       return TCL_OK;		/* Silently ignore user * */
+  }
+  me = module_find("irc", 0, 0);
+  if (me && !strcmp(argv[2], "hosts") && argc == 3) {
+    Function *func = me->funcs;
+
+    (func[IRC_CHECK_THIS_USER]) (argv[1], 1, NULL);
   }
   if (!(e = find_user_entry(et, u))) {
     e = user_malloc(sizeof(struct user_entry));
@@ -523,6 +532,11 @@ static int tcl_setuser STDVAR
 		    (struct list_type *) e))
       nfree(e);
     /* else maybe already freed... (entry_type==HOSTS) <drummer> */
+  }
+  if (me && !strcmp(argv[2], "hosts") && argc == 4) {
+    Function *func = me->funcs;
+
+    (func[IRC_CHECK_THIS_USER]) (argv[1], 0, NULL);
   }
   return r;
 }
