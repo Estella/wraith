@@ -26,7 +26,7 @@
 #include "crypt.h"
 #include "core_binds.h"
 
-int		 noshare = 1;		/* don't send out to sharebots	    */
+bool             noshare = 1;		/* don't send out to sharebots	    */
 struct userrec	*userlist = NULL;	/* user records are stored here	    */
 struct userrec	*lastuser = NULL;	/* last accessed user record	    */
 maskrec		*global_bans = NULL,
@@ -35,21 +35,20 @@ maskrec		*global_bans = NULL,
 struct igrec	*global_ign = NULL;
 int		cache_hit = 0,
 		cache_miss = 0;		/* temporary cache accounting	    */
-int		strict_host = 0;
+bool		strict_host = 0;
 int		userfile_perm = 0600;	/* Userfile permissions,
 					   default rw-------		    */
 
 
 #ifdef HUB
-static int		 sort_users = 1;	/* sort the userlist when saving    */
+static bool		 sort_users = 1;	/* sort the userlist when saving    */
 #endif /* HUB */
 
 int count_users(struct userrec *bu)
 {
   int tot = 0;
-  struct userrec *u = NULL;
 
-  for (u = bu; u; u = u->next)
+  for (struct userrec *u = bu; u; u = u->next)
     tot++;
   return tot;
 }
@@ -59,10 +58,10 @@ int count_users(struct userrec *bu)
  */
 char *fixfrom(char *s)
 {
-  char *p = NULL;
-
   if (!s || !*s || strict_host)
     return s;
+
+  char *p = NULL;
 
   if ((p = strchr(s, '!'))) {
     if (!*(++p))
@@ -78,9 +77,7 @@ char *fixfrom(char *s)
 
 static struct userrec *check_dcclist_hand(char *handle)
 {
-  int i;
-
-  for (i = 0; i < dcc_total; i++)
+  for (int i = 0; i < dcc_total; i++)
     if (!egg_strcasecmp(dcc[i].nick, handle))
       return dcc[i].user;
   return NULL;
@@ -88,14 +85,16 @@ static struct userrec *check_dcclist_hand(char *handle)
 
 struct userrec *get_user_by_handle(struct userrec *bu, char *handle)
 {
-  struct userrec *u = NULL, *ret = NULL;
-
   if (!handle)
     return NULL;
+
   /* FIXME: This should be done outside of this function. */
   rmspace(handle);
   if (!handle[0] || (handle[0] == '*'))
     return NULL;
+
+  struct userrec *ret = NULL;
+
   if (bu == userlist) {
     if (lastuser && !egg_strcasecmp(lastuser->handle, handle)) {
       cache_hit++;
@@ -113,7 +112,7 @@ struct userrec *get_user_by_handle(struct userrec *bu, char *handle)
     }
     cache_miss++;
   }
-  for (u = bu; u; u = u->next)
+  for (struct userrec *u = bu; u; u = u->next)
     if (!egg_strcasecmp(u->handle, handle)) {
       if (bu == userlist)
 	lastuser = u;
@@ -126,9 +125,8 @@ struct userrec *get_user_by_handle(struct userrec *bu, char *handle)
  */
 void correct_handle(char *handle)
 {
-  struct userrec *u = NULL;
+  struct userrec *u = get_user_by_handle(userlist, handle);
 
-  u = get_user_by_handle(userlist, handle);
   if (u == NULL || handle == u->handle)
     return;
   strcpy(handle, u->handle);
@@ -157,17 +155,16 @@ static void freeuser(struct userrec *);
 
 void clear_userlist(struct userrec *bu)
 {
-  struct userrec *u = NULL, *v = NULL;
-  int i;
+  struct userrec *v = NULL;
 
-  for (u = bu; u; u = v) {
+  for (struct userrec *u = bu; u; u = v) {
     v = u->next;
     freeuser(u);
   }
   if (userlist == bu) {
     struct chanset_t *cst = NULL;
 
-    for (i = 0; i < dcc_total; i++)
+    for (int i = 0; i < dcc_total; i++)
       dcc[i].user = NULL;
 
     conf.bot->u = NULL;
@@ -201,22 +198,24 @@ void clear_userlist(struct userrec *bu)
  */
 struct userrec *get_user_by_host(char *host)
 {
-  struct userrec *u = NULL, *ret = NULL;
-  struct list_type *q = NULL;
-  int cnt, i;
-  char host2[UHOSTLEN] = "";
-
   if (host == NULL)
     return NULL;
   rmspace(host);
   if (!host[0])
     return NULL;
-  ret = check_chanlist(host);
-  cnt = 0;
+
+  struct userrec *ret = check_chanlist(host);
+
   if (ret != NULL) {
     cache_hit++;
     return ret;
   }
+
+  struct userrec *u = NULL;
+  struct list_type *q = NULL;
+  int cnt = 0, i;
+  char host2[UHOSTLEN] = "";
+
   cache_miss++;
   strncpyz(host2, host, sizeof host2);
   host = fixfrom(host);
@@ -242,14 +241,13 @@ struct userrec *get_user_by_host(char *host)
  */
 int u_pass_match(struct userrec *u, char *in)
 {
-  char *cmp = NULL, newpass[32] = "", pass[MAXPASSLEN + 1] = "";
-
   if (!u)
     return 0;
 
+  char *cmp = (char *) get_user(&USERENTRY_PASS, u), pass[MAXPASSLEN + 1] = "";
+
   egg_snprintf(pass, sizeof pass, "%s", in);
 
-  cmp = (char *) get_user(&USERENTRY_PASS, u);
   if (!cmp && (!pass[0] || (pass[0] == '-')))
     return 1;
   if (!cmp || !pass || !pass[0] || (pass[0] == '-'))
@@ -258,6 +256,8 @@ int u_pass_match(struct userrec *u, char *in)
     if (!strcmp(cmp, pass))
       return 1;
   } else {
+    char newpass[MAXPASSLEN + 1] = "";
+
     if (strlen(pass) > MAXPASSLEN)
       pass[MAXPASSLEN] = 0;
     encrypt_pass(pass, newpass);
@@ -268,20 +268,18 @@ int u_pass_match(struct userrec *u, char *in)
 }
 
 #ifdef HUB
-int write_user(struct userrec *u, FILE * f, int idx)
+bool write_user(struct userrec *u, FILE * f, int idx)
 {
   char s[181] = "";
-  struct chanuserrec *ch = NULL;
-  struct chanset_t *cst = NULL;
-  struct user_entry *ue = NULL;
-  struct flag_record fr = {FR_GLOBAL, 0, 0, 0 };
-
-  fr.global = u->flags;
+  struct flag_record fr = {FR_GLOBAL, u->flags, 0, 0 };
 
   build_flags(s, &fr, NULL);
   if (lfprintf(f, "%s%-10s - %-24s\n", u->bot ? "-" : "", u->handle, s) == EOF)
     return 0;
-  for (ch = u->chanrec; ch; ch = ch->next) {
+
+  struct chanset_t *cst = NULL;
+
+  for (struct chanuserrec *ch = u->chanrec; ch; ch = ch->next) {
     cst = findchan_by_dname(ch->channel);
     if (cst) {
       if (idx >= 0) {
@@ -295,7 +293,7 @@ int write_user(struct userrec *u, FILE * f, int idx)
         return 0;
     }
   }
-  for (ue = u->entries; ue; ue = ue->next) {
+  for (struct user_entry *ue = u->entries; ue; ue = ue->next) {
     if (ue->name) {
       struct list_type *lt = NULL;
 
@@ -382,16 +380,12 @@ static void sort_userlist()
  */
 int write_userfile(int idx)
 {
-  FILE *f = NULL;
-  char *new_userfile = NULL, s1[81] = "", backup[DIRMAX] = "";
-  time_t tt;
-  struct userrec *u = NULL;
-  int ok;
-
   if (userlist == NULL)
     return 1;			/* No point in saving userfile */
 
-  new_userfile = (char *) calloc(1, strlen(userfile) + 5);
+  FILE *f = NULL;
+  char *new_userfile = (char *) calloc(1, strlen(userfile) + 5);
+
   sprintf(new_userfile, "%s~new", userfile);
 
   f = fopen(new_userfile, "w");
@@ -401,19 +395,24 @@ int write_userfile(int idx)
     free(new_userfile);
     return 2;
   }
+
+  char s1[81] = "", backup[DIRMAX] = "";
+  bool ok = 1;
+
   if (idx >= 0)
     dprintf(idx, "Saving userfile...\n");
   if (sort_users)
     sort_userlist();
-  tt = now;
+
+  time_t tt = now;
+
   strcpy(s1, ctime(&tt));
   lfprintf(f, "#4v: %s -- %s -- written %s", ver, conf.bot->nick, s1);
-  ok = 1;
   fclose(f);
   channels_writeuserfile();
   f = fopen(new_userfile, "a");
   putlog(LOG_DEBUG, "@", "Writing user entries.");
-  for (u = userlist; u && ok; u = u->next)
+  for (struct userrec *u = userlist; u && ok; u = u->next)
     ok = write_user(u, f, idx);
   if (!ok || fflush(f)) {
     putlog(LOG_MISC, "*", "%s (%s)", USERF_ERRWRITE, strerror(ferror(f)));
@@ -433,9 +432,6 @@ int write_userfile(int idx)
 
 int change_handle(struct userrec *u, char *newh)
 {
-  int i;
-  char s[HANDLEN + 1] = "";
-
   if (!u)
     return 0;
   /* Nothing that will confuse the userfile */
@@ -445,14 +441,16 @@ int change_handle(struct userrec *u, char *newh)
   /* Yes, even send bot nick changes now: */
   if (!noshare)
     shareout("h %s %s\n", u->handle, newh);
+
+  char s[HANDLEN + 1] = "";
+
   strncpyz(s, u->handle, sizeof s);
   strncpyz(u->handle, newh, sizeof u->handle);
-  for (i = 0; i < dcc_total; i++)
+  for (int i = 0; i < dcc_total; i++)
     if (dcc[i].type != &DCC_BOT && !egg_strcasecmp(dcc[i].nick, s)) {
       strncpyz(dcc[i].nick, newh, sizeof dcc[i].nick);
       if (dcc[i].type == &DCC_CHAT && dcc[i].u.chat->channel >= 0) {
-	chanout_but(-1, dcc[i].u.chat->channel,
-		    "*** Handle change: %s -> %s\n", s, newh);
+	chanout_but(-1, dcc[i].u.chat->channel, "*** Handle change: %s -> %s\n", s, newh);
 	if (dcc[i].u.chat->channel < GLOBAL_CHANS)
 	  botnet_send_nkch(i, s);
       }
@@ -529,12 +527,12 @@ struct userrec *adduser(struct userrec *bu, char *handle, char *host, char *pass
 
 static void freeuser(struct userrec *u)
 {
-  struct user_entry *ue = NULL, *ut = NULL;
-  struct chanuserrec *ch = NULL, *z = NULL;
-
   if (u == NULL)
     return;
-  ch = u->chanrec;
+
+  struct user_entry *ue = NULL, *ut = NULL;
+  struct chanuserrec *ch = u->chanrec, *z = NULL;
+
   while (ch) {
     z = ch;
     ch = ch->next;
@@ -585,8 +583,7 @@ int deluser(char *handle)
     shareout("k %s\n", handle);
   for (fnd = 0; fnd < dcc_total; fnd++)
     if (dcc[fnd].user == u)
-      dcc[fnd].user = 0;	/* Clear any dcc users for this entry,
-				 * null is safe-ish */
+      dcc[fnd].user = NULL;	/* Clear any dcc users for this entry null is safe-ish */
   clear_chanlist();
   freeuser(u);
   lastuser = NULL;
@@ -595,16 +592,14 @@ int deluser(char *handle)
 
 int delhost_by_handle(char *handle, char *host)
 {
-  struct userrec *u = NULL;
-  struct list_type *q = NULL, *qnext = NULL, *qprev = NULL;
+  struct userrec *u = get_user_by_handle(userlist, handle);
+  if (!u)
+    return 0;
+
+  struct list_type *q = (struct list_type *) get_user(&USERENTRY_HOSTS, u), *qnext = NULL, *qprev = q;
   struct user_entry *e = NULL;
   int i = 0;
 
-  u = get_user_by_handle(userlist, handle);
-  if (!u)
-    return 0;
-  q = (struct list_type *) get_user(&USERENTRY_HOSTS, u);
-  qprev = q;
   if (q) {
     if (!rfc_casecmp(q->extra, host)) {
       e = find_user_entry(&USERENTRY_HOSTS, u);
@@ -682,9 +677,8 @@ void touch_laston(struct userrec *u, char *where, time_t timeval)
 void user_del_chan(char *dname)
 {
   struct chanuserrec *ch = NULL, *och = NULL;
-  struct userrec *u = NULL;
 
-  for (u = userlist; u; u = u->next) {
+  for (struct userrec *u = userlist; u; u = u->next) {
     ch = u->chanrec;
     och = NULL;
     while (ch) {

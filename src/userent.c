@@ -21,7 +21,7 @@ static struct user_entry_type *entry_type_list;
 
 void init_userent()
 {
-  entry_type_list = 0;
+  entry_type_list = NULL;
   add_entry_type(&USERENTRY_COMMENT);
   add_entry_type(&USERENTRY_INFO);
   add_entry_type(&USERENTRY_LASTON);
@@ -51,18 +51,17 @@ void list_type_kill(struct list_type *t)
   }
 }
 
-int def_unpack(struct userrec *u, struct user_entry *e)
+bool def_unpack(struct userrec *u, struct user_entry *e)
 {
-  char *tmp = NULL;
+  char *tmp = e->u.list->extra;
 
-  tmp = e->u.list->extra;
   e->u.list->extra = NULL;
   list_type_kill(e->u.list);
   e->u.string = tmp;
   return 1;
 }
 
-int def_kill(struct user_entry *e)
+bool def_kill(struct user_entry *e)
 {
   free(e->u.string);
   free(e);
@@ -70,7 +69,7 @@ int def_kill(struct user_entry *e)
 }
 
 #ifdef HUB
-int def_write_userfile(FILE * f, struct userrec *u, struct user_entry *e)
+bool def_write_userfile(FILE * f, struct userrec *u, struct user_entry *e)
 {
   if (lfprintf(f, "--%s %s\n", e->type->name, e->u.string) == EOF)
     return 0;
@@ -83,7 +82,7 @@ void *def_get(struct userrec *u, struct user_entry *e)
   return e->u.string;
 }
 
-int def_set(struct userrec *u, struct user_entry *e, void *buf)
+bool def_set(struct userrec *u, struct user_entry *e, void *buf)
 {
   char *string = (char *) buf;
 
@@ -92,8 +91,8 @@ int def_set(struct userrec *u, struct user_entry *e, void *buf)
   if (!string && !e->u.string)
     return 1;
   if (string) {
-    int l = strlen (string);
-    char *i;
+    size_t l = strlen (string);
+    char *i = NULL;
 
     if (l > 160)
       l = 160;
@@ -119,7 +118,7 @@ int def_set(struct userrec *u, struct user_entry *e, void *buf)
   return 1;
 }
 
-int def_gotshare(struct userrec *u, struct user_entry *e, char *data, int idx)
+bool def_gotshare(struct userrec *u, struct user_entry *e, char *data, int idx)
 {
 #ifdef HUB
   putlog(LOG_DEBUG, "@", "%s: change %s %s", dcc[idx].nick, e->type->name, u->handle);
@@ -169,7 +168,7 @@ struct user_entry_type USERENTRY_INFO =
   "INFO"
 };
 
-void added_display(int idx, struct user_entry *e, struct userrec *u)
+static void added_display(int idx, struct user_entry *e, struct userrec *u)
 {
   /* format: unixtime handle */
   if (dcc[idx].user && (dcc[idx].user->flags & USER_OWNER)) {
@@ -204,7 +203,7 @@ struct user_entry_type USERENTRY_ADDED = {
   "ADDED"
 };
 
-int config_set(struct userrec *u, struct user_entry *e, void *buf)
+static bool config_set(struct userrec *u, struct user_entry *e, void *buf)
 {
   struct xtra_key *curr = NULL, *old = NULL, *mynew = (struct xtra_key *) buf;
 
@@ -247,7 +246,7 @@ int config_set(struct userrec *u, struct user_entry *e, void *buf)
   return 1;
 }
 
-int config_unpack(struct userrec *u, struct user_entry *e)
+static bool config_unpack(struct userrec *u, struct user_entry *e)
 {
   struct list_type *curr = NULL, *head = NULL;
   struct xtra_key *t = NULL;
@@ -271,7 +270,7 @@ int config_unpack(struct userrec *u, struct user_entry *e)
   return 1;
 }
 
-void config_display(int idx, struct user_entry *e, struct userrec *u)
+static void config_display(int idx, struct user_entry *e, struct userrec *u)
 {
 #ifdef HUB
   struct xtra_key *xk = NULL;
@@ -287,13 +286,10 @@ void config_display(int idx, struct user_entry *e, struct userrec *u)
 #endif /* HUB */
 }
 
-int config_gotshare(struct userrec *u, struct user_entry *e, char *buf, int idx)
+static bool config_gotshare(struct userrec *u, struct user_entry *e, char *buf, int idx)
 {
-  char *arg = NULL;
-  struct xtra_key *xk = NULL;
-  int l;
+  char *arg = newsplit(&buf);
 
-  arg = newsplit(&buf);
   if (!arg[0])
     return 1;
   if (!strcmp(u->handle, conf.bot->nick)) {
@@ -311,16 +307,16 @@ int config_gotshare(struct userrec *u, struct user_entry *e, char *buf, int idx)
     return 1;
   }
 
-  xk = (struct xtra_key *) calloc(1, sizeof(struct xtra_key));
+  size_t l = strlen(arg);
+  struct xtra_key *xk = (struct xtra_key *) calloc(1, sizeof(struct xtra_key));
 
-  l = strlen(arg);
   if (l > 1500)
     l = 1500;
   xk->key = (char *) calloc(1, l + 1);
   strncpy(xk->key, arg, l + 1);
 
   if (buf && buf[0]) {
-    int k = strlen(buf);
+    size_t k = strlen(buf);
 
     if (k > 1500 - l)
       k = 1500 - l;
@@ -333,7 +329,7 @@ int config_gotshare(struct userrec *u, struct user_entry *e, char *buf, int idx)
 }
 
 #ifdef HUB
-int config_write_userfile(FILE *f, struct userrec *u, struct user_entry *e)
+static bool config_write_userfile(FILE *f, struct userrec *u, struct user_entry *e)
 {
   struct xtra_key *x = NULL;
 
@@ -343,7 +339,7 @@ int config_write_userfile(FILE *f, struct userrec *u, struct user_entry *e)
 }
 #endif /* HUB */
 
-int config_kill(struct user_entry *e)
+static bool config_kill(struct user_entry *e)
 {
   struct xtra_key *x = NULL, *y = NULL;
 
@@ -436,15 +432,14 @@ struct user_entry_type USERENTRY_OS = {
  "OS"
 };
 
-
 void stats_add(struct userrec *u, int login, int op)
 {
-  char *s = NULL, s2[50] = "";
-  int sl, so;
-
   if (!u)
     return;
-  s = (char *) get_user(&USERENTRY_STATS, u);
+
+  char *s = (char *) get_user(&USERENTRY_STATS, u), s2[50] = "";
+  int sl, so;
+
   if (s) {
     strncpyz(s2, s, sizeof(s2));
   } else
@@ -464,13 +459,12 @@ void stats_add(struct userrec *u, int login, int op)
   set_user(&USERENTRY_STATS, u, s2);
 }
 
-void stats_display(int idx, struct user_entry *e, struct userrec *u)
+static void stats_display(int idx, struct user_entry *e, struct userrec *u)
 {
   /* format: logincount opcount */
   if (dcc[idx].user && (dcc[idx].user->flags & USER_OWNER)) {
-    char *p;
+    char *p = strchr(e->u.string, ' ');
 
-    p = strchr(e->u.string, ' ');
     if (p)
       dprintf(idx, "  -- %i logins, %i ops\n", atoi(e->u.string), atoi(p));
   }
@@ -498,7 +492,7 @@ void update_mod(char *handle, char *nick, char *cmd, char *par)
   set_user(&USERENTRY_MODIFIED, get_user_by_handle(userlist, handle), tmp);
 }
 
-void modified_display(int idx, struct user_entry *e, struct userrec *u)
+static void modified_display(int idx, struct user_entry *e, struct userrec *u)
 {
   if (e && dcc[idx].user && (dcc[idx].user->flags & USER_MASTER)) {
     char tmp[1024] = "", tmp2[1024] = "", *hnd = NULL;
@@ -532,7 +526,7 @@ struct user_entry_type USERENTRY_MODIFIED =
   "MODIFIED"
 };
 
-int pass_set(struct userrec *u, struct user_entry *e, void *buf)
+static bool pass_set(struct userrec *u, struct user_entry *e, void *buf)
 {
   char newpass[32] = "";
   register char *pass = (char *) buf;
@@ -578,7 +572,7 @@ struct user_entry_type USERENTRY_PASS =
 };
 
 
-void secpass_display(int idx, struct user_entry *e, struct userrec *u)
+static void secpass_display(int idx, struct user_entry *e, struct userrec *u)
 {
   struct flag_record fr = {FR_GLOBAL, 0, 0, 0 };
 
@@ -596,7 +590,6 @@ void secpass_display(int idx, struct user_entry *e, struct userrec *u)
   }
 }
 
-
 struct user_entry_type USERENTRY_SECPASS =
 {
   0,
@@ -612,16 +605,13 @@ struct user_entry_type USERENTRY_SECPASS =
   "SECPASS"
 };
 
-static int laston_unpack(struct userrec *u, struct user_entry *e)
+static bool laston_unpack(struct userrec *u, struct user_entry *e)
 {
-  char *par = NULL, *arg = NULL;
-  struct laston_info *li = NULL;
+  char *par = e->u.list->extra, *arg = newsplit(&par);
+  struct laston_info *li = (struct laston_info *) calloc(1, sizeof(struct laston_info));
 
-  par = e->u.list->extra;
-  arg = newsplit (&par);
   if (!par[0])
     par = "???";
-  li = (struct laston_info *) calloc(1, sizeof(struct laston_info));
   li->laston = atoi(arg);
   li->lastonplace = strdup(par);
   list_type_kill(e->u.list);
@@ -630,7 +620,7 @@ static int laston_unpack(struct userrec *u, struct user_entry *e)
 }
 
 #ifdef HUB
-static int laston_write_userfile(FILE * f, struct userrec *u, struct user_entry *e)
+static bool laston_write_userfile(FILE * f, struct userrec *u, struct user_entry *e)
 {
   struct laston_info *li = (struct laston_info *) e->u.extra;
 
@@ -641,7 +631,7 @@ static int laston_write_userfile(FILE * f, struct userrec *u, struct user_entry 
 }
 #endif /* HUB */
 
-static int laston_kill(struct user_entry *e)
+static bool laston_kill(struct user_entry *e)
 {
   if (((struct laston_info *) (e->u.extra))->lastonplace)
     free(((struct laston_info *) (e->u.extra))->lastonplace);
@@ -650,7 +640,7 @@ static int laston_kill(struct user_entry *e)
   return 1;
 }
 
-static int laston_set(struct userrec *u, struct user_entry *e, void *buf)
+static bool laston_set(struct userrec *u, struct user_entry *e, void *buf)
 {
   struct laston_info *li = (struct laston_info *) e->u.extra;
 
@@ -672,7 +662,7 @@ static int laston_set(struct userrec *u, struct user_entry *e, void *buf)
   return 1;
 }
 
-static int laston_gotshare(struct userrec *u, struct user_entry *e, char *par, int idx)
+static bool laston_gotshare(struct userrec *u, struct user_entry *e, char *par, int idx)
 {
   char *where = NULL;
   time_t timeval = 0;
@@ -704,12 +694,10 @@ struct user_entry_type USERENTRY_LASTON =
   "LASTON"
 };
 
-static int botaddr_unpack(struct userrec *u, struct user_entry *e)
+static bool botaddr_unpack(struct userrec *u, struct user_entry *e)
 {
   char p[1024] = "", *q1 = NULL, *q2 = NULL;
-  struct bot_addr *bi = NULL;
-
-  bi = (struct bot_addr *) calloc(1, sizeof(struct bot_addr));
+  struct bot_addr *bi = (struct bot_addr *) calloc(1, sizeof(struct bot_addr));
 
   /* address:port/port:hublevel:uplink */
   Context;
@@ -753,7 +741,7 @@ static int botaddr_unpack(struct userrec *u, struct user_entry *e)
 
 }
 
-static int botaddr_kill(struct user_entry *e)
+static bool botaddr_kill(struct user_entry *e)
 {
   free(((struct bot_addr *) (e->u.extra))->address);
   free(((struct bot_addr *) (e->u.extra))->uplink);
@@ -763,7 +751,7 @@ static int botaddr_kill(struct user_entry *e)
 }
 
 #ifdef HUB
-static int botaddr_write_userfile(FILE *f, struct userrec *u, struct user_entry *e)
+static bool botaddr_write_userfile(FILE *f, struct userrec *u, struct user_entry *e)
 {
   register struct bot_addr *bi = (struct bot_addr *) e->u.extra;
 
@@ -774,7 +762,7 @@ static int botaddr_write_userfile(FILE *f, struct userrec *u, struct user_entry 
 }
 #endif /* HUB */
 
-static int botaddr_set(struct userrec *u, struct user_entry *e, void *buf)
+static bool botaddr_set(struct userrec *u, struct user_entry *e, void *buf)
 {
   register struct bot_addr *bi = (struct bot_addr *) e->u.extra;
 
@@ -822,13 +810,11 @@ static void botaddr_display(int idx, struct user_entry *e, struct userrec *u)
 }
 #endif /* HUB */
 
-static int botaddr_gotshare(struct userrec *u, struct user_entry *e, char *buf, int idx)
+static bool botaddr_gotshare(struct userrec *u, struct user_entry *e, char *buf, int idx)
 {
-  struct bot_addr *bi = NULL;
-  char *arg = NULL;
+  struct bot_addr *bi = (struct bot_addr *) calloc(1, sizeof(struct bot_addr));
+  char *arg = newsplit(&buf);
 
-  bi = (struct bot_addr *) calloc(1, sizeof(struct bot_addr));
-  arg = newsplit(&buf);
   bi->address = strdup(arg);
   arg = newsplit(&buf);
   bi->telnet_port = atoi(arg);
@@ -864,7 +850,7 @@ struct user_entry_type USERENTRY_BOTADDR =
 };
 
 #ifdef HUB
-static int hosts_write_userfile(FILE *f, struct userrec *u, struct user_entry *e)
+static bool hosts_write_userfile(FILE *f, struct userrec *u, struct user_entry *e)
 {
   struct list_type *h = NULL;
 
@@ -875,12 +861,12 @@ static int hosts_write_userfile(FILE *f, struct userrec *u, struct user_entry *e
 }
 #endif /* HUB */
 
-static int hosts_null(struct userrec *u, struct user_entry *e)
+static bool hosts_null(struct userrec *u, struct user_entry *e)
 {
   return 1;
 }
 
-static int hosts_kill(struct user_entry *e)
+static bool hosts_kill(struct user_entry *e)
 {
   list_type_kill(e->u.list);
   free(e);
@@ -925,7 +911,7 @@ static void hosts_display(int idx, struct user_entry *e, struct userrec *u)
 #endif /* LEAF */
 }
 
-static int hosts_set(struct userrec *u, struct user_entry *e, void *buf)
+static bool hosts_set(struct userrec *u, struct user_entry *e, void *buf)
 {
   if (!buf || !egg_strcasecmp((const char *) buf, "none")) {
     /* When the bot crashes, it's in this part, not in the 'else' part */
@@ -964,7 +950,7 @@ static int hosts_set(struct userrec *u, struct user_entry *e, void *buf)
   return 1;
 }
 
-static int hosts_gotshare(struct userrec *u, struct user_entry *e, char *buf, int idx)
+static bool hosts_gotshare(struct userrec *u, struct user_entry *e, char *buf, int idx)
 {
   /* doh, try to be too clever and it bites your butt */
   return 0;
@@ -985,14 +971,14 @@ struct user_entry_type USERENTRY_HOSTS =
   "HOSTS"
 };
 
-int list_append(struct list_type **h, struct list_type *i)
+bool list_append(struct list_type **h, struct list_type *i)
 {
   for (; *h; h = &((*h)->next));
   *h = i;
   return 1;
 }
 
-int list_delete(struct list_type **h, struct list_type *i)
+bool list_delete(struct list_type **h, struct list_type *i)
 {
   for (; *h; h = &((*h)->next))
     if (*h == i) {
@@ -1002,7 +988,7 @@ int list_delete(struct list_type **h, struct list_type *i)
   return 0;
 }
 
-int list_contains(struct list_type *h, struct list_type *i)
+bool list_contains(struct list_type *h, struct list_type *i)
 {
   for (; h; h = h->next)
     if (h == i) {
@@ -1011,7 +997,7 @@ int list_contains(struct list_type *h, struct list_type *i)
   return 0;
 }
 
-int add_entry_type(struct user_entry_type *type)
+bool add_entry_type(struct user_entry_type *type)
 {
   struct userrec *u = NULL;
 
@@ -1066,13 +1052,13 @@ void *get_user(struct user_entry_type *et, struct userrec *u)
   return NULL;
 }
 
-int set_user(struct user_entry_type *et, struct userrec *u, void *d)
+bool set_user(struct user_entry_type *et, struct userrec *u, void *d)
 {
-  struct user_entry *e = NULL;
-  int r;
-
   if (!u || !et)
     return 0;
+
+  struct user_entry *e = NULL;
+  bool r;
 
   if (!(e = find_user_entry(et, u))) {
     e = (struct user_entry *) calloc(1, sizeof(struct user_entry));

@@ -100,10 +100,9 @@ char *encrypt_string(const char *keydata, char *in)
 
 char *decrypt_string(const char *keydata, char *in)
 {
-  size_t len = 0;
+  size_t len = strlen(in);
   char *buf = NULL, *res = NULL;
 
-  len = strlen(in);
   if (keydata && *keydata) {
     buf = b64dec((const unsigned char *) in, &len);
     res = (char *) decrypt_binary(keydata, (unsigned char *) buf, len);
@@ -132,10 +131,9 @@ void encrypt_pass(char *s1, char *s2)
 int lfprintf (FILE *stream, const char *format, ...)
 {
   va_list va;
-  char buf[2048], *ln = NULL, *nln = NULL, *tmp = NULL;
+  char buf[2048] = "", *ln = NULL, *nln = NULL, *tmp = NULL;
   int res;
 
-  buf[0] = 0;
   va_start(va, format);
   egg_vsnprintf(buf, sizeof buf, format, va);
   va_end(va);
@@ -157,9 +155,8 @@ int lfprintf (FILE *stream, const char *format, ...)
 
 void Encrypt_File(char *infile, char *outfile)
 {
-  char *buf = NULL;
   FILE *f = NULL, *f2 = NULL;
-  int std = 0;
+  bool std = 0;
 
   if (!strcmp(outfile, "STDOUT"))
     std = 1;
@@ -174,7 +171,7 @@ void Encrypt_File(char *infile, char *outfile)
     printf("----------------------------------START----------------------------------\n");
   }
 
-  buf = (char *) calloc(1, 1024);
+  char *buf = (char *) calloc(1, 1024);
   while (fgets(buf, 1024, f) != NULL) {
     remove_crlf(buf);
 
@@ -195,9 +192,8 @@ void Encrypt_File(char *infile, char *outfile)
 
 void Decrypt_File(char *infile, char *outfile)
 {
-  char *buf = NULL;
   FILE *f = NULL, *f2 = NULL;
-  int std = 0;
+  bool std = 0;
 
   if (!strcmp(outfile, "STDOUT"))
     std = 1;
@@ -212,7 +208,7 @@ void Decrypt_File(char *infile, char *outfile)
     printf("----------------------------------START----------------------------------\n");
   }
 
-  buf = (char *) calloc(1, 2048);
+  char *buf = (char *) calloc(1, 2048);
   while (fgets(buf, 2048, f) != NULL) {
     char *temps = NULL;
 
@@ -252,14 +248,15 @@ char *MD5(const char *string)
 char *
 MD5FILE(const char *bin)
 {
-  static char     md5string[MD5_HASH_LENGTH + 1] = "";
-  unsigned char   md5out[MD5_HASH_LENGTH + 1] = "", buffer[1024] = "";
-  MD5_CTX ctx;
-  size_t binsize = 0, len = 0;
   FILE *f = NULL;
 
   if (!(f = fopen(bin, "rb")))
     return "";
+
+  static char     md5string[MD5_HASH_LENGTH + 1] = "";
+  unsigned char   md5out[MD5_HASH_LENGTH + 1] = "", buffer[1024] = "";
+  MD5_CTX ctx;
+  size_t binsize = 0, len = 0;
 
   MD5_Init(&ctx);
   while ((len = fread(buffer, 1, sizeof buffer, f))) {
@@ -288,12 +285,11 @@ char *SHA1(const char *string)
 }
 
 /* convert binary hashes to hex */
-char *btoh(const unsigned char *md, int len)
+char *btoh(const unsigned char *md, size_t len)
 {
-  int i;
   char buf[100] = "", *ret = NULL;
 
-  for (i = 0; i < len; i+=4) {
+  for (size_t i = 0; i < len; i+=4) {
     sprintf(&(buf[i << 1]), "%02x", md[i]);
     sprintf(&(buf[(i + 1) << 1]), "%02x", md[i + 1]);
     sprintf(&(buf[(i + 2) << 1]), "%02x", md[i + 2]);

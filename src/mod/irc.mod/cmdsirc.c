@@ -52,9 +52,8 @@ static char *getnick(char *handle, struct chanset_t *chan)
 {
   char s[UHOSTLEN] = "";
   struct userrec *u = NULL;
-  register memberlist *m = NULL;
 
-  for (m = chan->channel.member; m && m->nick[0]; m = m->next) {
+  for (register memberlist *m = chan->channel.member; m && m->nick[0]; m = m->next) {
     egg_snprintf(s, sizeof s, "%s!%s", m->nick, m->userhost);
     if ((u = get_user_by_host(s)) && !egg_strcasecmp(u->handle, handle))
       return m->nick;
@@ -64,14 +63,14 @@ static char *getnick(char *handle, struct chanset_t *chan)
 
 static void cmd_act(int idx, char *par)
 {
-  char *chname = NULL;
-  struct chanset_t *chan = NULL;
-  memberlist *m = NULL;
-
   if (!par[0]) {
     dprintf(idx, "Usage: act [channel] <action>\n");
     return;
   }
+
+  char *chname = NULL;
+  struct chanset_t *chan = NULL;
+
   if (strchr(CHANMETA, par[0]) != NULL)
     chname = newsplit(&par);
   else
@@ -80,13 +79,15 @@ static void cmd_act(int idx, char *par)
   if (!chan || !has_op(idx, chan))
     return;
 
-  get_user_flagrec(dcc[idx].user, &user, chan->dname);
+  memberlist *m = ismember(chan, botname);
 
-  m = ismember(chan, botname);
   if (!m) {
     dprintf(idx, "Cannot say to %s: I'm not on that channel.\n", chan->dname);
     return;
   }
+
+  get_user_flagrec(dcc[idx].user, &user, chan->dname);
+
   if ((chan->channel.mode & CHANMODER) && !me_op(chan) && !me_voice(chan)) {
     dprintf(idx, "Cannot say to %s: It is moderated.\n", chan->dname);
     return;
@@ -100,28 +101,28 @@ static void cmd_act(int idx, char *par)
 
 static void cmd_msg(int idx, char *par)
 {
-  char *nick = NULL;
-
-  nick = newsplit(&par);
-  if (!par[0]) 
+  if (!par[0]) {
     dprintf(idx, "Usage: msg <nick> <message>\n");
-  else {
-    putlog(LOG_CMDS, "*", "#%s# msg %s %s", dcc[idx].nick, nick, par);
-    dprintf(DP_HELP, "PRIVMSG %s :%s\n", nick, par);
-    dprintf(idx, "Msg to %s: %s\n", nick, par);
+    return;
   }
+
+  char *nick = newsplit(&par);
+
+  putlog(LOG_CMDS, "*", "#%s# msg %s %s", dcc[idx].nick, nick, par);
+  dprintf(DP_HELP, "PRIVMSG %s :%s\n", nick, par);
+  dprintf(idx, "Msg to %s: %s\n", nick, par);
 }
 
 static void cmd_say(int idx, char *par)
 {
-  char *chname = NULL;
-  struct chanset_t *chan = NULL;
-  memberlist *m = NULL;
-
   if (!par[0]) {
     dprintf(idx, "Usage: say [channel] <message>\n");
     return;
   }
+
+  char *chname = NULL;
+  struct chanset_t *chan = NULL;
+
   if (strchr(CHANMETA, par[0]) != NULL)
     chname = newsplit(&par);
   else
@@ -130,13 +131,15 @@ static void cmd_say(int idx, char *par)
   if (!chan || !has_op(idx, chan))
     return;
 
-  get_user_flagrec(dcc[idx].user, &user, chan->dname);
+  memberlist *m = ismember(chan, botname);
 
-  m = ismember(chan, botname);
   if (!m) {
     dprintf(idx, "Cannot say to %s: I'm not on that channel.\n", chan->dname);
     return;
   }
+
+  get_user_flagrec(dcc[idx].user, &user, chan->dname);
+
   if ((chan->channel.mode & CHANMODER) && !me_op(chan) && !me_voice(chan)) {
     dprintf(idx, "Cannot say to %s: It is moderated.\n", chan->dname);
     return;
@@ -148,19 +151,19 @@ static void cmd_say(int idx, char *par)
 
 static void cmd_swhois(int idx, char *par)
 {
-  char *server = NULL, *nick = NULL;
-
   if (!par[0]) {
     dprintf(idx, "Usage: swhois [server/nick] nick\n");
     return;
   }
+
 
   putlog(LOG_CMDS, "*", "#%s# swhois %s", dcc[idx].nick, par);
   if (!server_online) {
     dprintf(idx, "I am currently not connected!\n");
     return;
   }
-  server = newsplit(&par);
+  char *server = newsplit(&par), *nick = NULL;
+
   if (par[0])
     nick = newsplit(&par);
 
@@ -170,15 +173,14 @@ static void cmd_swhois(int idx, char *par)
 
 static void cmd_kickban(int idx, char *par)
 {
-  struct chanset_t *chan = NULL;
-  char *chname = NULL, *nick = NULL, *s1 = NULL, s[UHOSTLEN] = "", bantype = 0;
-  int all = 0;
-  memberlist *m = NULL;
-
   if (!par[0]) {
     dprintf(idx, "Usage: kickban [channel|*] [-|@]<nick> [reason]\n");
     return;
   }
+
+  struct chanset_t *chan = NULL;
+  char *chname = NULL;
+  bool all = 0;
 
   if (par[0] == '*' && par[1] == ' ') {
     all = 1;
@@ -193,9 +195,11 @@ static void cmd_kickban(int idx, char *par)
       return;
   }
 
+
   putlog(LOG_CMDS, "*", "#%s# (%s) kickban %s", dcc[idx].nick, all ? "*" : chan->dname, par);
 
-  nick = newsplit(&par);
+  char *nick = newsplit(&par), bantype = 0;
+
   if ((nick[0] == '@') || (nick[0] == '-')) {
     bantype = nick[0];
     nick++;
@@ -205,10 +209,13 @@ static void cmd_kickban(int idx, char *par)
     return;
   }
 
+  memberlist *m = NULL;
+  char *s1 = NULL, s[UHOSTLEN] = "";
+  struct userrec *u = NULL;
+
   if (all)
     chan = chanset;
   while (chan) {
-    struct userrec *u = NULL;
 
     get_user_flagrec(dcc[idx].user, &user, chan->dname);
 
@@ -299,12 +306,10 @@ static void cmd_kickban(int idx, char *par)
 
 static void cmd_voice(int idx, char *par)
 {
+  char *nick = newsplit(&par);
   struct chanset_t *chan = NULL;
-  char *nick = NULL, s[UHOSTLEN] = "";
-  int all = 0;
-  memberlist *m = NULL;
+  bool all = 0;
 
-  nick = newsplit(&par);
   if (par[0] == '*' && !par[1]) {
     all = 1;
     newsplit(&par);
@@ -313,6 +318,10 @@ static void cmd_voice(int idx, char *par)
     if (!chan || !has_op(idx, chan))
       return;
   }
+
+  char s[UHOSTLEN] = "";
+  memberlist *m = NULL;
+
   if (all)
     chan = chanset;
   putlog(LOG_CMDS, "*", "#%s# (%s) voice %s", dcc[idx].nick, all ? "*" : chan->dname , nick);
@@ -368,11 +377,9 @@ static void cmd_voice(int idx, char *par)
 static void cmd_devoice(int idx, char *par)
 {
   struct chanset_t *chan = NULL;
-  char *nick = NULL, s[UHOSTLEN] = "";
-  int all = 0;
-  memberlist *m = NULL;
+  char *nick = newsplit(&par);
+  bool all = 0;
 
-  nick = newsplit(&par);
   if (par[0] == '*' && !par[1]) {
     all = 1;
     newsplit(&par);
@@ -381,6 +388,10 @@ static void cmd_devoice(int idx, char *par)
     if (!chan || !has_op(idx, chan))
       return;
   }
+
+  char s[UHOSTLEN] = "";
+  memberlist *m = NULL;
+
   if (all)
     chan = chanset;
   putlog(LOG_CMDS, "*", "#%s# (%s) devoice %s", dcc[idx].nick, all ? "*" : chan->dname, nick);
@@ -435,11 +446,9 @@ static void cmd_devoice(int idx, char *par)
 static void cmd_op(int idx, char *par)
 {
   struct chanset_t *chan = NULL;
-  char *nick = NULL, s[UHOSTLEN] = "";
-  int all = 0;
-  memberlist *m = NULL;
+  char *nick = newsplit(&par);
+  bool all = 0;
 
-  nick = newsplit(&par);
   if (par[0] == '*' && !par[1]) {
     all = 1;
     newsplit(&par);
@@ -448,13 +457,16 @@ static void cmd_op(int idx, char *par)
     if (!chan || !has_op(idx, chan))
       return;
   }
+
+  char s[UHOSTLEN] = "";
+  memberlist *m = NULL;
+  struct userrec *u = NULL;
+
   if (all)
     chan = chanset;
   putlog(LOG_CMDS, "*", "#%s# (%s) op %s", dcc[idx].nick, all ? "*" : chan->dname, nick);
 
   while (chan) {
-    struct userrec *u = NULL;
-
   get_user_flagrec(dcc[idx].user, &user, chan->dname);
   if (!nick[0] && !(nick = getnick(dcc[idx].nick, chan))) {
     if (all) goto next;
@@ -782,11 +794,9 @@ void mdop_request(char *botnick, char *code, char *par)
 static void cmd_deop(int idx, char *par)
 {
   struct chanset_t *chan = NULL;
-  char *nick = NULL, s[UHOSTLEN] = "";
-  int all = 0;
-  memberlist *m = NULL;
+  char *nick = newsplit(&par);
+  bool all = 0;
 
-  nick = newsplit(&par);
   if (par[0] == '*' && !par[1]) {
     all = 1;
     newsplit(&par);
@@ -794,15 +804,17 @@ static void cmd_deop(int idx, char *par)
     chan = get_channel(idx, par);
     if (!chan || !has_op(idx, chan))
       return;
-
   }
+
+  char s[UHOSTLEN] = "";
+  memberlist *m = NULL;
+  struct userrec *u = NULL;
+
   if (all)
     chan = chanset;
   putlog(LOG_CMDS, "*", "#%s# (%s) deop %s", dcc[idx].nick, all ? "*" : chan->dname, nick);
 
   while (chan) {
-    struct userrec *u = NULL;
-
     get_user_flagrec(dcc[idx].user, &user, chan->dname);
     if (!nick[0] && !(nick = getnick(dcc[idx].nick, chan))) {
       if (all) goto next;  
@@ -868,15 +880,14 @@ static void cmd_deop(int idx, char *par)
 
 static void cmd_kick(int idx, char *par)
 {
-  struct chanset_t *chan = NULL;
-  char *chname = NULL, *nick = NULL, s[UHOSTLEN] = "";
-  int all = 0;
-  memberlist *m = NULL;
-
   if (!par[0]) {
     dprintf(idx, "Usage: kick [channel|*] <nick> [reason]\n");
     return;
   }
+
+  struct chanset_t *chan = NULL;
+  char *chname = NULL;
+  bool all = 0;
 
   if (par[0] == '*' && par[1] == ' ') {
     all = 1;
@@ -893,18 +904,22 @@ static void cmd_kick(int idx, char *par)
 
   putlog(LOG_CMDS, "*", "#%s# (%s) kick %s", dcc[idx].nick, all ? "*" : chan->dname, par);
 
-  nick = newsplit(&par);
+  char *nick = newsplit(&par);
+
   if (!par[0])
     par = "request";
   if (match_my_nick(nick)) {
     dprintf(idx, "I'm not going to kick myself.\n");
     return;
   }
+
+  char s[UHOSTLEN] = "";
+  memberlist *m = NULL;
+  struct userrec *u = NULL;
+
   if (all)
     chan = chanset;
   while (chan) {
-    struct userrec *u = NULL;
-
     get_user_flagrec(dcc[idx].user, &user, chan->dname);
 
     if (privchan(user, chan, PRIV_OP)) {
@@ -1003,7 +1018,7 @@ static void cmd_getkey(int idx, char *par)
 static void cmd_mop(int idx, char *par)
 {
   struct chanset_t *chan = NULL;
-  int found = 0, all = 0;
+  bool found = 0, all = 0;
 
   if (par[0] == '*' && !par[1]) {
     get_user_flagrec(dcc[idx].user, &user, NULL);
@@ -1016,8 +1031,7 @@ static void cmd_mop(int idx, char *par)
     newsplit(&par);
   } else {
     if (par[0] && (strchr(CHANMETA, par[0]) != NULL)) {
-      char *chname = newsplit(&par);
-      chan = get_channel(idx, chname);
+      chan = get_channel(idx, newsplit(&par));
     } else
       chan = get_channel(idx, "");
   }
@@ -1026,9 +1040,11 @@ static void cmd_mop(int idx, char *par)
     return;
 
   putlog(LOG_CMDS, "*", "#%s# (%s) mop %s", dcc[idx].nick, all ? "*" : chan->dname, par);
-  while (chan) {
-    memberlist *m = NULL;
 
+  memberlist *m = NULL;
+  char s[256] = "";
+
+  while (chan) {
     get_user_flagrec(dcc[idx].user, &user, chan->dname);
     if (privchan(user, chan, PRIV_OP)) {
       if (all) goto next;
@@ -1048,8 +1064,6 @@ static void cmd_mop(int idx, char *par)
     if (channel_active(chan) && !channel_pending(chan)) {
       for (m = chan->channel.member; m && m->nick[0]; m = m->next) {
         if (!m->user) {
-          char s[256] = "";
-
           sprintf(s, "%s!%s", m->nick, m->userhost);
           m->user = get_user_by_host(s);
         }
@@ -1080,17 +1094,18 @@ static void cmd_mop(int idx, char *par)
 
 static void cmd_find(int idx, char *par)
 {
-  struct chanset_t *chan = NULL, **cfound = NULL;
-  memberlist *m = NULL, **found = NULL;
-  struct userrec *u2 = NULL;
-  int fcount = 0, tr = 0;
-
-  putlog(LOG_CMDS, "*", "#%s# find %s", dcc[idx].nick, par);
-
   if (!par[0]) {
     dprintf(idx, "Usage: find <nick!ident@host.com> (wildcard * allowed)\n");
     return;
   }
+
+  putlog(LOG_CMDS, "*", "#%s# find %s", dcc[idx].nick, par);
+
+  struct chanset_t *chan = NULL, **cfound = NULL;
+  memberlist *m = NULL, **found = NULL;
+  struct userrec *u2 = NULL;
+  int fcount = 0;
+  bool tr = 0;
 
   /* make a list of members in found[] */
   for (chan = chanset; chan; chan = chan->next) {
@@ -1160,7 +1175,7 @@ static void cmd_invite(int idx, char *par)
 {
   struct chanset_t *chan = NULL;
   memberlist *m = NULL;
-  int all = 0;
+  bool all = 0;
   char *nick = NULL;
 
   if (!par[0])
@@ -1221,12 +1236,10 @@ static void cmd_invite(int idx, char *par)
 
 static void cmd_authed(int idx, char *par)
 {
-  int i = 0;
-  
   putlog(LOG_CMDS, "*", "#%s# authed", dcc[idx].nick);
 
   dprintf(idx, "Authed:\n");
-  for (i = 0; i < auth_total; i++) {
+  for (int i = 0; i < auth_total; i++) {
    if (auth[i].authed)
      dprintf(idx, " %d. %s!%s at %li\n", i, auth[i].nick, auth[i].host, auth[i].authtime);
   }
@@ -1234,15 +1247,16 @@ static void cmd_authed(int idx, char *par)
 
 static void cmd_channel(int idx, char *par)
 {
-  char handle[HANDLEN + 1] = "", s[UHOSTLEN] = "", s1[UHOSTLEN] = "", atrflag = 0, chanflag[2] = "";
   struct chanset_t *chan = NULL;
-  memberlist *m = NULL;
-  unsigned int maxnicklen, maxhandlen;
-  char format[81] = "";
 
   chan = get_channel(idx, par);
   if (!chan || !has_op(idx, chan))
     return;
+
+  char handle[HANDLEN + 1] = "", s[UHOSTLEN] = "", s1[UHOSTLEN] = "", atrflag = 0, chanflag[2] = "";
+  memberlist *m = NULL;
+  size_t maxnicklen, maxhandlen;
+  char format[81] = "";
 
   get_user_flagrec(dcc[idx].user, &user, chan->dname);
 
@@ -1277,7 +1291,6 @@ static void cmd_channel(int idx, char *par)
 			maxnicklen, maxhandlen);
     dprintf(idx, format, "NICKNAME", "HANDLE", " JOIN", "  HOPS", "IDLE", "USER@HOST");
     for (m = chan->channel.member; m && m->nick[0]; m = m->next) {
-      int hops = m->hops;
       if (m->joined > 0) {
 	if ((now - (m->joined)) > 86400)
 	  egg_strftime(s, 6, "%d%b", gmtime(&(m->joined)));
@@ -1357,7 +1370,7 @@ static void cmd_channel(int idx, char *par)
         egg_snprintf(format, sizeof format, 
 			"%%c%%c%%-%us %%-%us   %%d %%s %%c     <- netsplit, %%lus\n", 
 			maxnicklen, maxhandlen);
-	dprintf(idx, format, chanflag[0],chanflag[1], m->nick, handle, s, hops, atrflag,
+	dprintf(idx, format, chanflag[0],chanflag[1], m->nick, handle, s, m->hops, atrflag,
 		now - (m->split));
       } else if (!rfc_casecmp(m->nick, botname)) {
         egg_snprintf(format, sizeof format, 
@@ -1376,7 +1389,7 @@ static void cmd_channel(int idx, char *par)
 	  strncpyz(s1, "   ", sizeof s1);
 	egg_snprintf(format, sizeof format, "%%c%%c%%-%us %%-%us %%s %%c   %%d %%s  %%s\n", 
 			maxnicklen, maxhandlen);
-	dprintf(idx, format, chanflag[0], chanflag[1], m->nick,	handle, s, atrflag, hops,
+	dprintf(idx, format, chanflag[0], chanflag[1], m->nick,	handle, s, atrflag, m->hops,
                      s1, m->userhost);
       }
       if (chan_fakeop(m))
@@ -1397,8 +1410,7 @@ static void cmd_topic(int idx, char *par)
   struct chanset_t *chan = NULL;
 
   if (par[0] && (strchr(CHANMETA, par[0]) != NULL)) {
-    char *chname = newsplit(&par);
-    chan = get_channel(idx, chname);
+    chan = get_channel(idx, newsplit(&par));
   } else
     chan = get_channel(idx, "");
 
@@ -1431,10 +1443,8 @@ static void cmd_topic(int idx, char *par)
 
 static void cmd_resetbans(int idx, char *par)
 {
-  struct chanset_t *chan = NULL;
-  char *chname = newsplit(&par);
+  struct chanset_t *chan = get_channel(idx, newsplit(&par));
 
-  chan = get_channel(idx, chname);
   if (!chan || !has_op(idx, chan))
     return;
 
@@ -1447,10 +1457,8 @@ static void cmd_resetbans(int idx, char *par)
 
 static void cmd_resetexempts(int idx, char *par)
 {
-  struct chanset_t *chan = NULL;
-  char *chname = newsplit(&par);
+  struct chanset_t *chan = get_channel(idx, newsplit(&par));
 
-  chan = get_channel(idx, chname);
   if (!chan || !has_op(idx, chan))
     return;
 
@@ -1463,10 +1471,8 @@ static void cmd_resetexempts(int idx, char *par)
 
 static void cmd_resetinvites(int idx, char *par)
 {
-  struct chanset_t *chan = NULL;
-  char *chname = newsplit(&par);
+  struct chanset_t *chan = get_channel(idx, newsplit(&par));
 
-  chan = get_channel(idx, chname);
   if (!chan || !has_op(idx, chan))
     return;
   get_user_flagrec(dcc[idx].user, &user, chan->dname);
@@ -1478,21 +1484,22 @@ static void cmd_resetinvites(int idx, char *par)
 
 static void cmd_adduser(int idx, char *par)
 {
+  if ((!par[0]) || ((par[0] =='!') && (!par[1]))) {
+    dprintf(idx, "Usage: adduser <nick> [handle]\n");
+    return;
+  }
+
   char *nick = NULL, *hand = NULL;
   struct chanset_t *chan = NULL;
   struct userrec *u = NULL;
   memberlist *m = NULL;
   char s[UHOSTLEN] = "", s1[UHOSTLEN] = "", s2[MAXPASSLEN + 1] = "", s3[MAXPASSLEN + 1] = "", tmp[50] = "";
   int atr = dcc[idx].user ? dcc[idx].user->flags : 0;
-  int statichost = 0;
+  bool statichost = 0;
   char *p1 = s1;
 
   putlog(LOG_CMDS, "*", "#%s# adduser %s", dcc[idx].nick, par);
 
-  if ((!par[0]) || ((par[0] =='!') && (!par[1]))) {
-    dprintf(idx, "Usage: adduser <nick> [handle]\n");
-    return;
-  }
   nick = newsplit(&par);
 
   /* This flag allows users to have static host (added by drummer, 20Apr99) */
@@ -1503,10 +1510,9 @@ static void cmd_adduser(int idx, char *par)
   if (!par[0]) {
     hand = nick;
   } else {
-    char *p;
-    int ok = 1;
+    bool ok = 1;
 
-    for (p = par; *p; p++)
+    for (char *p = par; *p; p++)
       if ((*p <= 32) || (*p >= 127))
 	ok = 0;
     if (!ok) {
@@ -1582,15 +1588,16 @@ static void cmd_adduser(int idx, char *par)
 
 static void cmd_deluser(int idx, char *par)
 {
+  if (!par[0]) {
+    dprintf(idx, "Usage: deluser <nick>\n");
+    return;
+  }
+
   char *nick = NULL, s[UHOSTLEN] = "";
   struct chanset_t *chan = NULL;
   memberlist *m = NULL;
   struct userrec *u = NULL;
 
-  if (!par[0]) {
-    dprintf(idx, "Usage: deluser <nick>\n");
-    return;
-  }
   nick = newsplit(&par);
 
   for (chan = chanset; chan; chan = chan->next) {

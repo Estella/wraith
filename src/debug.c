@@ -30,7 +30,7 @@
 #include <sys/mman.h>
 #define PAGESIZE 4096
 
-int		sdebug = 0;             /* enable debug output? */
+bool		sdebug = 0;             /* enable debug output? */
 
 
 #ifdef DEBUG_CONTEXT
@@ -75,8 +75,7 @@ void setlimits()
 
 void init_debug()
 {
-  int i = 0;
-  for (i = 0; i < 16; i ++)
+  for (int i = 0; i < 16; i ++)
     Context;
 
 #ifdef DEBUG_CONTEXT
@@ -108,7 +107,7 @@ void sdprintf (char *format, ...)
 
 static void write_debug()
 {
-  int x;
+  sock_t x;
   char s[25] = "", tmpout[150] = "", buf[DIRMAX] = "";
   int y;
 
@@ -353,15 +352,11 @@ void init_signals()
 
 #ifdef DEBUG_CONTEXT
 /* Context */
-void eggContext(const char *file, int line, const char *module)
+void eggContext(const char *file, int line)
 {
-  char x[31] = "", *p = NULL;
+  char x[31] = "", *p = strrchr(file, '/');
 
-  p = strrchr(file, '/');
-  if (!module) {
-    strncpyz(x, p ? p + 1 : file, sizeof x);
-  } else
-    egg_snprintf(x, 31, "%s:%s", module, p ? p + 1 : file);
+  strncpyz(x, p ? p + 1 : file, sizeof x);
   cx_ptr = ((cx_ptr + 1) & 15);
   strcpy(cx_file[cx_ptr], x);
   cx_line[cx_ptr] = line;
@@ -370,16 +365,11 @@ void eggContext(const char *file, int line, const char *module)
 
 /* Called from the ContextNote macro.
  */
-void eggContextNote(const char *file, int line, const char *module, const char *note)
+void eggContextNote(const char *file, int line, const char *note)
 {
-  char x[31] = "", *p = NULL;
+  char x[31] = "", *p = strrchr(file, '/');
 
-  p = strrchr(file, '/');
-  if (!module) {
-    strncpyz(x, p ? p + 1 : file, sizeof x);
-  } else {
-    egg_snprintf(x, 31, "%s:%s", module, p ? p + 1 : file);
-  }
+  strncpyz(x, p ? p + 1 : file, sizeof x);
   cx_ptr = ((cx_ptr + 1) & 15);
   strcpy(cx_file[cx_ptr], x);
   cx_line[cx_ptr] = line;
@@ -390,12 +380,10 @@ void eggContextNote(const char *file, int line, const char *module, const char *
 #ifdef DEBUG_ASSERT
 /* Called from the Assert macro.
  */
-void eggAssert(const char *file, int line, const char *module)
+void eggAssert(const char *file, int line)
 {
-  if (!module)
-    putlog(LOG_MISC, "*", "* In file %s, line %u", file, line);
-  else
-    putlog(LOG_MISC, "*", "* In file %s:%s, line %u", module, file, line);
+  putlog(LOG_MISC, "*", "* In file %s, line %u", file, line);
+
 #ifdef DEBUG_CONTEXT
   write_debug();
 #endif /* DEBUG_CONTEXT */

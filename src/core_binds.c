@@ -38,7 +38,7 @@ void core_binds_init()
 void check_bind_dcc(const char *cmd, int idx, const char *text)
 {
   struct flag_record fr = {FR_GLOBAL | FR_CHAN, 0, 0, 0 };
-  int x, hits, found = 0;
+  bool found = 0;
   bind_entry_t *entry = NULL;
   bind_table_t *table = NULL;
   char *args = strdup(text);
@@ -78,7 +78,9 @@ void check_bind_dcc(const char *cmd, int idx, const char *text)
     }
   }
 
-  x = check_bind_hits(BT_dcc, cmd, &fr, &hits, idx, args);
+  int hits = 0;
+
+  check_bind_hits(BT_dcc, cmd, &fr, &hits, idx, args);
 
   if (hits != 1)
     putlog(LOG_CMDS, "*", "! #%s# %s %s", dcc[idx].nick, cmd, args);
