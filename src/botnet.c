@@ -1052,7 +1052,7 @@ static void failed_tandem_relay(int idx)
 	(dcc[i].u.relay->sock == dcc[idx].sock))
       uidx = i;
   if (uidx < 0) {
-    putlog(LOG_MISC, "*", "%s  %d -> %d", BOT_CANTFINDRELAYUSER,
+    putlog(LOG_MISC, "*", "%s  %li -> %li", BOT_CANTFINDRELAYUSER,
 	   dcc[idx].sock, dcc[idx].u.relay->sock);
     killsock(dcc[idx].sock);
     lostdcc(idx);
@@ -1182,7 +1182,7 @@ static void tandem_relay_resolve_failure(int idx)
       break;
     }
   if (uidx < 0) {
-    putlog(LOG_MISC, "*", "%s  %d -> %d", BOT_CANTFINDRELAYUSER,
+    putlog(LOG_MISC, "*", "%s  %li -> %li", BOT_CANTFINDRELAYUSER,
 	   dcc[idx].sock, dcc[idx].u.relay->sock);
     killsock(dcc[idx].sock);
     lostdcc(idx);
@@ -1247,7 +1247,7 @@ static void pre_relay(int idx, char *buf, register int i)
       }
   }
   if (tidx < 0) {
-    putlog(LOG_MISC, "*", "%s  %d -> %d", BOT_CANTFINDRELAYUSER,
+    putlog(LOG_MISC, "*", "%s  %li -> %li", BOT_CANTFINDRELAYUSER,
 	   dcc[idx].sock, dcc[idx].u.relay->sock);
     killsock(dcc[idx].sock);
     lostdcc(idx);
@@ -1293,7 +1293,7 @@ static void failed_pre_relay(int idx)
       }
   }
   if (tidx < 0) {
-    putlog(LOG_MISC, "*", "%s  %d -> %d", BOT_CANTFINDRELAYUSER,
+    putlog(LOG_MISC, "*", "%s  %li -> %li", BOT_CANTFINDRELAYUSER,
 	   dcc[idx].sock, dcc[idx].u.relay->sock);
     killsock(dcc[idx].sock);
     lostdcc(idx);
@@ -1328,7 +1328,7 @@ static void cont_tandem_relay(int idx, char *buf, register int i)
 	(dcc[i].u.relay->sock == dcc[idx].sock))
       uidx = i;
   if (uidx < 0) {
-    putlog(LOG_MISC, "*", "%s  %d -> %d", BOT_CANTFINDRELAYUSER,
+    putlog(LOG_MISC, "*", "%s  %li -> %li", BOT_CANTFINDRELAYUSER,
 	   dcc[i].sock, dcc[i].u.relay->sock);
     killsock(dcc[i].sock);
     lostdcc(i);
@@ -1492,12 +1492,12 @@ static void dcc_relaying(int idx, char *buf, int j)
 
 static void display_relay(int i, char *other)
 {
-  sprintf(other, "rela  -> sock %d", dcc[i].u.relay->sock);
+  sprintf(other, "rela  -> sock %li", dcc[i].u.relay->sock);
 }
 
 static void display_relaying(int i, char *other)
 {
-  sprintf(other, ">rly  -> sock %d", dcc[i].u.relay->sock);
+  sprintf(other, ">rly  -> sock %li", dcc[i].u.relay->sock);
 }
 
 static void display_tandem_relay(int i, char *other)

@@ -658,6 +658,8 @@ void kill_bot(char *s1, char *s2)
 /* Update system code
  */
 #ifdef LEAF
+static void updatelocal() __attribute__((noreturn));
+
 static void updatelocal(void)
 {
   /* let's drop the server connection ASAP */

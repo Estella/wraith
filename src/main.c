@@ -204,6 +204,8 @@ static void checkpass()
   }
 }
 
+static void got_ed(char *, char *, char*) __attribute__((noreturn));
+
 static void got_ed(char *which, char *in, char *out)
 {
   sdprintf("got_Ed called: -%s i: %s o: %s", which, in, out);
@@ -220,6 +222,8 @@ static void got_ed(char *which, char *in, char *out)
   }
   exit(0);
 }
+
+static void show_help() __attribute__((noreturn));
 
 static void show_help()
 {
@@ -925,7 +929,7 @@ int main(int argc, char **argv)
 	    dcc[idx].type->activity(idx, buf, i);
 	  } else
 	    putlog(LOG_MISC, "*",
-		   "!!! untrapped dcc activity: type %s, sock %d",
+		   "!!! untrapped dcc activity: type %s, sock %li",
 		   dcc[idx].type->name, dcc[idx].sock);
 	  break;
 	}
@@ -957,8 +961,8 @@ int main(int argc, char **argv)
       for (i = 0; i < dcc_total; i++) {
 	if ((fcntl(dcc[i].sock, F_GETFD, 0) == -1) && (errno = EBADF)) {
 	  putlog(LOG_MISC, "*",
-		 "DCC socket %d (type %d, name '%s') expired -- pfft",
-		 dcc[i].sock, dcc[i].type, dcc[i].nick);
+		 "DCC socket %li (type %s, name '%s') expired -- pfft",
+		 dcc[i].sock, dcc[i].type->name, dcc[i].nick);
 	  killsock(dcc[i].sock);
 	  lostdcc(i);
 	  i--;
