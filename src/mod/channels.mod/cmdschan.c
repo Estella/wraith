@@ -1398,6 +1398,9 @@ static void cmd_chaninfo(struct userrec *u, int idx, char *par)
     get_mode_protect(chan, work);
     dprintf(idx, "Protect modes (chanmode): %s\n", work[0] ? work : "None");
     dprintf(idx, "Protect topic: %s\n", chan->topic_prot[0] ? chan->topic_prot : "None");
+/* Chanchar template
+ *  dprintf(idx, "String temp: %s\n", chan->temp[0] ? chan->temp : "NULL");
+ */
     if (chan->idle_kick)
       dprintf(idx, "Idle Kick after (idle-kick): %d\n", chan->idle_kick);
     else
@@ -1418,6 +1421,12 @@ static void cmd_chaninfo(struct userrec *u, int idx, char *par)
       dprintf(idx, "ban-time: %d\n", chan->ban_time);
     else
       dprintf(idx, "ban-time: 0\n");
+/* Chanint template
+ *  if (chan->temp)
+ *   dprintf(idx, "temp: %d\n", chan->temp);
+ * else
+ *   dprintf(idx, temp: 0\n");
+ */
 #ifdef S_IRCNET
     if (chan->exempt_time)
       dprintf(idx, "exempt-time: %d\n", chan->exempt_time);
@@ -1474,6 +1483,10 @@ static void cmd_chaninfo(struct userrec *u, int idx, char *par)
     dprintf(idx, "     %cvoice          %cfastop\n",
 	    (chan->status & CHAN_VOICE) ? '+' : '-',
 	    (chan->status & CHAN_FASTOP) ? '+' : '-');
+/* Chanflag template
+ *          (chan->status & CHAN_TEMP) ? '+' : '-',
+ * also include %ctemp in dprintf.
+ */
 
 
     ii = 1;
