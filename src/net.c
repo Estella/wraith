@@ -137,13 +137,13 @@ int get_ip(char *hostname, union sockaddr_union *so)
   struct hostent *hp;
 #endif /* USE_IPV6 */
 
-  memset(so, 0, sizeof(union sockaddr_union));
+  egg_memset(so, 0, sizeof(union sockaddr_union));
   debug1(STR("get_ip(%s)"), hostname);
 
   if (!hostname || !hostname[0])
     return 1;
 #ifdef USE_IPV6
-  memset(&hints, 0, sizeof(struct addrinfo));
+  egg_memset(&hints, 0, sizeof(struct addrinfo));
   hints.ai_socktype = SOCK_STREAM;
 
   if ((error = getaddrinfo(hostname, NULL, &hints, &res)))
@@ -210,7 +210,7 @@ void init_net()
   int i;
 
   for (i = 0; i < MAXSOCKS; i++) {
-    bzero(&socklist[i], sizeof(socklist[i]));
+    egg_bzero(&socklist[i], sizeof(socklist[i]));
 #ifdef HAVE_SSL
     socklist[i].ssl=NULL;
 #endif /* HAVE_SSL */
@@ -298,10 +298,10 @@ void cache_my_ip()
 #endif /* USE_IPV6 */
 
   debug0(STR("cache_my_ip()"));
-  memset(&cached_myip4_so, 0, sizeof(union sockaddr_union));
+  egg_memset(&cached_myip4_so, 0, sizeof(union sockaddr_union));
 
 #ifdef USE_IPV6
-  memset(&cached_myip6_so, 0, sizeof(union sockaddr_union));
+  egg_memset(&cached_myip6_so, 0, sizeof(union sockaddr_union));
 
   if (myip6 != NULL && myip6[1]) {
     sdprintf("myip6: %s", myip6);
@@ -770,7 +770,7 @@ int open_address_listen(IP addr, int *port)
     return -1;
 
     debug2(STR("Opening listen socket on port %d with AF_INET6, sock: %d"), *port, sock);
-    bzero((char *) &name6, sizeof(name6));
+    egg_bzero((char *) &name6, sizeof(name6));
     name6.sin6_family = af_def;
     name6.sin6_port = htons(*port); /* 0 = just assign us a port */
     /* memcpy(&name6.sin6_addr, &in6addr_any, 16); */ /* this is the only way to get ipv6+ipv4 in 1 socket */
@@ -996,7 +996,7 @@ int answer(int sock, char *caller, unsigned long *ip, unsigned short *port,
       struct in_addr addr;
 
       memcpy(&addr, ((char *)&from6.sin6_addr) + 12, sizeof(addr));
-      memset(&from, 0, sizeof(from));
+      egg_memset(&from, 0, sizeof(from));
 
       from4->sin_family = AF_INET;
       addrlen = sizeof(*from4);
@@ -1251,13 +1251,12 @@ char *botlink_decrypt(int snum, char *src)
   nfree(line);
   return src;
 }
+
 char *botlink_encrypt(int snum, char *src)
 {
-  char *srcbuf = NULL,   *buf = NULL,   *line = NULL,   *eol = NULL,   *eline = NULL;
-
+  char *srcbuf = NULL, *buf = NULL, *line = NULL, *eol = NULL, *eline = NULL;
   int bufpos = 0, i;
   
-
   srcbuf = nmalloc(strlen(src) + 10);
   strcpy(srcbuf, src);
   line = srcbuf;
@@ -1274,7 +1273,7 @@ char *botlink_encrypt(int snum, char *src)
       if (!socklist[snum].oseed)
         socklist[snum].oseed++;
     }
-    buf = nrealloc(buf, bufpos + strlen(eline) + 10);
+    buf = nrealloc(buf, bufpos + strlen(eline) + 1 + 9);
     strcpy((char *) &buf[bufpos], eline);
     strcat(buf, "\n");
     bufpos = strlen(buf);
@@ -1289,7 +1288,7 @@ char *botlink_encrypt(int snum, char *src)
       if (!socklist[snum].oseed)
        socklist[snum].oseed++;
     }
-    buf = nrealloc(buf, bufpos + strlen(eline) + 10);
+    buf = nrealloc(buf, bufpos + strlen(eline) + 1 + 9);
     strcpy((char *) &buf[bufpos], eline);
     strcat(buf, "\n");
     nfree(eline);
@@ -1297,9 +1296,6 @@ char *botlink_encrypt(int snum, char *src)
   nfree(srcbuf);
   return buf;
 }
-
-
-
 
 /* sockgets: buffer and read from sockets
  * 
@@ -1557,7 +1553,7 @@ void tputs(register int z, char *s, unsigned int len)
         }
       }
       if (socklist[i].encstatus) {
-       if ((!s) || (!s[0])) {
+        if ((!s) || (!s[0])) {
          s = botlink_encrypt(i, s);
          len = strlen(s);
        }
