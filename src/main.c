@@ -1077,7 +1077,7 @@ static void gotspawn(char *filename)
     }
   }
   fclose(fp);
-//  unlink(filename);
+  unlink(filename);
 }
 
 static int spawnbot(char *bin, char *nick, char *ip, char *host, char *ipsix, int cloak)
