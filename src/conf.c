@@ -15,6 +15,7 @@
 #include "main.h"
 #include "settings.h"
 #include "misc.h"
+#include "users.h"
 #include "misc_file.h"
 #include "socket.h"
 
@@ -267,9 +268,10 @@ fatal:
 void
 init_conf()
 {
-  conf.bots = (conf_bot *) my_calloc(1, sizeof(conf_bot));
-  conf.bots->nick = NULL;
-  conf.bots->next = NULL;
+//  conf.bots = (conf_bot *) my_calloc(1, sizeof(conf_bot));
+//  conf.bots->nick = NULL;
+//  conf.bots->next = NULL;
+  conf.bots = NULL;
   conf.bot = NULL;
 
   conf.watcher = 0;
@@ -347,12 +349,9 @@ checkpid(char *nick, conf_bot *bot)
 void
 conf_addbot(char *nick, char *ip, char *host, char *ip6)
 {
-  conf_bot *bot = NULL;
+  conf_bot *bot = (conf_bot *) my_calloc(1, sizeof(conf_bot));
 
-  for (bot = conf.bots; bot && bot->nick; bot = bot->next) ;
-
-  bot->next = (conf_bot *) my_calloc(1, sizeof(conf_bot));
-  bot->next->next = NULL;
+  bot->next = NULL;
   bot->pid_file = NULL;
   bot->nick = strdup(nick);
   bot->net.ip = NULL;
@@ -395,7 +394,7 @@ conf_addbot(char *nick, char *ip, char *host, char *ip6)
     }
   }
 
-  if (!bot->hub && bot == conf.bots) {
+  if (!bot->hub && !conf.bots) {
     bot->localhub = 1;          /* first bot */
     conf.localhub = strdup(nick ? nick : origbotname);
     /* perhaps they did -B localhub-bot ? */
@@ -403,34 +402,27 @@ conf_addbot(char *nick, char *ip, char *host, char *ip6)
       localhub = 1;
   }
 
+  list_append((struct list_type **) &(conf.bots), (struct list_type *) bot);
+//  list_append((struct list_type **) &(cache->cchan), (struct list_type *) cchan);
 }
 
 void
-free_bot(char *botn)
+free_bot(conf_bot *bot)
 {
-  conf_bot *bot = NULL, *old = NULL;
+  if (bot) {
+    list_delete((struct list_type **) &(conf.bots), (struct list_type *) bot);
 
-  for (bot = conf.bots; bot && bot->nick; old = bot, bot = bot->next) {
-    if (!strcmp(botn, bot->nick)) {
-      free(bot->nick);
-      free(bot->pid_file);
-      if (bot->net.ip)
-        free(bot->net.ip);
-      if (bot->net.host)
-        free(bot->net.host);
-      if (bot->net.ip6)
-        free(bot->net.ip6);
-      if (bot->net.host6)
-        free(bot->net.host6);
-
-      if (old)
-        old->next = bot->next;
-      else
-        conf.bots = bot->next;
-      free(bot);
-
-      break;
-    }
+    free(bot->nick);
+    free(bot->pid_file);
+    if (bot->net.ip)
+      free(bot->net.ip);
+    if (bot->net.host)
+      free(bot->net.host);
+    if (bot->net.ip6)
+      free(bot->net.ip6);
+    if (bot->net.host6)
+      free(bot->net.host6);
+    free(bot);
   }
 }
 
@@ -443,7 +435,7 @@ conf_delbot(char *botn)
     if (!strcmp(bot->nick, botn)) {     /* found it! */
       bot->pid = checkpid(bot->nick, bot);
       killbot(bot->nick, SIGKILL);
-      free_bot(bot->nick);
+      free_bot(bot);
       return 0;
     }
   }
@@ -457,15 +449,9 @@ free_conf_bots(void)
 
   for (bot = conf.bots; bot; bot = bot_n) {
     bot_n = bot->next;
-
-    free_bot(bot->nick);
+    free_bot(bot);
   }
-  if (conf.bots) {
-    if (!conf.bots->next)
-      free(conf.bots);
-    else
-      sdprintf("FAILED TO CLEAR ALL OF .bots!, MEMORY LEAK!\n");
-  }
+  conf.bots = NULL;
 }
 
 int
