@@ -33,7 +33,7 @@ struct chanuserrec *add_chanrec(struct userrec *u, char *chname)
     strncpy(ch->channel, chname, 81);
     ch->channel[80] = 0;
     if (!noshare)
-      shareout(findchan_by_dname(chname), "+cr %s %s\n", u->handle, chname);
+      shareout("+cr %s %s\n", u->handle, chname);
   }
   return ch;
 }
@@ -98,7 +98,7 @@ void set_handle_chaninfo(struct userrec *bu, char *handle, char *chname, char *i
     ch->info = NULL;
   cst = findchan_by_dname(chname);
   if ((!noshare) && (bu == userlist)) {
-    shareout(cst, "chchinfo %s %s %s\n", handle, chname, info ? info : "");
+    shareout("chchinfo %s %s %s\n", handle, chname, info ? info : "");
   }
 }
 
@@ -116,7 +116,7 @@ void del_chanrec(struct userrec *u, char *chname)
 	free(ch->info);
       free(ch);
       if (!noshare)
-	shareout(findchan_by_dname(chname), "-cr %s %s\n", u->handle, chname);
+	shareout("-cr %s %s\n", u->handle, chname);
       return;
     }
     lst = ch;
@@ -173,8 +173,7 @@ int u_setsticky_mask(struct chanset_t *chan, maskrec *u, char *uhost, int sticky
 	strcpy(uhost, u->mask);
 
       if (!noshare)
-        shareout(chan, "%s %s %d %s\n", botcmd, uhost, sticky,
-                                        (chan) ? chan->dname : "");
+        shareout("%s %s %d %s\n", botcmd, uhost, sticky, (chan) ? chan->dname : "");
       return 1;
     }
 
@@ -254,9 +253,9 @@ int u_delmask(char type, struct chanset_t *c, char *who, int doit)
       if (mask) {
 	/* Distribute chan bans differently */
 	if (c)
-	  shareout(c, "-%s %s %s\n", type == 'b' ? "bc" : type == 'e' ? "ec" : "invc", c->dname, mask);
+	  shareout("-%s %s %s\n", type == 'b' ? "bc" : type == 'e' ? "ec" : "invc", c->dname, mask);
 	else
-	  shareout(NULL, "-%s %s\n", type == 'b' ? "b" : type == 'e' ? "e" : "inv", mask);
+	  shareout("-%s %s\n", type == 'b' ? "b" : type == 'e' ? "e" : "inv", mask);
 	free(mask);
       }
     }
@@ -352,13 +351,13 @@ int u_addmask(char type, struct chanset_t *chan, char *who, char *from, char *no
 
     if (mask) {
       if (!chan)
-	shareout(NULL, "+%s %s %lu %s%s %s %s\n",
+	shareout("+%s %s %lu %s%s %s %s\n",
 		 type == 'b' ? "b" : type == 'e' ? "e" : "inv",
 		 mask, expire_time - now,
 		 (flags & MASKREC_STICKY) ? "s" : "",
 		 (flags & MASKREC_PERM) ? "p" : "-", from, note);
       else
-	shareout(chan, "+%s %s %lu %s %s%s %s %s\n",
+	shareout("+%s %s %lu %s %s%s %s %s\n",
 		 type == 'b' ? "bc" : type == 'e' ? "ec" : "invc",	
 		 mask, expire_time - now,
 		 chan->dname, (flags & MASKREC_STICKY) ? "s" : "",
