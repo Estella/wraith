@@ -1276,14 +1276,13 @@ static int write_invites(FILE *f, int idx)
  */
 static int write_chans(FILE *f, int idx)
 {
-
   char w[1024], w2[1024], name[163];
-  char udefs[2048] = "", sadd[5], buf[2048];
+/*  char udefs[2048] = "", buf[2048]; */
 /* Chanchar template
  *char temp[121];
  */
   struct chanset_t *chan;
-  struct udef_struct *ul;
+/*  struct udef_struct *ul; */
 
   putlog(LOG_DEBUG, "*", "Writing channels..");
 
@@ -1300,13 +1299,14 @@ static int write_chans(FILE *f, int idx)
 
      putlog(LOG_DEBUG, "*", "writing channel %s to userfile..", chan->dname);
 
-     egg_memset(udefs,'\0',2048);
+/*     egg_memset(udefs,'\0',2048); */
      convert_element(chan->dname, name);
      get_mode_protect(chan, w);
      convert_element(w, w2);
 /* Chanchar template
  *   convert_element(chan->temp, temp);
  */
+/* fuck these for now
      for (ul = udef; ul; ul = ul->next) { //put the udefs into one string
        egg_memset(buf,'\0',2048);
        if (ul->defined && ul->name) { 
@@ -1319,10 +1319,8 @@ static int write_chans(FILE *f, int idx)
         strcat(udefs,buf);
        }
      }
-   //insert the ending character into a string
-     sprintf(sadd, "}\n");
-
-     if (lfprintf(f, "+ channel %s %s%schanmode %s addedby %s addedts %lu idle-kick %d limit %d stopnethack-mode %d \
+*/
+     if (lfprintf(f, "+ channel add %s { chanmode %s addedby %s addedts %lu idle-kick %d limit %d stopnethack-mode %d \
 revenge-mode %d \
 flood-chan %d:%d flood-ctcp %d:%d flood-join %d:%d \
 flood-kick %d:%d flood-deop %d:%d flood-nick %d:%d \
@@ -1333,10 +1331,8 @@ ban-time %d exempt-time %d invite-time %d \
 %cprivate %ccycle %cinactive %cdynamicexempts \
 %cuserexempts %cdynamicinvites %cuserinvites \
 %cnodesynch %cclosed %ctake %cmanop %cvoice \
-%cfastop %s %s",
-	"add",
+%cfastop }\n",
 	name,
-	" { ",
 	w2,
         chan->added_by,
         chan->added_ts,
@@ -1381,20 +1377,16 @@ ban-time %d exempt-time %d invite-time %d \
 	PLSMNS(channel_take(chan)),
 	PLSMNS(channel_manop(chan)),
 	PLSMNS(channel_voice(chan)),
-	PLSMNS(channel_fastop(chan)),
+	PLSMNS(channel_fastop(chan))
 /* Chanflag template
  * also include a %ctemp above.
  *      PLSMNS(channel_temp(chan)),
  */
-        udefs,
-        sadd) == EOF)
+        ) == EOF)
           return 0;
-//     } 
     } 
-
   }
   return 1;
-
 }
 
 
@@ -1408,7 +1400,6 @@ static void channels_writeuserfile(void)
   simple_sprintf(s, "%s~new", userfile);
   f = fopen(s, "a");
   if (f) {
-//write channels to the userfile
     ret  = write_chans(f, -1);
     ret += write_config(f, -1);
     ret += write_bans(f, -1);
@@ -1418,7 +1409,6 @@ static void channels_writeuserfile(void)
   }
   if (ret < 5)
     putlog(LOG_MISC, "*", USERF_ERRWRITE);
-  //old .chan write_channels();
 #endif /* HUB */
 }
 
