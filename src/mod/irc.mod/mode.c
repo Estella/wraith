@@ -1300,6 +1300,7 @@ static int gotmode(char *from, char *msg)
               }
             }
           }
+          enforce_bitch(chan);			/* deop quick! */
         }
       }
 
