@@ -1,5 +1,5 @@
 # $Id$
-# wraith authorization script 1.0
+# wraith authorization script
 # By lordares
 #
 # This expects the md5 executable in $cspath/.BitchX
