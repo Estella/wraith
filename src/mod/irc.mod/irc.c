@@ -961,7 +961,6 @@ static void reset_chan_info(struct chanset_t *chan)
       chan->status |= CHAN_ASKEDBANS;
       dprintf(DP_MODE, "MODE %s +b\n", chan->name);
     }
-#ifdef S_IRCNET
     if (opped) {
 /* FIXME: broken +e checking */
 putlog(LOG_DEBUG, "@", "I AM +o in %s, need to send +e", chan->dname);
@@ -977,7 +976,6 @@ putlog(LOG_DEBUG, "@", "I AM NOW CHECKING +e for %s", chan->dname);
         dprintf(DP_MODE, "MODE %s +I\n", chan->name);
       }
     }
-#endif
     /* These 2 need to get out asap, so into the mode queue */
     dprintf(DP_MODE, "MODE %s\n", chan->name);
     if (use_354)
@@ -1178,7 +1176,6 @@ static void check_expired_chanstuff()
 	      add_mode(chan, '-', 'b', b->mask);
 	      b->timer = now;
 	    }
-#ifdef S_IRCNET
        if (use_exempts && channel_dynamicexempts(chan) && chan->exempt_time)
 	  for (e = chan->channel.exempt; e->mask[0]; e = e->next)
            if (now - e->timer > 60 * chan->exempt_time &&
@@ -1223,7 +1220,6 @@ static void check_expired_chanstuff()
 	      add_mode(chan, '-', 'I', b->mask);
 	      b->timer = now;
 	    }
-#endif
 	if (chan->idle_kick)
 	  for (m = chan->channel.member; m && m->nick[0]; m = m->next)
 	    if (now - m->last >= chan->idle_kick * 60 &&
@@ -1463,10 +1459,8 @@ static void do_nettype()
     kick_method = 1;
     modesperline = 4;
     use_354 = 0;
-#ifdef S_IRCNET
     use_exempts = 1;
     use_invites = 1;
-#endif
     max_bans = 100;
     max_modes = 100;
     rfc_compliant = 1;
@@ -1476,10 +1470,8 @@ static void do_nettype()
     kick_method = 4;
     modesperline = 3;
     use_354 = 0;
-#ifdef S_IRCNET
     use_exempts = 1;
     use_invites = 1;
-#endif
     max_bans = 30;
     max_modes = 30;
     rfc_compliant = 1;
@@ -1489,10 +1481,8 @@ static void do_nettype()
     kick_method = 1;
     modesperline = 6;
     use_354 = 1;
-#ifdef S_IRCNET
     use_exempts = 0;
     use_invites = 0;
-#endif
     max_bans = 30;
     max_modes = 30;
     rfc_compliant = 1;
@@ -1502,10 +1492,8 @@ static void do_nettype()
     kick_method = 1;
     modesperline = 6;
     use_354 = 0;
-#ifdef S_IRCNET
     use_exempts = 0;
     use_invites = 0;
-#endif
     max_bans = 100;
     max_modes = 100;
     rfc_compliant = 0;
@@ -1515,10 +1503,8 @@ static void do_nettype()
     kick_method = 1;
     modesperline = 4;
     use_354 = 0;
-#ifdef S_IRCNET
     use_exempts = 1;
     use_invites = 0;
-#endif
     max_bans = 20;
     max_modes = 20;
     rfc_compliant = 1;
@@ -1747,9 +1733,7 @@ char *irc_start(Function * global_funcs)
       dprintf(DP_MODE, "JOIN %s %s\n",
               (chan->name[0]) ? chan->name : chan->dname, chan->key_prot);
     chan->status &= ~(CHAN_ACTIVE | CHAN_PEND | CHAN_ASKEDBANS);
-#ifdef S_IRCNET
     chan->ircnet_status &= ~(CHAN_ASKED_INVITED | CHAN_ASKED_EXEMPTS);
-#endif
   }
   add_hook(HOOK_MINUTELY, (Function) check_expired_chanstuff);
   add_hook(HOOK_MINUTELY, (Function) warn_pls_take);
