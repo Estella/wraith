@@ -24,10 +24,10 @@ cd ${HOME}/tmp/wraith/
 # export PWD="${HOME}/wraith/"
 ./build -C -n -s lordares@endurance.quadspeedi.net:public_html/nightly/ all
 cd ${HOME}/tmp/
-cp ${HOME}/tmp/wraith/misc/cron_cvs_build.sh ${HOME}/tmp/cron_cvs_build.sh
+cp -f ${HOME}/tmp/wraith/misc/cron_cvs_build.sh ${HOME}/tmp/cron_cvs_build.sh
 rm -rf ${HOME}/tmp/wraith
 cvs -d $PRIVATE_ROOT logout
 
-mv ${HOME}/tmp/cron_cvs_build.sh ${HOME}/cron_cvs_build.sh
+mv -f ${HOME}/tmp/cron_cvs_build.sh ${HOME}/cron_cvs_build.sh
 
 
