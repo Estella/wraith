@@ -1703,13 +1703,13 @@ static int got315(char *from, char *msg)
     return 0;
   /* Finished getting who list, can now be considered officially ON CHANNEL */
   chan->status |= CHAN_ACTIVE;
-  chan->status &= ~CHAN_PEND;
+  chan->status &= ~(CHAN_PEND | CHAN_JOINING);
   /* Am *I* on the channel now? if not, well d0h. */
   if (!ismember(chan, botname)) {
-    putlog(LOG_MISC | LOG_JOIN, chan->dname, "Oops, I'm not really on %s.",
-	   chan->dname);
+    putlog(LOG_MISC | LOG_JOIN, chan->dname, "Oops, I'm not really on %s.", chan->dname);
     clear_channel(chan, 1);
     chan->status &= ~CHAN_ACTIVE;
+    chan->status |= CHAN_JOINING;
     dprintf(DP_MODE, "JOIN %s %s\n",
 	    (chan->name[0]) ? chan->name : chan->dname,
 	    chan->channel.key[0] ? chan->channel.key : chan->key_prot);
@@ -1933,6 +1933,7 @@ static int got403(char *from, char *msg)
              "Unique channel %s does not exist... Attempting to join with "
              "short name.", chname);
       dprintf(DP_SERVER, "JOIN %s\n", chan->dname);
+      chan->status |= CHAN_JOINING;
     } else {
       /* We have found the channel, so the server has given us the short
        * name. Prefix another '!' to it, and attempt the join again...
@@ -2265,7 +2266,7 @@ static int gotjoin(char *from, char *chname)
       /* uh, what?!  i'm on the channel?! */
       putlog(LOG_ERROR, "*", "confused bot: guess I'm on %s and didn't realize it", chan->dname);
       chan->status |= CHAN_ACTIVE;
-      chan->status &= ~CHAN_PEND;
+      chan->status &= ~(CHAN_PEND | CHAN_JOINING);
       reset_chan_info(chan);
     } else {
       int splitjoin = 0;
@@ -2442,7 +2443,7 @@ static int gotpart(char *from, char *msg)
     if (match_my_nick(nick)) 
       irc_log(chan, "Parting");    
     clear_channel(chan, 1);
-    chan->status &= ~(CHAN_ACTIVE | CHAN_PEND);
+    chan->status &= ~(CHAN_ACTIVE | CHAN_PEND | CHAN_JOINING);
     return 0;
   }
   if (chan && !channel_pending(chan)) {
@@ -2450,7 +2451,7 @@ static int gotpart(char *from, char *msg)
       /* whoa! */
       putlog(LOG_ERRORS, "*", "confused bot: guess I'm on %s and didn't realize it", chan->dname);
       chan->status |= CHAN_ACTIVE;
-      chan->status &= ~CHAN_PEND;
+      chan->status &= ~(CHAN_PEND | CHAN_JOINING);
       reset_chan_info(chan);
     }
     set_handle_laston(chan->dname, u, now);
@@ -2466,11 +2467,13 @@ static int gotpart(char *from, char *msg)
     /* If it was me, all hell breaks loose... */
     if (match_my_nick(nick)) {
       clear_channel(chan, 1);
-      chan->status &= ~(CHAN_ACTIVE | CHAN_PEND);
-      if (shouldjoin(chan))
+      chan->status &= ~(CHAN_ACTIVE | CHAN_PEND | CHAN_JOINING);
+      if (shouldjoin(chan)) {
 	dprintf(DP_MODE, "JOIN %s %s\n",
 	        (chan->name[0]) ? chan->name : chan->dname,
 	        chan->channel.key[0] ? chan->channel.key : chan->key_prot);
+        chan->status |= CHAN_JOINING;
+      }
     } else
       check_lonely_channel(chan);
   }
@@ -2493,8 +2496,9 @@ static int gotkick(char *from, char *origmsg)
 
   char *nick = newsplit(&msg);
 
-  if (match_my_nick(nick) && channel_pending(chan) && shouldjoin(chan)) {
+  if (match_my_nick(nick) && channel_pending(chan) && shouldjoin(chan) && !channel_joining(chan)) {
     chan->status &= ~(CHAN_ACTIVE | CHAN_PEND);
+    chan->status |= CHAN_JOINING;
     dprintf(DP_MODE, "JOIN %s %s\n",
             (chan->name[0]) ? chan->name : chan->dname,
             chan->channel.key[0] ? chan->channel.key : chan->key_prot);
@@ -2541,11 +2545,12 @@ static int gotkick(char *from, char *origmsg)
     }
     irc_log(chan, "%s was kicked by %s (%s)", s1, from, msg);
     /* Kicked ME?!? the sods! */
-    if (match_my_nick(nick) && shouldjoin(chan)) {
+    if (match_my_nick(nick) && shouldjoin(chan) && !channel_joining(chan)) {
       chan->status &= ~(CHAN_ACTIVE | CHAN_PEND);
       dprintf(DP_MODE, "JOIN %s %s\n",
               (chan->name[0]) ? chan->name : chan->dname,
               chan->channel.key[0] ? chan->channel.key : chan->key_prot);
+      chan->status |= CHAN_JOINING;
       clear_channel(chan, 1);
     } else {
       killmember(chan, nick);
