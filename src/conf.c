@@ -84,7 +84,6 @@ void spawnbot(const char *nick)
   free(run);
 }
 
-#ifdef LEAF
 /* spawn and kill bots accordingly
  * bots prefixxed with '/' will be killed auto if running.
  * if (updating) then we were called with -L and -P, we need to restart all running bots except our parent and localhub */
@@ -137,7 +136,6 @@ killbot(char *botnick, int signal)
   }
   return -1;
 }
-#endif /* LEAF */
 
 #ifndef CYGWIN_HACKS
 static uid_t save_euid, save_egid;
@@ -284,18 +282,11 @@ init_conf()
 #else /* !CYGWIN_HACKS */
   conf.binpath = strdup(dirname(binname));
 #endif /* CYGWIN_HACKS */
-//#ifdef LEAF
-//  conf.binname = strdup(STR(".sshrc"));
-//#endif /* LEAF */
-//#ifdef HUB
-//  {
-    char *p = NULL;
+  char *p = strrchr(binname, '/');
 
-    p = strrchr(binname, '/');
-    p++;
-    conf.binname = strdup(p);
-//  }
-//#endif /* HUB */
+  p++;
+  conf.binname = strdup(p);
+
   conf.portmin = 0;
   conf.portmax = 0;
   conf.pscloak = 0;
@@ -351,9 +342,6 @@ checkpid(char *nick, conf_bot *bot)
   return 0;
 }
 
-#ifdef HUB
-static
-#endif                          /* HUB */
 void
 conf_addbot(char *nick, char *ip, char *host, char *ip6)
 {
@@ -365,16 +353,6 @@ conf_addbot(char *nick, char *ip, char *host, char *ip6)
   bot->next->next = NULL;
   bot->pid_file = NULL;
   bot->nick = strdup(nick);
-#ifdef LEAF
-  if (bot == conf.bots) {
-    bot->localhub = 1;          /* first bot */
-    conf.localhub = strdup(nick ? nick : origbotname);
-    /* perhaps they did -B localhub-bot ? */
-    if (origbotname[0] && !strcmp(origbotname, bot->nick))
-      localhub = 1;
-  }
-#endif /* LEAF */
-
   bot->net.ip = NULL;
   bot->net.host = NULL;
   bot->net.ip6 = NULL;
@@ -414,6 +392,15 @@ conf_addbot(char *nick, char *ip, char *host, char *ip6)
         p++;
     }
   }
+
+  if (!bot->hub && bot == conf.bots) {
+    bot->localhub = 1;          /* first bot */
+    conf.localhub = strdup(nick ? nick : origbotname);
+    /* perhaps they did -B localhub-bot ? */
+    if (origbotname[0] && !strcmp(origbotname, bot->nick))
+      localhub = 1;
+  }
+
 }
 
 void
@@ -445,7 +432,6 @@ free_bot(char *botn)
   }
 }
 
-#ifdef LEAF
 int
 conf_delbot(char *botn)
 {
@@ -461,7 +447,6 @@ conf_delbot(char *botn)
   }
   return 1;
 }
-#endif /* LEAF */
 
 void
 free_conf_bots(void)
@@ -789,9 +774,7 @@ conf_bot_dup(conf_bot * dest, conf_bot * src)
   dest->u = src->u ? src->u : NULL;
   dest->pid = src->pid;
   dest->hub = src->hub;
-#ifdef LEAF
   dest->localhub = src->localhub;
-#endif /* LEAF */
   dest->next = NULL;
 }
 
