@@ -899,8 +899,8 @@ int ssl_link(register int sock, int state)
         } else if (state == ACCEPT_SSL) {
           err = SSL_accept(socklist[i].ssl);
         }
-        if ((errs!=SSL_ERROR_WANT_READ)&&(errs!=SSL_ERROR_WANT_WRITE)&& (errs!=SSL_ERROR_WANT_X509_LOOKUP))
-          break; /* anything not one of these is a sufficient condition to break out... */
+//        if ((errs!=SSL_ERROR_WANT_READ)&&(errs!=SSL_ERROR_WANT_WRITE)&& (errs!=SSL_ERROR_WANT_X509_LOOKUP))
+//          break; /* anything not one of these is a sufficient condition to break out... */
       }
       alarm(0);
   }
@@ -1151,7 +1151,7 @@ static int sockread(char *s, int *len)
 	    *len = 0;
 #ifdef HAVE_SSL
 /*            debug0("CALLING SSL_LINK() FROM SOCKREAD");
-            if (!ssl_link(socklist[i].sock))
+//            if (!ssl_link(socklist[i].sock))
               debug0("SSL_LINK FAILED");
             debug0("BACK FROM SSL_LINK()"); */
 #endif /* HAVE_SSL */
