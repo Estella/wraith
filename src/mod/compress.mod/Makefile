@@ -1,7 +1,6 @@
-# Makefile.in for src/mod/compress.mod/
+# Makefile for src/mod/compress.mod/
 # $Id$
 
-ZLIB = @ZLIB@
 srcdir = .
 
 
@@ -12,7 +11,6 @@ doofus:
 	@cd ../../../ && make
 
 static: ../compress.o
-	@echo "$(ZLIB)" >> ../mod.xlibs
 
 ../compress.o:
 	@echo -e "Compiling: \033[1mcompress\033[0m"
@@ -25,9 +23,7 @@ depend:
 
 clean:
 	@rm -f .depend *.o *~
-
 distclean: clean
-	@rm -f Makefile config.cache config.log config.status config.h compress_config.h
 
 #safety hash
 ../compress.o: .././compress.mod/compress.c ../../../src/mod/module.h \
@@ -41,5 +37,5 @@ distclean: clean
  ../../../src/compat/memset.h ../../../src/compat/memcpy.h \
  ../../../src/compat/strcasecmp.h ../../../src/compat/strftime.h \
  ../../../src/mod/modvals.h ../../../src/tandem.h \
- ../../../src/mod/share.mod/share.h ../compress.mod/compress_config.h \
+ ../../../src/mod/share.mod/share.h \
  ../compress.mod/compress.h ../compress.mod/tclcompress.c
