@@ -31,8 +31,11 @@
 
 /* Handy string lengths */
 
+#define SALT1LEN	32
+#define SALT2LEN	16
+
 #define MAXPASSLEN      15
-#define PACKNAMELEN     40
+#define PACKNAMELEN     32
 
 #define UHOSTMAX    291 + NICKMAX /* 32 (ident) + 3 (\0, !, @) + NICKMAX */
 #define DIRMAX		512	/* paranoia				*/
@@ -51,6 +54,8 @@
 #define DIRLEN          DIRMAX + 1
 #define NOTENAMELEN     ((HANDLEN << 1) + 1)
 #define BADNICKCHARS	"-,+*=:!.@#;$%&"
+#define LISTSEPERATORS  ",=:; "
+
 
 #if (NICKMAX < 9) || (NICKMAX > 32)
 #  include "invalid NICKMAX value"

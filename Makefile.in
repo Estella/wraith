@@ -17,7 +17,7 @@ CCDEPMODE = @CCDEPMODE@
 LEAFEXEC = leaf@EXEEXT@
 HUBEXEC = hub@EXEEXT@
 DISTROFILES = config.h.in doc/ misc/ scripts/ ChangeLog Makefile.in build configure pack/ src/
-EXCLUDES = $(CFG) misc/ind doc/DEVEL src/Makefile src/compat/Makefile src/mod/Makefile \
+EXCLUDES = pack/pack.cfg misc/ind doc/DEVEL src/Makefile src/compat/Makefile src/mod/Makefile \
            src/crypto/Makefile src/crypto/.deps src/crypto/.cvsignore \
            src/mod/dns.mod/Makefile src/mod/*.mod/.deps/ src/mod/*.mod/.cvsignore \
            src/.deps src/compat/.deps misc/commit misc/grep autotools/ \
@@ -81,9 +81,9 @@ MAKE_UTILS_NR = $(MAKE) 'CC=$(CC)' 'STRIP=touch' \
 MAKE_CONFIG = $(MAKE) 'MAKE=$(MAKE)'
 
 all:
-	@echo ""
-	@echo "Use the build script."
-	@echo ""
+	echo ""
+	echo "Use the build script"
+	echo ""
 
 cleanutils:
 	@rm -f src/stringfix src/makesettings src/sorthelp src/makehelp
@@ -217,7 +217,6 @@ leaf:	general
 	@echo ""
 	+@cd src/mod && $(MAKE_LEAF) static
 	+@cd src && $(MAKE_LEAF) $(LEAFEXEC)
-	@./$(LEAFEXEC) -0
 	@echo ""
 
 dleaf:  general
@@ -228,7 +227,6 @@ dleaf:  general
 	@echo ""
 	+@cd src/mod && $(MAKE_DLEAF) static
 	+@cd src && $(MAKE_DLEAF) $(LEAFEXEC)
-	@./$(LEAFEXEC) -0
 	@echo ""
 
 hub:	general
@@ -239,7 +237,6 @@ hub:	general
 	@echo ""
 	+@cd src/mod && $(MAKE_HUB) static
 	+@cd src && $(MAKE_HUB) $(HUBEXEC)
-	@./$(HUBEXEC) -0
 	@echo ""
 
 dhub:   general
@@ -250,7 +247,6 @@ dhub:   general
 	@echo ""
 	+@cd src/mod && $(MAKE_DHUB) static
 	+@cd src && $(MAKE_DHUB) $(HUBEXEC)
-	@./$(HUBEXEC) -0
 	@echo ""
 
 #safety hash
