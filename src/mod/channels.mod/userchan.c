@@ -294,11 +294,10 @@ bool u_addmask(char type, struct chanset_t *chan, char *who, char *from, char *n
     strcat(host, "!*");
     strcat(host, s);
   }
-#ifdef LEAF
-    simple_sprintf(s, "%s!%s", botname, botuserhost);
-#else
-    simple_sprintf(s, "%s!%s@%s", origbotname, botuser, conf.bot->net.host);
-#endif /* LEAF */
+    if (conf.bot->hub)
+      simple_sprintf(s, "%s!%s@%s", origbotname, botuser, conf.bot->net.host);
+    else
+      simple_sprintf(s, "%s!%s", botname, botuserhost);
   if (s[0] && type == 'b' && wild_match(host, s)) {
     putlog(LOG_MISC, "*", IRC_IBANNEDME);
     return 0;
@@ -1157,9 +1156,8 @@ static void check_expired_bans(void)
       for (chan = chanset; chan; chan = chan->next)
         for (b = chan->channel.ban; b->mask[0]; b = b->next)
 	  if (!rfc_casecmp(b->mask, u->mask) && expired_mask(chan, b->who) && b->timer != now) {
-#ifdef LEAF
-	    add_mode(chan, '-', 'b', u->mask);
-#endif /* LEAF */
+            if (!conf.bot->hub)
+              add_mode(chan, '-', 'b', u->mask);
 	    b->timer = now;
 	  }
       u_delmask('b', NULL, u->mask, 1);
@@ -1174,9 +1172,8 @@ static void check_expired_bans(void)
 	       u->mask, MISC_ONLOCALE, chan->dname, MISC_EXPIRED);
 	for (b = chan->channel.ban; b->mask[0]; b = b->next)
           if (!rfc_casecmp(b->mask, u->mask) && expired_mask(chan, b->who) && b->timer != now) {
-#ifdef LEAF
-	    add_mode(chan, '-', 'b', u->mask);
-#endif /* LEAF */
+            if (!conf.bot->hub)
+              add_mode(chan, '-', 'b', u->mask);
 	    b->timer = now;
 	  }
 	u_delmask('b', chan, u->mask, 1);
@@ -1219,9 +1216,8 @@ static void check_expired_exempts(void)
 	else
 	  for (e = chan->channel.exempt; e->mask[0]; e = e->next)
 	    if (!rfc_casecmp(e->mask, u->mask) && expired_mask(chan, e->who) && e->timer != now) {
-#ifdef LEAF
-	      add_mode(chan, '-', 'e', u->mask);
-#endif /* LEAF */
+              if (!conf.bot->hub)
+                add_mode(chan, '-', 'e', u->mask);
 	      e->timer = now;
 	    }
       }
@@ -1251,9 +1247,8 @@ static void check_expired_exempts(void)
 		 u->mask, MISC_ONLOCALE, chan->dname, MISC_EXPIRED);
 	  for (e = chan->channel.exempt; e->mask[0]; e = e->next)
 	    if (!rfc_casecmp(e->mask, u->mask) && expired_mask(chan, e->who) && e->timer != now) {
-#ifdef LEAF
-	      add_mode(chan, '-', 'e', u->mask);
-#endif /* LEAF */
+              if (!conf.bot->hub)
+                add_mode(chan, '-', 'e', u->mask);
 	      e->timer = now;
 	    }
           u_delmask('e', chan, u->mask, 1);
@@ -1283,9 +1278,8 @@ static void check_expired_invites(void)
 	if (!(chan->channel.mode & CHANINV))
 	  for (b = chan->channel.invite; b->mask[0]; b = b->next)
 	    if (!rfc_casecmp(b->mask, u->mask) && expired_mask(chan, b->who) && b->timer != now) {
-#ifdef LEAF
-	      add_mode(chan, '-', 'I', u->mask);
-#endif /* LEAF */
+              if (!conf.bot->hub)
+                add_mode(chan, '-', 'I', u->mask);
 	      b->timer = now;
 	    }
       u_delmask('I', NULL, u->mask,1);
@@ -1301,9 +1295,8 @@ static void check_expired_invites(void)
 	if (!(chan->channel.mode & CHANINV))
 	  for (b = chan->channel.invite; b->mask[0]; b = b->next)
 	    if (!rfc_casecmp(b->mask, u->mask) && expired_mask(chan, b->who) && b->timer != now) {
-#ifdef LEAF
-	      add_mode(chan, '-', 'I', u->mask);
-#endif /* LEAF */
+              if (!conf.bot->hub)
+                add_mode(chan, '-', 'I', u->mask);
 	      b->timer = now;
 	    }
 	u_delmask('I', chan, u->mask, 1);

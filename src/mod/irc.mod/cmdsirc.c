@@ -1,4 +1,3 @@
-#ifdef LEAF
 /*
  * chancmds.c -- part of irc.mod
  *   handles commands directly relating to channel interaction
@@ -1721,4 +1720,3 @@ static cmd_t irc_dcc[] =
   {NULL,		NULL,	 NULL,				NULL, 0}
 };
 
-#endif /* LEAF */

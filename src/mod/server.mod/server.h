@@ -1,4 +1,3 @@
-#ifdef LEAF
 /*
  * server.h -- part of server.mod
  *
@@ -70,4 +69,3 @@ void clearq(struct server_list *);
 void nuke_server(const char *);
 bool match_my_nick(char *);
 
-#endif /*leaf*/

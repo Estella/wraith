@@ -1,4 +1,3 @@
-#ifdef LEAF
 /*
  * irc.h -- part of irc.mod
  *
@@ -117,4 +116,3 @@ extern bool		use_354;
 extern unsigned int	modesperline;
 #endif				/* _EGG_MOD_IRC_IRC_H */
 
-#endif /* LEAF */
