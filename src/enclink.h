@@ -36,5 +36,6 @@ extern int link_find_by_type(int);
 extern void link_link(int, int, direction_t);
 extern char *link_write(int, char *, size_t *);
 extern int link_read(int, char *, size_t *);
+extern void link_hash(int, char *);
 
 #endif /* !_ENCLINK_H */
