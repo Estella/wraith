@@ -36,7 +36,7 @@ extern time_t		 now;
 extern int		 egg_numver, connect_timeout, conmask, backgrd,
 			 max_dcc, default_flags, debug_output,
 			 ignore_time;
-extern char		 botnetnick[], ver[], origbotname[], notify_new[];
+extern char		 botnetnick[], ver[], origbotname[], notify_new[], thepass[];
 
 
 extern sock_list *socklist;
@@ -51,7 +51,7 @@ int	use_telnet_banner = 0;	/* Display telnet banner?		   */
 char	network[41] = "EFnet"; /* Name of the IRC network you're on  */
 int	password_timeout = 20;	/* Time to wait for a password from a user */
 int     auth_timeout = 40;
-int	bot_timeout = 25;	/* Bot timeout value			   */
+int	bot_timeout = 15;	/* Bot timeout value			   */
 int	identtimeout = 15;	/* Timeout value for ident lookups	   */
 int	dupwait_timeout = 5;	/* Timeout for rejecting duplicate entries */
 #ifdef LEAF
@@ -376,9 +376,11 @@ static void cont_link(int idx, char *buf, int ii)
     dcc[idx].u.bot->numver = 0;
     dprintf(idx, "%s\n", botnetnick);
     i = sizeof(sa);
-    /* myip myport hubnick mynick */
+
+    /* initkey-gen */
+    /* thepass myport hubnick mynick */
     getsockname(socklist[snum].sock, (struct sockaddr *) &sa, &i);
-    sprintf(tmp,"%8x@%4x@%s@%s", getmyip(), sa.sin_port, dcc[idx].nick, botnetnick);
+    sprintf(tmp,"%s@%4x@%s@%s", thepass, sa.sin_port, dcc[idx].nick, botnetnick);
     MD5_Init(&ctx);
     MD5_Update(&ctx, tmp, strlen(tmp));
     MD5_Final(socklist[snum].ikey, &ctx);
@@ -395,7 +397,7 @@ static void dcc_bot_new(int idx, char *buf, int x)
 /*  struct userrec *u = get_user_by_handle(userlist, dcc[idx].nick); */
   char *code;
   int i;
-
+  
   strip_telnet(dcc[idx].sock, buf, &x);
   code = newsplit(&buf);
   if (!egg_strcasecmp(code, "goodbye!")) {
@@ -412,7 +414,7 @@ static void dcc_bot_new(int idx, char *buf, int x)
        break;
       }
     }
-    putlog(LOG_DEBUG, "*", "snum: %d", snum);
+
     if (snum >= 0) {
       char *tmp,
        *p;
@@ -1325,7 +1327,12 @@ static void dcc_telnet_hostresolved(int i)
   changeover_dcc(i, &DCC_IDENTWAIT, 0);
   dcc[i].timeval = now;
   dcc[i].u.ident_sock = dcc[idx].sock;
-  sock = open_telnet(iptostr(htonl(dcc[i].addr)), 113);
+#ifdef USE_IPV6
+  if (sockprotocol(dcc[idx].sock) == AF_INET6)
+    sock = open_telnet(dcc[i].host, 113);
+  else
+#endif /* USE_IPV6 */
+    sock = open_telnet(iptostr(htonl(dcc[i].addr)), 113);
   putlog(LOG_MISC, "*", DCC_TELCONN, dcc[i].host, dcc[i].port);
   s[0] = 0;
   if (sock < 0) {
@@ -1615,8 +1622,10 @@ static void dcc_telnet_pass(int idx, int atr)
        *tmp2;
       char tmp[256];
       MD5_CTX ctx;
-
-      sprintf(tmp, "%8x@%4x@%s@%s", htonl(dcc[idx].addr), htons(dcc[idx].port), botnetnick, dcc[idx].nick);
+      
+      /* initkey-gen */
+      /* thepass port mynick botnetnick */
+      sprintf(tmp, "%s@%4x@%s@%s", thepass, htons(dcc[idx].port), botnetnick, dcc[idx].nick);
       MD5_Init(&ctx);
       MD5_Update(&ctx, tmp, strlen(tmp));
       MD5_Final(socklist[snum].okey, &ctx);
