@@ -15,7 +15,6 @@
 #include "misc.h"
 #include "thread.h"
 #include "settings.h"
-#include "salt.h"
 #include "misc_file.h"
 #include "net.h"
 #include "users.h"
@@ -340,7 +339,6 @@ static void dtx_arg(int argc, char *argv[])
 
         egg_strftime(date, sizeof date, "%c %Z", gmtime(&buildts));
 	printf("%s\nBuild Date: %s (%lu)\n", version, date, buildts);
-        printf("SALTS\nfiles: %s\nbotlink: %s\n", SALT1, SALT2);
 	exit(0);
       }
 #ifdef LEAF
