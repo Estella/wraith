@@ -149,6 +149,7 @@ struct chanset_t {
   int ircnet_status;
   int limitraise;
   int closed_ban;
+  int closed_private;
 /* Chanint template 
  *int temp;
  */
