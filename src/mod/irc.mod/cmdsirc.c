@@ -389,7 +389,6 @@ static void cmd_devoice(int idx, char *par)
       return;
   }
 
-  char s[UHOSTLEN] = "";
   memberlist *m = NULL;
 
   if (all)
@@ -431,7 +430,7 @@ static void cmd_devoice(int idx, char *par)
     dprintf(idx, "%s is not on %s.\n", nick, chan->dname);
     return;
   }
-  egg_snprintf(s, sizeof s, "%s!%s", m->nick, m->userhost);
+
   add_mode(chan, '-', 'v', nick);
   dprintf(idx, "Devoiced %s on %s\n", nick, chan->dname);
   next:;
