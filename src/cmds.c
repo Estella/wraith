@@ -9,6 +9,7 @@
 #include "common.h"
 #include "cmds.h"
 #include "conf.h"
+#include "binary.h"
 #include "color.h"
 #include "settings.h"
 #include "settings.h"
