@@ -9,6 +9,7 @@
 #include "conf.h"
 #include "shell.h"
 #include "debug.h"
+#include "chanprog.h"
 #include "crypt.h"
 #include "main.h"
 #include "salt.h"
@@ -23,12 +24,6 @@
 #endif /* S_CONFEDIT */
 #include <sys/stat.h>
 #include <signal.h>
-
-extern char             origbotname[], tempdir[],
-                        userfile[], natip[], *binname;
-extern int              localhub, updating;
-extern uid_t		myuid;
-extern conf_t           conf;
 
 conf_t		conf;		/* global conf struct */
 conf_t 		conffile;	/* just some config options only avail during loading */

@@ -16,6 +16,7 @@
 #include "types.h"
 
 #ifndef MAKING_NUMMODS
+extern module_entry 		*module_list;
 
 void check_static(char *, char *(*)());
 

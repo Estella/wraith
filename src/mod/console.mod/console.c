@@ -21,8 +21,6 @@
 #include "src/misc.h"
 #include "src/core_binds.h"
 
-extern int noshare;
-
 static int console_autosave = 1;
 static int info_party = 1;
 
