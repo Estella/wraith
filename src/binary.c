@@ -20,6 +20,8 @@ encdata_t encdata = {
   ""
 };
 
+int checked_bin_buf = 0;
+
 char *
 bin_md5(const char *fname, int todo)
 {
@@ -30,6 +32,7 @@ bin_md5(const char *fname, int todo)
   size_t len = 0;
   MD5_CTX ctx;
 
+  checked_bin_buf++;
   if (!(f = fopen(fname, "rb")))
     werr(ERR_BINSTAT);
 
