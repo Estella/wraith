@@ -808,7 +808,7 @@ int main(int argc, char **argv)
   }
 #endif /* LEAF */
 
-#if defined(LEAF) && defined(S_PSCLOAK) && defined(__linux__)
+#if defined(LEAF) && defined(__linux__)
   if (conf.pscloak) {
     int on = 0;
     char *p = progname();
@@ -817,7 +817,7 @@ int main(int argc, char **argv)
     strncpyz(argv[0], p, strlen(p) + 1);
     for (on = 1; on < argc; on++) egg_memset(argv[on], 0, strlen(argv[on]));
   }
-#endif /* LEAF && PSCLOAK */
+#endif /* LEAF */
 
   /* Move into background? */
   /* we don't split cygwin because to run as a service the bot shouldn't exit.
