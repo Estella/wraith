@@ -1975,7 +1975,7 @@ struct dcc_table DCC_IDENT =
   NULL
 };
 
-void dcc_telnet_got_ident(int i, char *host)
+static void dcc_telnet_got_ident(int i, char *host)
 {
   int idx;
   char x[1024];
