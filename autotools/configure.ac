@@ -88,6 +88,7 @@ AC_C_BIGENDIAN
 AC_C_INLINE
 AC_CHECK_SIZEOF(long, 0)
 AC_CHECK_SIZEOF(int, 0)
+AC_CHECK_SIZEOF(short, 0)
 
 
 #checkpoint

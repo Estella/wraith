@@ -1164,7 +1164,12 @@ static void dcc_telnet(int idx, char *buf, int i)
   /* Buffer data received on this socket.  */
   sockoptions(sock, EGG_OPTION_SET, SOCK_BUFFER);
 
-  if (port < 1024 || port > 65535) {
+#if SIZEOF_SHORT == 2
+  if (port < 1024) {
+#else
+   if (port < 1024 || port > 65535) {
+#endif
+
     putlog(LOG_BOTS, "*", DCC_BADSRC, s, port);
     killsock(sock);
     return;
