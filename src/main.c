@@ -669,9 +669,6 @@ printf("bleh..ip: %s host: %s ip6: %s host6: %s\n", conf.bot->ip, conf.bot->host
     }
   }
 
-  chanprog();
-//fatal("WOOT", 0);
-
   dns_init();
   module_load("channels");
 #ifdef LEAF
@@ -685,6 +682,7 @@ printf("bleh..ip: %s host: %s ip6: %s host6: %s\n", conf.bot->ip, conf.bot->host
   console_init();
   ctcp_init();
   module_load("compress");
+  chanprog();
 
 
 #ifdef LEAF

@@ -12,6 +12,7 @@
 #include "misc_file.h"
 #include "rfc1459.h"
 #include "dcc.h"
+#include "src/mod/share.mod/share.h"
 #include "userrec.h"
 #include "misc.h"
 #include "users.h"
@@ -426,7 +427,7 @@ int write_userfile(int idx)
     return 2;
   }
   if (idx >= 0)
-    dprintf(idx, USERF_WRITING);
+    dprintf(idx, "Saving userfile...\n");
   if (sort_users)
     sort_userlist();
   tt = now;
