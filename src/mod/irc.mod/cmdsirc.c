@@ -57,7 +57,7 @@ static char *getnick(char *handle, struct chanset_t *chan)
   struct userrec *u = NULL;
 
   for (register memberlist *m = chan->channel.member; m && m->nick[0]; m = m->next) {
-    egg_snprintf(s, sizeof s, "%s!%s", m->nick, m->userhost);
+    simple_snprintf(s, sizeof s, "%s!%s", m->nick, m->userhost);
     if ((u = get_user_by_host(s)) && !egg_strcasecmp(u->handle, handle))
       return m->nick;
   }
@@ -250,7 +250,7 @@ static void cmd_kickban(int idx, char *par)
       dprintf(idx, "%s is not on %s\n", nick, chan->dname);
       return;
     }
-    egg_snprintf(s, sizeof s, "%s!%s", m->nick, m->userhost);
+    simple_snprintf(s, sizeof s, "%s!%s", m->nick, m->userhost);
     u = get_user_by_host(s);
     get_user_flagrec(u, &victim, chan->dname);
   
@@ -366,7 +366,7 @@ static void cmd_voice(int idx, char *par)
       dprintf(idx, "%s is not on %s.\n", nick, chan->dname);
       return;
     }
-    egg_snprintf(s, sizeof s, "%s!%s", m->nick, m->userhost);
+    simple_snprintf(s, sizeof s, "%s!%s", m->nick, m->userhost);
     add_mode(chan, '+', 'v', nick);
     dprintf(idx, "Gave voice to %s on %s\n", nick, chan->dname);
     next:;
@@ -504,7 +504,7 @@ static void cmd_op(int idx, char *par)
     dprintf(idx, "%s is not on %s.\n", nick, chan->dname);
     return;
   }
-  egg_snprintf(s, sizeof s, "%s!%s", m->nick, m->userhost);
+  simple_snprintf(s, sizeof s, "%s!%s", m->nick, m->userhost);
   u = get_user_by_host(s);
   get_user_flagrec(u, &victim, chan->dname);
   if (chk_deop(victim, chan)) {
@@ -855,7 +855,7 @@ static void cmd_deop(int idx, char *par)
       dprintf(idx, "I'm not going to deop myself.\n");
       return;
     }
-    egg_snprintf(s, sizeof s, "%s!%s", m->nick, m->userhost);
+    simple_snprintf(s, sizeof s, "%s!%s", m->nick, m->userhost);
     u = get_user_by_host(s);
     get_user_flagrec(u, &victim, chan->dname);
 
@@ -953,7 +953,7 @@ static void cmd_kick(int idx, char *par)
       dprintf(idx, "%s is not on %s\n", nick, chan->dname);
       return;
     }
-    egg_snprintf(s, sizeof s, "%s!%s", m->nick, m->userhost);
+    simple_snprintf(s, sizeof s, "%s!%s", m->nick, m->userhost);
     u = get_user_by_host(s);
     get_user_flagrec(u, &victim, chan->dname);
     if ((chan_op(victim) || (glob_op(victim) && !chan_deop(victim))) &&
@@ -1276,11 +1276,11 @@ static void cmd_channel(int idx, char *par)
   putlog(LOG_CMDS, "*", "#%s# (%s) channel", dcc[idx].nick, chan->dname);
   strlcpy(s, getchanmode(chan), sizeof s);
   if (channel_pending(chan)) {
-    egg_snprintf(s1, sizeof s1, "%s %s", IRC_PROCESSINGCHAN, chan->dname);
+    simple_snprintf(s1, sizeof s1, "%s %s", IRC_PROCESSINGCHAN, chan->dname);
   } else if (channel_active(chan)) {
-    egg_snprintf(s1, sizeof s1, "%s %s", IRC_CHANNEL, chan->dname);
+    simple_snprintf(s1, sizeof s1, "%s %s", IRC_CHANNEL, chan->dname);
   } else {
-    egg_snprintf(s1, sizeof s1, "%s %s", IRC_DESIRINGCHAN, chan->dname);
+    simple_snprintf(s1, sizeof s1, "%s %s", IRC_DESIRINGCHAN, chan->dname);
   }
   dprintf(idx, "%s, %d member%s, mode %s:\n", s1, chan->channel.members,
 	  chan->channel.members == 1 ? "" : "s", s);
@@ -1312,7 +1312,7 @@ static void cmd_channel(int idx, char *par)
       } else
 	strlcpy(s, " --- ", sizeof s);
       if (m->user == NULL) {
-	egg_snprintf(s1, sizeof s1, "%s!%s", m->nick, m->userhost);
+	simple_snprintf(s1, sizeof s1, "%s!%s", m->nick, m->userhost);
 	m->user = get_user_by_host(s1);
       }
       if (m->user == NULL)
@@ -1549,7 +1549,7 @@ static void cmd_adduser(int idx, char *par)
   }
   if (strlen(hand) > HANDLEN)
     hand[HANDLEN] = 0;
-  egg_snprintf(s, sizeof s, "%s!%s", m->nick, m->userhost);
+  simple_snprintf(s, sizeof s, "%s!%s", m->nick, m->userhost);
   if ((u = get_user_by_host(s))) {
     dprintf(idx, "%s is already known as %s.\n", nick, u->handle);
     return;
@@ -1617,7 +1617,7 @@ static void cmd_deluser(int idx, char *par)
     return;
   }
   get_user_flagrec(dcc[idx].user, &user, chan->dname);
-  egg_snprintf(s, sizeof s, "%s!%s", m->nick, m->userhost);
+  simple_snprintf(s, sizeof s, "%s!%s", m->nick, m->userhost);
   if (!(u = get_user_by_host(s))) {
     dprintf(idx, "%s is not a valid user.\n", nick);
     return;
