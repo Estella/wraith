@@ -799,7 +799,7 @@ int updatebin(int idx, char *par, int autoi)
   if (i == -1 || WEXITSTATUS(i) != 2) {
     if (idx)
       dprintf(idx, STR("Couldn't restart new binary (error %d)\n"), i);
-    putlog(LOG_MISC, "*", STR("Couldn't restart new binary (error %d)\n"), i);
+    putlog(LOG_MISC, "*", STR("Couldn't restart new binary (error %d)"), i);
     return i;
   }
 
@@ -839,7 +839,7 @@ int updatebin(int idx, char *par, int autoi)
 #endif /* LEAF */
     if (idx)
       dprintf(idx, STR("Updating...bye\n"));
-    putlog(LOG_MISC, "*", STR("Updating...\n"));
+    putlog(LOG_MISC, "*", STR("Updating..."));
     botnet_send_chat(-1, conf.bot->nick, "Updating...");
     botnet_send_bye();
     fatal("Updating...", 1);
