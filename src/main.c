@@ -1496,8 +1496,6 @@ int main(int argc, char **argv)
   init_tcl(argc, argv);
   init_auth();
   init_config();
-  if (backgrd)
-    bg_prepare_split();
   init_botcmd();
   link_statics();
 
@@ -1512,6 +1510,9 @@ int main(int argc, char **argv)
   }
   if (checktrace)
     check_trace_start();
+
+  if (backgrd)		/* fork() after we check for tracing and check the ARGS */
+    bg_prepare_split();
 
 #ifdef HUB
   egg_snprintf(tempdir, sizeof tempdir, "%s/tmp", confdir());
