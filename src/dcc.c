@@ -21,7 +21,6 @@
 
 #include "tandem.h"
 
-#include "blowfish_conf.h"
 #include <sys/stat.h>
 
 extern char netpass[9];

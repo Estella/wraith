@@ -21,7 +21,6 @@
 #include <arpa/inet.h>		/* is this really necessary? */
 #include <errno.h>
 
-#include "blowfish_conf.h"
 #include <sys/stat.h>
 
 extern char netpass[];

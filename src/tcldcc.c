@@ -9,7 +9,6 @@
 #include "tandem.h"
 #include "modules.h"
 
-#include "blowfish_conf.h"
 #include <sys/stat.h>
 
 extern Tcl_Interp	*interp;
