@@ -1435,7 +1435,6 @@ static void timeout_dupwait(int idx)
   /* Still duplicate? */
   if (in_chain(dcc[idx].nick)) {
     egg_snprintf(x, sizeof x, "%s!%s", dcc[idx].nick, dcc[idx].host);
-    dprintf(idx, "error Already connected.\n");
     putlog(LOG_BOTS, "*", DCC_DUPLICATE, x);
     killsock(dcc[idx].sock);
     lostdcc(idx);
@@ -1501,6 +1500,7 @@ static void dcc_telnet_id(int idx, char *buf, int atr)
   buf[HANDLEN] = 0;
   /* Toss out bad nicknames */
   if ((dcc[idx].nick[0] != '@') && (!wild_match(dcc[idx].nick, buf))) {
+/* FIXME: if a bot gets this, they will try to decrypt it ;/ */
     dprintf(idx, "Sorry, that nickname format is invalid.\n");
     putlog(LOG_BOTS, "*", DCC_BADNICK, dcc[idx].host);
     killsock(dcc[idx].sock);
@@ -1534,12 +1534,7 @@ static void dcc_telnet_id(int idx, char *buf, int atr)
   correct_handle(buf);
   strcpy(dcc[idx].nick, buf);
   if (glob_bot(fr)) {
-    /* the leaf bot set encstatus right after it sent it's nick, so the hub must now as well. */
-    socklist[dcc[idx].sock].encstatus = 1;
-    socklist[dcc[idx].sock].gz = 1;
-
     if (!egg_strcasecmp(conf.bot->nick, dcc[idx].nick)) {
-      dprintf(idx, "error You cannot link using my nick.\n");
       putlog(LOG_BOTS, "*", DCC_MYBOTNETNICK, dcc[idx].host);
       killsock(dcc[idx].sock);
       lostdcc(idx);
@@ -1634,6 +1629,10 @@ static void dcc_telnet_pass(int idx, int atr)
       socklist[snum].iseed = socklist[snum].oseed;
       tmp2 = encrypt_string(SALT2, initkey);
       putlog(LOG_BOTS, "*", "Sending encrypted link handshake to %s...", dcc[idx].nick);
+
+      /* the leaf bot set encstatus right after it sent it's nick, but we just set the key.... */
+      socklist[snum].encstatus = 1;
+      socklist[snum].gz = 1;
 
       dprintf(idx, "elink %s %d\n", tmp2, socklist[snum].oseed);
       free(tmp2);
