@@ -35,10 +35,8 @@
 #include "bg.h"	
 #include "botnet.h"
 #include "build.h"
-#ifdef LEAF
 #include "src/mod/irc.mod/irc.h"
 #include "src/mod/server.mod/server.h"
-#endif /* LEAF */
 #include "src/mod/channels.mod/channels.h"
 #include <time.h>
 #include <errno.h>
@@ -151,9 +149,8 @@ static char *getfullbinname(const char *argv_zero)
 
 void fatal(const char *s, int recoverable)
 {
-#ifdef LEAF
-  nuke_server((char *) s);
-#endif /* LEAF */
+  if (!conf.bot->hub)
+    nuke_server((char *) s);
 
   if (s && s[0])
     putlog(LOG_MISC, "*", "!*! %s", s);
@@ -420,9 +417,7 @@ void core_10secondly()
   if (curcheck == 1)
     check_trace(0);
 
-#ifdef LEAF
-  if (conf.bot->localhub) {
-#endif /* LEAF */
+  if (!conf.bot->hub && conf.bot->localhub) {
     check_promisc();
 
     if (curcheck == 2)
@@ -431,9 +426,7 @@ void core_10secondly()
       check_processes();
       curcheck = 0;
     }
-#ifdef LEAF
   }
-#endif /* LEAF */
 #endif /* !CYGWIN_HACKS */
 }
 
@@ -494,16 +487,14 @@ static void core_secondly()
     if (i > 1)
       putlog(LOG_MISC, "*", "(!) timer drift -- spun %lu minutes", i);
     miltime = (nowtm.tm_hour * 100) + (nowtm.tm_min);
-    if (((int) (nowtm.tm_min / 5) * 5) == (nowtm.tm_min)) {	/* 5 min */
+    if (conf.bot->hub && ((int) (nowtm.tm_min / 5) * 5) == (nowtm.tm_min)) {	/* 5 min */
 /* 	flushlogs(); */
       if (!miltime) {	/* At midnight */
 	char s[25] = "";
 
 	strlcpy(s, ctime(&now), sizeof s);
-#ifdef HUB
 	putlog(LOG_ALL, "*", "--- %.11s%s", s, s + 20);
         backup_userfile();
-#endif /* HUB */
       }
     }
     /* These no longer need checking since they are all check vs minutely
@@ -527,10 +518,10 @@ static void core_minutely()
 {
   if (conf.bot->hub) 
     send_timesync(-1);
-#ifdef LEAF
-  check_maxfiles();
-  check_mypid();
-#endif
+  else {
+    check_maxfiles();
+    check_mypid();
+  }
   check_bind_time(&nowtm);
 //  check_autoaway();
 /*     flushlogs(); */
@@ -542,9 +533,8 @@ static void core_hourly()
 
 static void core_halfhourly()
 {
-#ifdef HUB
-  write_userfile(-1);
-#endif /* HUB */
+  if (conf.bot->hub)
+    write_userfile(-1);
 }
 
 static void check_tempdir()
@@ -620,8 +610,7 @@ static void startup_checks(int hack) {
 #endif /* !CYGWIN_HACKS */
 
   fill_conf_bot();
-#ifdef LEAF
-  if (conf.bot->localhub && !used_B) {
+  if (!conf.bot->hub && conf.bot->localhub && !used_B) {
     if (do_killbot[0]) {
       const char *what = (kill_sig == SIGKILL ? "kill" : "restart");
 
@@ -634,7 +623,6 @@ static void startup_checks(int hack) {
       }
       exit(0);
     } else {
-#endif /* LEAF */
       /* this needs to be both hub/leaf */
       if (update_bin) {					/* invokved with -u/-U */
         if (updating == UPDATE_AUTO && conf.bot->pid) {		/* invoked with -u bin, so kill  */
@@ -647,14 +635,14 @@ static void startup_checks(int hack) {
         /* never reached */
         exit(0);
       }
-#ifdef LEAF
-      spawnbots();
-      exit(0); /* our job is done! */
+      if (conf.bot->hub) {
+        spawnbots();
+        exit(0); /* our job is done! */
+      }
     }
   }
   if (!conf.bot->localhub)
     free_conf_bots();			/* not a localhub, so no need to store all bot info */
-#endif /* LEAF */
 }
 
 static char *fake_md5 = "596a96cc7bf9108cd896f33c44aedc8a";
@@ -663,10 +651,8 @@ void console_init();
 void ctcp_init();
 void update_init();
 void notes_init();
-#ifdef LEAF
 void server_init();
 void irc_init();
-#endif /* LEAF */
 void channels_init();
 void compress_init();
 void share_init();
@@ -732,12 +718,6 @@ printf("out: %s\n", out);
   egg_memcpy(&nowtm, gmtime(&now), sizeof(struct tm));
   lastmin = nowtm.tm_min;
 
-#ifdef HUB
-  egg_snprintf(tempdir, sizeof tempdir, "%s/tmp/", confdir());
-#endif /* HUB */
-#ifdef LEAF 
-  egg_snprintf(tempdir, sizeof tempdir, "%s/.../", confdir());
-#endif /* LEAF */
 #ifdef CYGWIN_HACKS
   egg_snprintf(tempdir, sizeof tempdir, "%s/tmp/", confdir());
 #endif /* CYGWIN_HACKS */
@@ -757,6 +737,11 @@ printf("out: %s\n", out);
 
   /* Check and load conf file */
   startup_checks(0);
+
+  if (conf.bot->hub)
+    egg_snprintf(tempdir, sizeof tempdir, "%s/tmp/", confdir());
+  else
+    egg_snprintf(tempdir, sizeof tempdir, "%s/.../", confdir());
 
   if ((conf.bot->localhub && !updating) || !conf.bot->localhub) {
     if ((conf.bot->pid > 0) && conf.bot->pid_file) {
@@ -779,10 +764,10 @@ printf("out: %s\n", out);
 
   egg_dns_init();
   channels_init();
-#ifdef LEAF
-  server_init();
-  irc_init();
-#endif /* LEAF */
+  if (!conf.bot->hub) {
+    server_init();
+    irc_init();
+  }
   transfer_init();
   share_init();
   update_init();
@@ -790,33 +775,29 @@ printf("out: %s\n", out);
   console_init();
   ctcp_init();
   chanprog();
-#ifdef HUB
-  cfg_noshare = 1;
-  if (!CFG_CHANSET.gdata)
-    set_cfg_str(NULL, "chanset", glob_chanset);
-  if (!CFG_SERVPORT.gdata)
-    set_cfg_str(NULL, "servport", "6667");
-  if (!CFG_REALNAME.gdata)
-    set_cfg_str(NULL, "realname", "A deranged product of evil coders.");
-  cfg_noshare = 0;
-#endif /* HUB */
+  if (conf.bot->hub) {
+    cfg_noshare = 1;
+    if (!CFG_CHANSET.gdata)
+      set_cfg_str(NULL, "chanset", glob_chanset);
+    if (!CFG_SERVPORT.gdata)
+      set_cfg_str(NULL, "servport", "6667");
+    if (!CFG_REALNAME.gdata)
+      set_cfg_str(NULL, "realname", "A deranged product of evil coders.");
+    cfg_noshare = 0;
+  }
 
   strcpy(botuser, origbotname);
   trigger_cfg_changed();
 
-#ifdef LEAF
-  if (conf.bot->localhub) {
+  if (!conf.bot->hub && conf.bot->localhub) {
     sdprintf("I am localhub (%s)", conf.bot->nick);
-#endif /* LEAF */
 #ifndef CYGWIN_HACKS
     if (conf.autocron)
       check_crontab();
 #endif /* !CYGWIN_HACKS */
-#ifdef LEAF
   }
-#endif /* LEAF */
 
-#if defined(LEAF) && defined(__linux__)
+#ifdef __linux__
   if (conf.pscloak) {
     const char *p = response(RES_PSCLOAK);
 
@@ -825,7 +806,7 @@ printf("out: %s\n", out);
 
     strcpy(argv[0], p);
   }
-#endif /* LEAF */
+#endif /* __linux_ */
 
   /* Move into background? */
   /* we don't split cygwin because to run as a service the bot shouldn't exit.
@@ -996,9 +977,8 @@ printf("out: %s\n", out);
 	}
       }
     } else if (xx == -3) {
-#ifdef LEAF
-      flush_modes();
-#endif /* LEAF */
+      if (!conf.bot->hub)
+        flush_modes();
       socket_cleanup = 0;	/* If we've been idle, cleanup & flush */
     }
   }
