@@ -13,6 +13,11 @@
 #  include "config.h"
 #endif
 #include "garble.h"
+#include "debug.h"
+#include "eggdrop.h"
+#include "flags.h"
+#include "chan.h"
+#include "compat/compat.h"
 
 
 
@@ -22,17 +27,12 @@
 #ifdef HAVE_STRINGS_H
 #  include <strings.h>
 #endif
-#include <sys/types.h>
 #include "lang.h"
-#include "eggdrop.h"
-#include "flags.h"
 #ifdef HAVE_ZLIB_H
 #  include <zlib.h>
 #endif /* HAVE_ZLIB_H */
 
 #include "tclegg.h"
-#include "chan.h"
-#include "compat/compat.h"
 
 
 /* This macro copies (_len - 1) bytes from _source to _target. The

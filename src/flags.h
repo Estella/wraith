@@ -7,6 +7,13 @@
 #ifndef _EGG_FLAGS_H
 #define _EGG_FLAGS_H
 
+#include "chan.h"
+
+/* For private() checking */
+#define PRIV_OP 1
+#define PRIV_VOICE 2
+
+
 struct flag_record {
   int match;
   int global;
@@ -186,6 +193,12 @@ int flagrec_ok(struct flag_record *, struct flag_record *);
 int sanity_check(int);
 int chan_sanity_check(int, int);
 char geticon(int);
+
+int private(struct flag_record, struct chanset_t *, int);
+int chk_op(struct flag_record, struct chanset_t *);
+int chk_deop(struct flag_record, struct chanset_t *);
+int chk_voice(struct flag_record, struct chanset_t *);
+int chk_devoice(struct flag_record, struct chanset_t *);
 
 #endif				/* MAKING_MODS */
 
