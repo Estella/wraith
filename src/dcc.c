@@ -46,7 +46,7 @@ int	dcc_total = 0;		/* Total dcc's				   */
 char	network[41] = "EFnet"; /* Name of the IRC network you're on  */
 
 static int	password_timeout = 20;	/* Time to wait for a password from a user */
-static int     auth_timeout = 40;
+static int      auth_timeout = 40;
 static int	bot_timeout = 15;	/* Bot timeout value			   */
 static int	identtimeout = 15;	/* Timeout value for ident lookups	   */
 static int	dupwait_timeout = 5;	/* Timeout for rejecting duplicate entries */
@@ -211,7 +211,6 @@ void send_timesync(int idx)
   }
 #endif /* HUB */
 }
-
 
 static void greet_new_bot(int idx)
 {

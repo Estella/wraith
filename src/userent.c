@@ -773,11 +773,6 @@ struct user_entry_type USERENTRY_BOTADDR =
   "BOTADDR"
 };
 
-static int hosts_null(struct userrec *u, struct user_entry *e)
-{
-  return 1;
-}
-
 #ifdef HUB
 static int hosts_write_userfile(FILE *f, struct userrec *u, struct user_entry *e)
 {
@@ -884,7 +879,7 @@ struct user_entry_type USERENTRY_HOSTS =
 {
   0,
   hosts_gotshare,
-  hosts_null,
+  NULL,
 #ifdef HUB
   hosts_write_userfile,
 #endif /* HUB */
