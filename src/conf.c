@@ -80,7 +80,7 @@ spawnbots()
       }
 
       size = strlen(bot->nick) + strlen(binname) + 20;
-      run = calloc(1, size);
+      run = (char *) calloc(1, size);
       egg_snprintf(run, size, "%s -B %s", binname, bot->nick);
       sdprintf("Spawning '%s': %s", bot->nick, run);
       status = system(run);
@@ -180,7 +180,7 @@ confedit()
 
       setgid(getgid());
       setuid(getuid());
-      run = calloc(1, size);
+      run = (char *) calloc(1, size);
       /* child */
       egg_snprintf(run, size, "%s %s", editor, s);
       execlp("/bin/sh", "/bin/sh", "-c", run, NULL);
@@ -507,7 +507,7 @@ readconf(char *fname, int bits)
     fatal("Cannot read config", 0);
 
   free_conf_bots();
-  inbuf = calloc(1, 201);
+  inbuf = (char *) calloc(1, 201);
   while (fgets(inbuf, 201, f) != NULL) {
     char *line = NULL, *temp_ptr = NULL;
 

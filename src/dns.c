@@ -91,7 +91,7 @@ static void dns_dcchostbyip(IP ip, char *hostn, int ok, void *other)
         (dcc[idx].u.dns->ip == ip)) {
       if (dcc[idx].u.dns->host)
         free(dcc[idx].u.dns->host);
-      dcc[idx].u.dns->host = calloc(1, strlen(hostn) + 1);
+      dcc[idx].u.dns->host = (char *) calloc(1, strlen(hostn) + 1);
       strcpy(dcc[idx].u.dns->host, hostn);
       if (ok)
         dcc[idx].u.dns->dns_success(idx);
@@ -145,7 +145,7 @@ void dcc_dnsipbyhost(char *hostn)
     }
   }
 
-  de = calloc(1, sizeof(devent_t));
+  de = (devent_t *) calloc(1, sizeof(devent_t));
 
   /* Link into list. */
   de->next = dns_events;
@@ -172,7 +172,7 @@ void dcc_dnshostbyip(IP ip)
     }
   }
 
-  de = calloc(1, sizeof(devent_t));
+  de = (devent_t *) calloc(1, sizeof(devent_t));
 
   /* Link into list. */
   de->next = dns_events;
