@@ -1095,7 +1095,6 @@ static void cmd_channels(int idx, char *par) {
 }
 
 
-int dns_report(int, int);  
 void channels_report(int, int);
 void transfer_report(int, int);
 void share_report(int, int);
@@ -1120,7 +1119,6 @@ static void cmd_status(int idx, char *par)
     putlog(LOG_CMDS, "*", "#%s# status", dcc[idx].nick);
     tell_verbose_status(idx);
   }
-  dns_report(idx, all);  
 #ifdef LEAF
   server_report(idx, all);
   irc_report(idx, all);
