@@ -22,6 +22,7 @@
 
 
 #include "garble.h"
+#include "conf.h"
 #include "debug.h"
 #include "eggdrop.h"
 #include "flags.h"
