@@ -14,6 +14,12 @@
 #include "chanprog.h"
 #include "settings.h"
 #include "src/mod/channels.mod/channels.h"
+#ifdef LEAF
+#include "src/mod/server.mod/server.h"
+#endif /* LEAF */
+#ifdef HUB
+#include "src/mod/share.mod/share.h"
+#endif /* HUB */
 #include "rfc1459.h"
 #include "net.h"
 #include "misc.h"
@@ -30,7 +36,6 @@
 #endif
 #endif
 #include <sys/utsname.h>
-#include "hooks.h"
 
 struct chanset_t 	*chanset = NULL;	/* Channel list			*/
 char 			admin[121] = "";	/* Admin info			*/
@@ -597,19 +602,9 @@ void reload()
   checkchans(1);
   loading = 0;
   reaffirm_owners();
-  call_hook(HOOK_READ_USERFILE);
+  hook_read_userfile();
 }
 #endif /* HUB */
-
-void rehash()
-{
-  call_hook(HOOK_PRE_REHASH);
-  noshare = 1;
-  clear_userlist(userlist);
-  noshare = 0;
-  userlist = NULL;
-  chanprog();
-}
 
 /* Oddly enough, written by proton (Emech's coder)
  */
