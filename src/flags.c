@@ -395,7 +395,7 @@ get_user_flagrec(struct userrec *u, struct flag_record *fr, const char *chname)
  * This function does not check if the user has "op" access, it only checks if the user is
  * restricted by +private for the channel
  */
-inline int
+int
 private(struct flag_record fr, struct chanset_t *chan, int type)
 {
   if (!chan || !channel_private(chan) || glob_bot(fr) || glob_owner(fr))
@@ -412,7 +412,7 @@ private(struct flag_record fr, struct chanset_t *chan, int type)
   return 1;                     /* user is restricted by +private */
 }
 
-inline int
+int
 chk_op(struct flag_record fr, struct chanset_t *chan)
 {
   if (!chan || (!private(fr, chan, PRIV_OP) && !chk_deop(fr))) {
@@ -422,7 +422,7 @@ chk_op(struct flag_record fr, struct chanset_t *chan)
   return 0;
 }
 
-inline int
+int
 chk_autoop(struct flag_record fr, struct chanset_t *chan)
 {
   if (glob_bot(fr))
@@ -434,7 +434,7 @@ chk_autoop(struct flag_record fr, struct chanset_t *chan)
   return 0;
 }
 
-inline int
+int
 chk_deop(struct flag_record fr)
 {
   if (chan_deop(fr) || (glob_deop(fr) && !chan_op(fr)))
@@ -443,7 +443,7 @@ chk_deop(struct flag_record fr)
     return 0;
 }
 
-inline int
+int
 chk_voice(struct flag_record fr, struct chanset_t *chan)
 {
   if (!chan || (!private(fr, chan, PRIV_VOICE) && !chk_devoice(fr))) {
@@ -453,7 +453,7 @@ chk_voice(struct flag_record fr, struct chanset_t *chan)
   return 0;
 }
 
-inline int
+int
 chk_devoice(struct flag_record fr)
 {
   if (chan_quiet(fr) || (glob_quiet(fr) && !chan_voice(fr)))
@@ -462,13 +462,13 @@ chk_devoice(struct flag_record fr)
     return 0;
 }
 
-inline int
+int
 chk_noflood(struct flag_record fr)
 {
   return (chan_noflood(fr) || glob_noflood(fr));
 }
 
-inline int
+int
 isupdatehub()
 {
 #ifdef HUB
@@ -479,7 +479,7 @@ isupdatehub()
     return 0;
 }
 
-inline int
+int
 ischanhub()
 {
   if (conf.bot->u && (conf.bot->u->flags & USER_CHANHUB))
