@@ -39,6 +39,7 @@ OBJS = auth.o \
 	match.o \
 	misc.o \
 	misc_file.o \
+	mempool.o \
 	net.o \
 	adns.o \
 	response.o \
