@@ -772,9 +772,14 @@ static void got_op(struct chanset_t *chan, char *nick, char *from,
     dprintf(DP_MODE, "WHO %s\n", who);
     return;
   }
+
   /* Did *I* just get opped? */
-  if (!me_op(chan) && match_my_nick(who))
+  if (!me_op(chan) && match_my_nick(who)) {
+    /* take asap. */
+    if (channel_take(chan))
+      do_take(chan);
     check_chan = 1;
+  }
 
   if (!m->user) {
     simple_sprintf(s, "%s!%s", m->nick, m->userhost);
@@ -1283,6 +1288,7 @@ static int gotmode(char *from, char *msg)
           }
         }
       }
+
       /* check for mop */
       if (chan && (ops >= 3) && me_op(chan)) {
         if (channel_nomop(chan)) {
@@ -1470,8 +1476,7 @@ static int gotmode(char *from, char *msg)
       z = strlen(msg);
       if (msg[--z] == ' ')	/* I hate cosmetic bugs :P -poptix */
 	msg[z] = 0;
-      putlog(LOG_MODES, chan->dname, "%s: mode change '%s %s' by %s",
-	     ch, chg, msg, from);
+      putlog(LOG_MODES, chan->dname, "%s: mode change '%s %s' by %s", ch, chg, msg, from);
       u = get_user_by_host(from);
       get_user_flagrec(u, &user, ch);
       nick = splitnick(&from);
