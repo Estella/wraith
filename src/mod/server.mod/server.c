@@ -14,6 +14,7 @@ static const char rcsid_[] = "$Id$";
 #include "src/botmsg.h"
 #include "src/rfc1459.h"
 #include "src/settings.h"
+#include "src/match.h"
 #include "src/tclhash.h"
 #include "src/users.h"
 #include "src/userrec.h"

@@ -23,13 +23,25 @@ static char   last_invchan[300] = "";
  */
 #define CHANNEL_ID_LEN 5
 
+static void print_memberlist(memberlist *toprint)
+{
+  memberlist *m = NULL;
+
+  for (m = toprint; m && m->nick[0]; m = m->next) {
+    sdprintf("%s!%s user: %s tried: %d hops: %d", m->nick, m->userhost, m->user ? m->user->handle : "", m->tried_getuser, m->hops);
+  }
+}
+
 /* Returns a pointer to a new channel member structure.
  */
-static memberlist *newmember(struct chanset_t *chan, char * nick)
+static memberlist *newmember(struct chanset_t *chan, char *nick)
 {
-  memberlist *x = x = chan->channel.member, *lx = NULL, *n = (memberlist *) my_calloc(1, sizeof(memberlist));
+  memberlist *x = chan->channel.member, 
+             *lx = NULL, 
+             *n = (memberlist *) my_calloc(1, sizeof(memberlist));
 
-  while (x && x->nick[0] && (rfc_casecmp(x->nick, nick)<0)) {
+  /* This sorts the list */
+  while (x && x->nick[0] && (rfc_casecmp(x->nick, nick) < 0)) {
     lx = x;
     x = x->next;
   }
@@ -42,11 +54,12 @@ static memberlist *newmember(struct chanset_t *chan, char * nick)
   n->hops = -1;
   if (!lx) {
     n->next = chan->channel.member;
-    chan->channel.member=n;
+    chan->channel.member = n;
   } else {
     n->next = lx->next;
     lx->next = n;
   }
+
   chan->channel.members++;
   return n;
 }
@@ -1175,8 +1188,9 @@ void recheck_channel(struct chanset_t *chan, int dobans)
 
   if (stacking)
     return;			/* wewps */
+
   if (!userlist || loading)                /* Bot doesnt know anybody */
-    return;                     /* ... it's better not to deop everybody */
+    return;        		           /* ... it's better not to deop everybody */
 
   memberlist *m = NULL;
   char s[UHOSTLEN] = "";
@@ -1233,16 +1247,16 @@ void recheck_channel(struct chanset_t *chan, int dobans)
   }
 
   for (m = chan->channel.member; m && m->nick[0]; m = m->next) { 
-    sprintf(s, "%s!%s", m->nick, m->userhost);
+    simple_sprintf(s, "%s!%s", m->nick, m->userhost);
 
     if (!m->user && !m->tried_getuser) {
            m->tried_getuser = 1;
            m->user = get_user_by_host(s);
     }
     get_user_flagrec(m->user, &fr, chan->dname);
-      if (glob_bot(fr) && chan_hasop(m) && !match_my_nick(m->nick))
-	stop_reset = 1;
-      check_this_member(chan, m->nick, &fr);
+    if (glob_bot(fr) && chan_hasop(m) && !match_my_nick(m->nick))
+      stop_reset = 1;
+    check_this_member(chan, m->nick, &fr);
   }
 
   if (dobans) {
@@ -1547,15 +1561,18 @@ static int got352or4(struct chanset_t *chan, char *user, char *host, char *nick,
   struct flag_record fr = { FR_GLOBAL | FR_CHAN, 0, 0, 0 };
   char userhost[UHOSTLEN] = "";
   memberlist *m = ismember(chan, nick);	/* in my channel list copy? */
-  bool waschanop;
+  bool waschanop = 0, me = 0;
 //  struct chanset_t *ch = NULL;
 //  memberlist *ml = NULL;
+
+  me = match_my_nick(nick);
 
   if (!m) {			/* Nope, so update */
     m = newmember(chan, nick);	/* Get a new channel entry */
     m->joined = m->split = m->delay = 0L;	/* Don't know when he joined */
     m->flags = 0;		/* No flags for now */
     m->last = now;		/* Last time I saw him */
+    m->user = NULL;
   }
   if (!m->nick[0])
     strcpy(m->nick, nick);	/* Store the nick in list */
@@ -1580,14 +1597,7 @@ static int got352or4(struct chanset_t *chan, char *user, char *host, char *nick,
   if (!m->userhost[0])
     simple_sprintf(m->userhost, "%s@%s", user, host);
   simple_sprintf(userhost, "%s!%s", nick, m->userhost);
-  /* Combine n!u@h */
-//  m->user = NULL;		/* No handle match (yet) */
-  if (!m->user)
-    m->tried_getuser = 0;
-  if (match_my_nick(nick)) {	/* Is it me? */
-    strcpy(botuserhost, m->userhost);	/* Yes, save my own userhost */
-    m->joined = now;		/* set this to keep the whining masses happy */
-  }
+
   waschanop = me_op(chan);      /* Am I opped here? */
   if (strchr(flags, '@') != NULL)	/* Flags say he's opped? */
     m->flags |= (CHANOP | WASOP);	/* Yes, so flag in my table */
@@ -1604,20 +1614,26 @@ static int got352or4(struct chanset_t *chan, char *user, char *host, char *nick,
   if (!(m->flags & (CHANVOICE | CHANOP)))
     m->flags |= STOPWHO;
 
-  if (!waschanop && me_op(chan) && match_my_nick(nick))
-    recheck_channel(chan, 1);
-  if (!me_op(chan) && match_my_nick(nick) && any_ops(chan))
-    chan->channel.do_opreq = 1;
+  if (me) {			/* Is it me? */
+//    strcpy(botuserhost, m->userhost);		/* Yes, save my own userhost */
+    m->joined = now;				/* set this to keep the whining masses happy */
 
-  if (!m->user)
+    if (!waschanop && me_op(chan))
+      recheck_channel(chan, 1);
+    if (!me_op(chan) && any_ops(chan))
+      chan->channel.do_opreq = 1;
+  }
+
+  if (!m->user && !m->tried_getuser) {
     m->user = get_user_by_host(userhost);
-  m->tried_getuser = 1;
+    m->tried_getuser = 1;
+  }
   get_user_flagrec(m->user, &fr, chan->dname);
   
   if (me_op(chan)) {
     /* are they a chanop, and me too */
         /* are they a channel or global de-op */
-    if (chan_hasop(m) && chk_deop(fr, chan) && !match_my_nick(nick)) 
+    if (chan_hasop(m) && chk_deop(fr, chan) && !me)
         /* && target_priority(chan, m, 1) */
       add_mode(chan, '-', 'o', nick);
 
@@ -1626,7 +1642,7 @@ static int got352or4(struct chanset_t *chan, char *user, char *host, char *nick,
         /* and user matches a ban */
         (u_match_mask(global_bans, userhost) || u_match_mask(chan->bans, userhost)) &&
         /* and it's not me, and i'm an op */
-        !match_my_nick(nick)) {
+        !me) {
       /*  && target_priority(chan, m, 0) */
       dprintf(DP_SERVER, "KICK %s %s :%s%s\n", chan->name, nick, bankickprefix, response(RES_BANNED));
       m->flags |= SENTKICK;
@@ -1635,7 +1651,7 @@ static int got352or4(struct chanset_t *chan, char *user, char *host, char *nick,
     else if ((chan_kick(fr) || glob_kick(fr)) &&
            /* and it's not me :) who'd set me +k anyway, a sicko? */
            /* and if im an op */
-           !match_my_nick(nick)) {
+           !me) {
            /* && target_priority(chan, m, 0) */
       /* cya later! */
       quickban(chan, userhost);
@@ -1712,6 +1728,7 @@ static int got315(char *from, char *msg)
   /* May have left the channel before the who info came in */
   if (!chan || !channel_pending(chan))
     return 0;
+
   /* Finished getting who list, can now be considered officially ON CHANNEL */
   chan->status |= CHAN_ACTIVE;
   chan->status &= ~(CHAN_PEND | CHAN_JOINING);
@@ -1729,7 +1746,7 @@ static int got315(char *from, char *msg)
       recheck_channel(chan, 1);
     else if (chan->channel.members == 1)
       chan->status |= CHAN_STOP_CYCLE;
-    else 
+    else
       request_op(chan);
   }
   /* do not check for i-lines here. */
