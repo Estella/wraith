@@ -14,6 +14,7 @@
 #endif
 
 #include "garble.h"
+#include "sprintf.h"
 #include "conf.h"
 #include "debug.h"
 #include "mempool.h"

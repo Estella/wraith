@@ -89,13 +89,13 @@ static void bot_chan2(int idx, char *msg)
   for (p = from; *p;) {
     if ((*p < 32) || (*p == 127))
 /* FIXME: overlap      strcpy(p, p + 1); */
-      sprintf(p, "%s", p + 1);
+      simple_sprintf(p, "%s", p + 1);
     else
       p++;
   }
   p = strchr(from, '@');
   if (p) {
-    sprintf(TBUF, "<%s> %s", from, msg);
+    simple_sprintf(TBUF, "<%s> %s", from, msg);
     *p = 0;
     if (!partyidle(p + 1, from)) {
       *p = '@';
@@ -105,7 +105,7 @@ static void bot_chan2(int idx, char *msg)
     *p = '@';
     p++;
   } else {
-    sprintf(TBUF, "*** (%s) %s", from, msg);
+    simple_sprintf(TBUF, "*** (%s) %s", from, msg);
     p = from;
   }
   i = nextbot(p);
@@ -245,7 +245,7 @@ static void bot_actchan(int idx, char *par)
   chan = base64_to_int(p);
   for (p = from; *p;) {
     if ((*p < 32) || (*p == 127))
-      sprintf(p, "%s", p + 1);
+      simple_sprintf(p, "%s", p + 1);
 /* FIXME: overlap      strcpy(p, p + 1); */
     else
       p++;
@@ -350,7 +350,7 @@ static void remote_tell_who(int idx, char *nick, int chan)
       l = strlen(c->dname);
       if (i + l < 1021) {
 	if (i > 10) {
-          sprintf(s, "%s, %s", s, c->dname);
+          simple_sprintf(s, "%s, %s", s, c->dname);
 	} else {
           strcpy(s, c->dname);
 	  i += (l + 2);
@@ -462,7 +462,7 @@ static void bot_who(int idx, char *par)
   from = newsplit(&par);
   p = strchr(from, '@');
   if (!p) {
-    sprintf(TBUF, "%s@%s", from, dcc[idx].nick);
+    simple_sprintf(TBUF, "%s@%s", from, dcc[idx].nick);
     from = TBUF;
   }
   to = newsplit(&par);
@@ -980,7 +980,7 @@ static void bot_join(int idx, char *par)
   }
   u = get_user_by_handle(userlist, nick);
   if (u) {
-    sprintf(TBUF, "@%s", bot);
+    simple_sprintf(TBUF, "@%s", bot);
     touch_laston(u, TBUF, now);
   }
   i = addparty(bot, nick, chan, y[0], sock, par, &i2);
@@ -1014,7 +1014,7 @@ static void bot_part(int idx, char *par)
 
   u = get_user_by_handle(userlist, nick);
   if (u) {
-    sprintf(TBUF, "@%s", bot);
+    simple_sprintf(TBUF, "@%s", bot);
     touch_laston(u, TBUF, now);
   }
   if ((partyidx = getparty(bot, sock)) != -1) {
