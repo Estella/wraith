@@ -30,7 +30,7 @@ static int flud_thr;		/* msg flood threshold */
 static int flud_time;		/* msg flood time */
 static int flud_ctcp_thr;	/* ctcp flood threshold */
 static int flud_ctcp_time;	/* ctcp flood time */
-static char botuserhost[121];	/* bot's user@host (refreshed whenever the
+char botuserhost[121];	/* bot's user@host (refreshed whenever the
 				   bot joins a channel) */
 				/* may not be correct user@host BUT it's
 				   how the server sees it */
@@ -47,7 +47,7 @@ static int waiting_for_awake;	/* set when i unidle myself, cleared when
 static time_t server_online;	/* server connection time */
 static time_t server_cycle_wait;	/* seconds to wait before
 					   re-beginning the server list */
-static char botrealname[121];	/* realname of bot */
+char botrealname[121];	/* realname of bot */
 static int server_timeout;	/* server timeout for connecting */
 static int never_give_up;	/* never give up when connecting to servers? */
 static int strict_servernames;	/* don't update server list */
@@ -80,7 +80,7 @@ static int optimize_kicks;
 
 static void empty_msgq(void);
 static void next_server(int *, char *, unsigned int *, char *);
-static void disconnect_server(int);
+static void disconnect_server(int, int);
 static int calc_penalty(char *);
 static int fast_deq(int);
 static char *splitnicks(char **);
@@ -1375,7 +1375,7 @@ static void server_5minutely()
       /* Uh oh!  Never got pong from last time, five minutes ago!
        * Server is probably stoned.
        */
-      disconnect_server(1);
+      disconnect_server(servidx, DO_LOST);
       putlog(LOG_SERV, "*", IRC_SERVERSTONED);
     } else if (!trying_server) {
       /* Check for server being stoned. */
