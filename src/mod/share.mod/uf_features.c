@@ -55,7 +55,7 @@ typedef struct {
 } uff_head_t;
 
 static uff_head_t	uff_list;
-static char		uff_sbuf[512];
+static char		uff_sbuf[512] = "";
 
 
 /*
@@ -73,7 +73,7 @@ static void uff_init(void)
  */
 static uff_list_t *uff_findentry_byflag(int flag)
 {
-  uff_list_t *ul;
+  uff_list_t *ul = NULL;
 
   for (ul = uff_list.start; ul; ul = ul->next)
     if (ul->entry->flag & flag)
@@ -86,7 +86,7 @@ static uff_list_t *uff_findentry_byflag(int flag)
  */
 static uff_list_t *uff_findentry_byname(char *feature)
 {
-  uff_list_t *ul;
+  uff_list_t *ul = NULL;
 
   for (ul = uff_list.start; ul; ul = ul->next)
     if (!strcmp(ul->entry->feature, feature))
@@ -98,7 +98,7 @@ static uff_list_t *uff_findentry_byname(char *feature)
  */
 static void uff_insert_entry(uff_list_t *nul)
 {
-  uff_list_t	*ul, *lul = NULL;
+  uff_list_t *ul = NULL, *lul = NULL;
 
   ul = uff_list.start;
   while (ul && ul->entry->priority < nul->entry->priority) {
@@ -142,20 +142,18 @@ static void uff_remove_entry(uff_list_t *ul)
  */
 static void uff_addfeature(uff_table_t *ut)
 {
-  uff_list_t	*ul;
+  uff_list_t *ul = NULL;
 
   if (uff_findentry_byname(ut->feature)) {
-    putlog(LOG_MISC, "*", "(!) share: same feature name used twice: %s",
-	   ut->feature);
+    putlog(LOG_MISC, "*", "(!) share: same feature name used twice: %s", ut->feature);
     return;
   }
   ul = uff_findentry_byflag(ut->flag);
   if (ul) {
-    putlog(LOG_MISC, "*", "(!) share: feature flag %d used twice by %s and %s",
-	   ut->flag, ut->feature, ul->entry->feature);
+    putlog(LOG_MISC, "*", "(!) share: feature flag %d used twice by %s and %s", ut->flag, ut->feature, ul->entry->feature);
     return;
   }
-  ul = malloc(sizeof(uff_list_t));
+  ul = calloc(1, sizeof(uff_list_t));
   ul->entry = ut;
   uff_insert_entry(ul);
 }
@@ -174,7 +172,7 @@ static void uff_addtable(uff_table_t *ut)
  */
 static int uff_delfeature(uff_table_t *ut)
 {
-  uff_list_t *ul;
+  uff_list_t *ul = NULL;
 
   for (ul = uff_list.start; ul; ul = ul->next)
     if (!strcmp(ul->entry->feature, ut->feature)) {
@@ -205,8 +203,8 @@ static void uff_deltable(uff_table_t *ut)
  */
 static void uf_features_parse(int idx, char *par)
 {
-  char *buf, *s, *p;
-  uff_list_t *ul;
+  char *buf = NULL, *s = NULL, *p = NULL;
+  uff_list_t *ul = NULL;
 
   uff_sbuf[0] = 0;				/* Reset static buffer	*/
   p = s = buf = strdup(par);
@@ -238,7 +236,7 @@ static void uf_features_parse(int idx, char *par)
  */
 static char *uf_features_dump(int idx)
 {
-  uff_list_t *ul;
+  uff_list_t *ul = NULL;
 
   uff_sbuf[0] = 0;
   for (ul = uff_list.start; ul; ul = ul->next)
@@ -251,8 +249,8 @@ static char *uf_features_dump(int idx)
 
 static int uf_features_check(int idx, char *par)
 {
-  char *buf, *s, *p;
-  uff_list_t *ul;
+  char *buf = NULL, *s = NULL, *p = NULL;
+  uff_list_t *ul = NULL;
 
   uff_sbuf[0] = 0;				/* Reset static buffer	*/
   p = s = buf = strdup(par);
@@ -294,7 +292,7 @@ static int uf_features_check(int idx, char *par)
  */
 static int uff_call_sending(int idx, char *user_file)
 {
-  uff_list_t *ul;
+  uff_list_t *ul = NULL;
 
   for (ul = uff_list.start; ul; ul = ul->next)
     if (ul->entry && ul->entry->snd &&
@@ -310,7 +308,7 @@ static int uff_call_sending(int idx, char *user_file)
  */
 static int uff_call_receiving(int idx, char *user_file)
 {
-  uff_list_t *ul;
+  uff_list_t *ul = NULL;
 
   for (ul = uff_list.end; ul; ul = ul->prev)
     if (ul->entry && ul->entry->rcv &&

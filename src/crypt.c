@@ -28,7 +28,7 @@ char *encrypt_binary(const char *keydata, unsigned char *data, int *datalen)
   if (newdatalen % CRYPT_BLOCKSIZE)             /* more than 1 block? */
     newdatalen += (CRYPT_BLOCKSIZE - (newdatalen % CRYPT_BLOCKSIZE));
 
-  newdata = (unsigned char *) malloc(newdatalen);
+  newdata = (unsigned char *) calloc(1, newdatalen);
   egg_memcpy(newdata, data, *datalen);
   if (newdatalen != *datalen)
     egg_bzero((void *) &newdata[*datalen], (newdatalen - *datalen));
@@ -38,7 +38,8 @@ char *encrypt_binary(const char *keydata, unsigned char *data, int *datalen)
     /* No key, no encryption */
     egg_memcpy(newdata, data, newdatalen);
   } else {
-    char key[CRYPT_KEYSIZE + 1];
+    char key[CRYPT_KEYSIZE + 1] = "";
+
     strncpyz(key, keydata, sizeof(key));
 /*      strncpyz(&key[sizeof(key) - strlen(keydata)], keydata, sizeof(key)); */
     AES_set_encrypt_key(key, CRYPT_KEYBITS, &e_key);
@@ -58,14 +59,15 @@ char *decrypt_binary(const char *keydata, unsigned char *data, int datalen)
   unsigned char *newdata = NULL;
 
   datalen -= datalen % CRYPT_BLOCKSIZE;
-  newdata = (unsigned char *) malloc(datalen);
+  newdata = (unsigned char *) calloc(1, datalen);
   egg_memcpy(newdata, data, datalen);
 
   if ((!keydata) || (!keydata[0])) {
     /* No key, no decryption */
   } else {
     /* Init/fetch key */
-    char key[CRYPT_KEYSIZE + 1];
+    char key[CRYPT_KEYSIZE + 1] = "";
+
     strncpyz(key, keydata, sizeof(key));
 /*      strncpy(&key[sizeof(key) - strlen(keydata)], keydata, sizeof(key)); */
     AES_set_decrypt_key(key, CRYPT_KEYBITS, &d_key);
@@ -105,12 +107,13 @@ const char base64r[256] = {
 char *encrypt_string(const char *keydata, char *data)
 {
   int l, i, t;
-  unsigned char *bdata;
-  char *res;
+  unsigned char *bdata = NULL;
+  char *res = NULL;
+
   l = strlen(data) + 1;
   bdata = encrypt_binary(keydata, data, &l);
   if ((keydata) && (keydata[0])) {
-    res = malloc((l * 4) / 3 + 5);
+    res = calloc(1, (l * 4) / 3 + 5);
 #define DB(x) ((unsigned char) (x+i<l ? bdata[x+i] : 0))
     for (i = 0, t = 0; i < l; i += 3, t += 4) {
       res[t] = base64[DB(0) >> 2];
@@ -130,10 +133,11 @@ char *encrypt_string(const char *keydata, char *data)
 char *decrypt_string(const char *keydata, char *data)
 {
   int i, l, t;
-  char *buf, *res;
+  char *buf = NULL, *res = NULL;
+
   l = strlen(data);
   if ((keydata) && (keydata[0])) {
-    buf = malloc((l * 3) / 4 + 6);
+    buf = calloc(1, (l * 3) / 4 + 6);
 #define DB(x) ((unsigned char) (x+i<l ? base64r[(unsigned char) data[x+i]] : 0))
     for (i = 0, t = 0; i < l; i += 4, t += 3) {
       buf[t] = (DB(0) << 2) + (DB(1) >> 4);
@@ -147,7 +151,7 @@ char *decrypt_string(const char *keydata, char *data)
     free(buf);
     return res;
   } else {
-    res = malloc(l + 1);
+    res = calloc(1, l + 1);
     strcpy(res, data);
     return res;
   }
@@ -155,8 +159,7 @@ char *decrypt_string(const char *keydata, char *data)
 
 void encrypt_pass(char *s1, char *s2)
 {
-  /* fix this, standard eggs don't allow this long password hashes */
-  char *tmp;
+  char *tmp = NULL;
 
   if (strlen(s1) > 15)
     s1[15] = 0;
@@ -170,7 +173,7 @@ void encrypt_pass(char *s1, char *s2)
 int lfprintf (FILE *stream, ...)
 {
   va_list va;
-  char buf[8192], *ln, *nln, *tmp, *format;
+  char buf[8192] = "", *ln = NULL, *nln = NULL, *tmp = NULL, *format = NULL;
   int res;
 
   va_start(va, stream);
@@ -195,9 +198,10 @@ int lfprintf (FILE *stream, ...)
 
 void EncryptFile(char *infile, char *outfile)
 {
-  char  buf[8192];
-  FILE *f, *f2 = NULL;
+  char  buf[8192] = "";
+  FILE *f = NULL, *f2 = NULL;
   int std = 0;
+
   if (!strcmp(outfile, "STDOUT"))
     std = 1;
   f  = fopen(infile, "r");
@@ -227,8 +231,8 @@ void EncryptFile(char *infile, char *outfile)
 
 void DecryptFile(char *infile, char *outfile)
 {
-  char  buf[8192], *temps;
-  FILE *f, *f2 = NULL;
+  char buf[8192] = "", *temps = NULL;
+  FILE *f = NULL, *f2 = NULL;
   int std = 0;
 
   if (!strcmp(outfile, "STDOUT"))

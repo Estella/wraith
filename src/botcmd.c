@@ -35,7 +35,7 @@ extern time_t		 now, online_since;
 extern party_t		*party;
 extern module_entry	*module_list;
 
-static char TBUF[1024];		/* Static buffer for goofy bot stuff */
+static char TBUF[1024] = "";		/* Static buffer for goofy bot stuff */
 
 static char base64to[256] =
 {
@@ -90,7 +90,7 @@ static void fake_alert(int idx, char *item, char *extra)
  */
 static void bot_chan2(int idx, char *msg)
 {
-  char *from, *p;
+  char *from = NULL, *p = NULL;
   int i, chan;
 
   if (bot_flags(dcc[idx].user) & BOT_ISOLATE)
@@ -101,7 +101,7 @@ static void bot_chan2(int idx, char *msg)
   /* Strip annoying control chars */
   for (p = from; *p;) {
     if ((*p < 32) || (*p == 127))
-/*      strcpy(p, p + 1); */
+/* FIXME: overlap      strcpy(p, p + 1); */
       sprintf(p, "%s", p + 1);
     else
       p++;
@@ -139,7 +139,7 @@ static void bot_chan2(int idx, char *msg)
 #ifdef S_DCCPASS
 void bot_cmdpass(int idx, char *par)
 {
-  char *p;
+  char *p = NULL;
 
   p = strchr(par, ' ');
   if (p) {
@@ -160,12 +160,17 @@ void bot_config(int idx, char *par)
 }
 
 void bot_remotecmd(int idx, char *par) {
-  char *tbot, *fbot, *fhnd, *fidx;
+  char *tbot = NULL, *fbot = NULL, *fhnd = NULL, *fidx = NULL;
+ 
+  if (par[0])
+    tbot = newsplit(&par);
+  if (par[0])
+    fbot = newsplit(&par);
+  if (par[0])
+    fhnd = newsplit(&par);
+  if (par[0])
+    fidx = newsplit(&par);
 
-  tbot = newsplit(&par);
-  fbot = newsplit(&par);
-  fhnd = newsplit(&par);
-  fidx = newsplit(&par);
   if (!strcmp(tbot, conf.bot->nick)) {
     gotremotecmd(tbot, fbot, fhnd, fidx, par);
   } else if (!strcmp(tbot, "*")) {
@@ -178,11 +183,17 @@ void bot_remotecmd(int idx, char *par) {
 }
 
 void bot_remotereply(int idx, char *par) {
-  char *tbot, *fbot, *fhnd, *fidx;
-  tbot = newsplit(&par);
-  fbot = newsplit(&par);
-  fhnd = newsplit(&par);
-  fidx = newsplit(&par);
+  char *tbot = NULL, *fbot = NULL, *fhnd = NULL, *fidx = NULL;
+
+  if (par[0])
+    tbot = newsplit(&par);
+  if (par[0])
+    fbot = newsplit(&par);
+  if (par[0])
+    fhnd = newsplit(&par);
+  if (par[0])
+    fidx = newsplit(&par);
+
   if (!strcmp(tbot, conf.bot->nick)) {
     gotremotereply(fbot, fhnd, fidx, par);
   } else {
@@ -195,7 +206,7 @@ void bot_remotereply(int idx, char *par) {
  */
 static void bot_chat(int idx, char *par)
 {
-  char *from;
+  char *from = NULL;
   int i;
 
   if (bot_flags(dcc[idx].user) & BOT_ISOLATE)
@@ -219,7 +230,7 @@ static void bot_chat(int idx, char *par)
  */
 static void bot_actchan(int idx, char *par)
 {
-  char *from, *p;
+  char *from = NULL, *p = NULL;
   int i, chan;
 
   if (bot_flags(dcc[idx].user) & BOT_ISOLATE)
@@ -249,7 +260,7 @@ static void bot_actchan(int idx, char *par)
   for (p = from; *p;) {
     if ((*p < 32) || (*p == 127))
       sprintf(p, "%s", p + 1);
-/*      strcpy(p, p + 1); */
+/* FIXME: overlap      strcpy(p, p + 1); */
     else
       p++;
   }
@@ -262,7 +273,7 @@ static void bot_actchan(int idx, char *par)
  */
 static void bot_priv(int idx, char *par)
 {
-  char *from, *p, *to = TBUF, *tobot;
+  char *from = NULL, *p = NULL, *to = TBUF, *tobot = NULL;
   int i;
 
   from = newsplit(&par);
@@ -319,7 +330,7 @@ static void bot_priv(int idx, char *par)
 
 static void bot_bye(int idx, char *par)
 {
-  char s[1024];
+  char s[1024] = "";
   int users, bots;
 
   bots = bots_in_subtree(findbot(dcc[idx].nick));
@@ -339,8 +350,8 @@ static void bot_bye(int idx, char *par)
 static void remote_tell_who(int idx, char *nick, int chan)
 {
   int i = 10, k, l, ok = 0;
-  char s[1024], *realnick;
-  struct chanset_t *c;
+  char s[1024] = "", *realnick = NULL;
+  struct chanset_t *c = NULL;
 
   realnick = strchr(nick, ':');
   if (realnick)
@@ -472,7 +483,7 @@ static void bot_sysname(int idx, char *par)
  */
 static void bot_who(int idx, char *par)
 {
-  char *from, *to, *p;
+  char *from = NULL, *to = NULL, *p = NULL;
   int i, chan;
 
   from = newsplit(&par);
@@ -504,7 +515,7 @@ static void bot_endlink(int idx, char *par)
 static void bot_infoq(int idx, char *par)
 {
   char s[200] = "", s2[32] = "", *realnick = NULL;
-  struct chanset_t *chan;
+  struct chanset_t *chan = NULL;
   time_t now2;
   int hr, min;
 
@@ -571,14 +582,13 @@ static void bot_pong(int idx, char *par)
     dcc[idx].pingtime -= now;
   else
     dcc[idx].pingtime = 120;
-
 }
 
 /* link <from@bot> <who> <to-whom>
  */
 static void bot_link(int idx, char *par)
 {
-  char *from, *bot, *rfrom;
+  char *from = NULL, *bot = NULL, *rfrom = NULL;
   int i;
 
   from = newsplit(&par);
@@ -607,7 +617,7 @@ static void bot_link(int idx, char *par)
  */
 static void bot_unlink(int idx, char *par)
 {
-  char *from, *bot, *rfrom, *p, *undes;
+  char *from = NULL, *bot = NULL, *rfrom = NULL, *p = NULL, *undes = NULL;
   int i;
 
   from = newsplit(&par);
@@ -664,7 +674,7 @@ static void bot_unlink(int idx, char *par)
  */
 static void bot_update(int idx, char *par)
 {
-  char *bot, x;
+  char *bot = NULL, x;
   int vnum;
 
   bot = newsplit(&par);
@@ -678,8 +688,8 @@ static void bot_update(int idx, char *par)
 
 static void bot_mtcl(char *botnick, char *code, char *par)
 {
+ char ret[2000] = "";
  int oidx = 0, tcode = 0;
- char ret[2000];
  
  if (!par[0]) 
   return;
@@ -712,9 +722,9 @@ static void bot_rmtcl(char *botnick, char *code, char *par)
  */
 static void bot_nlinked(int idx, char *par)
 {
-  char *newbot, *next, *p, s[1024], x;
+  char *newbot = NULL, *next = NULL, *p = NULL, s[1024] = "", x = 0;
+  struct userrec *u = NULL;
   int bogus = 0, i;
-  struct userrec *u;
 
   newbot = newsplit(&par);
   next = newsplit(&par);
@@ -785,7 +795,7 @@ static void bot_nlinked(int idx, char *par)
 static void bot_unlinked(int idx, char *par)
 {
   int i;
-  char *bot;
+  char *bot = NULL;
 
   bot = newsplit(&par);
   i = nextbot(bot);
@@ -812,7 +822,7 @@ static void bot_unlinked(int idx, char *par)
  */
 static void bot_trace(int idx, char *par)
 {
-  char *from, *dest;
+  char *from = NULL, *dest = NULL;
   int i;
 
   from = newsplit(&par);
@@ -827,7 +837,7 @@ static void bot_trace(int idx, char *par)
  */
 static void bot_traced(int idx, char *par)
 {
-  char *to, *p;
+  char *to = NULL, *p = NULL;
   int i, sock;
 
   to = newsplit(&par);
@@ -898,8 +908,8 @@ static void bot_timesync(int idx, char *par)
  */
 static void bot_reject(int idx, char *par)
 {
-  char *from, *who, *destbot, *frombot;
-  struct userrec *u;
+  char *from = NULL, *who = NULL, *destbot = NULL, *frombot = NULL;
+  struct userrec *u = NULL;
   int i;
 
   if (bot_flags(dcc[idx].user) & BOT_ISOLATE)
@@ -923,7 +933,7 @@ static void bot_reject(int idx, char *par)
       botnet_send_priv(idx, conf.bot->nick, from, NULL, "%s %s (%s)",
 		       BOT_CANTUNLINK, who, BOT_DOESNTEXIST);
     } else if (!egg_strcasecmp(dcc[i].nick, who)) {
-      char s[1024];
+      char s[1024] = "";
 
       /* I'm the connection to the rejected bot */
       putlog(LOG_BOTS, "*", "%s %s %s", from, MISC_REJECTED, dcc[i].nick);
@@ -987,7 +997,7 @@ static void bot_reject(int idx, char *par)
 static void bot_thisbot(int idx, char *par)
 {
   if (egg_strcasecmp(par, dcc[idx].nick)) {
-    char s[1024];
+    char s[1024] = "";
 
     putlog(LOG_BOTS, "*", NET_WRONGBOT, dcc[idx].nick, par);
     dprintf(idx, "bye %s\n", MISC_IMPOSTER);
@@ -1032,7 +1042,7 @@ static void bot_handshake(int idx, char *par)
  */
 static void bot_zapf(int idx, char *par)
 {
-  char *from, *to;
+  char *from = NULL, *to = NULL;
   int i;
 
   from = newsplit(&par);
@@ -1060,7 +1070,7 @@ static void bot_zapf(int idx, char *par)
  */
 static void bot_zapfbroad(int idx, char *par)
 {
-  char *from, *opcode;
+  char *from = NULL, *opcode = NULL;
   int i;
 
   from = newsplit(&par);
@@ -1084,7 +1094,7 @@ static void bot_error(int idx, char *par)
  */
 static void bot_nickchange(int idx, char *par)
 {
-  char *bot, *ssock, *newnick;
+  char *bot = NULL, *ssock = NULL, *newnick = NULL;
   int sock, i;
 
   if (bot_flags(dcc[idx].user) & BOT_ISOLATE)
@@ -1112,8 +1122,8 @@ static void bot_nickchange(int idx, char *par)
  */
 static void bot_join(int idx, char *par)
 {
-  char *bot, *nick, *x, *y;
-  struct userrec *u;
+  char *bot = NULL, *nick = NULL, *x = NULL, *y = NULL;
+  struct userrec *u = NULL;
   int i, sock, chan, i2, linking = 0;
 
   if (bot_flags(dcc[idx].user) & BOT_ISOLATE)
@@ -1175,8 +1185,8 @@ static void bot_join(int idx, char *par)
  */
 static void bot_part(int idx, char *par)
 {
-  char *bot, *nick, *etc;
-  struct userrec *u;
+  char *bot = NULL, *nick = NULL, *etc = NULL;
+  struct userrec *u = NULL;
   int sock, partyidx;
   int silent = 0;
 
@@ -1222,7 +1232,7 @@ static void bot_part(int idx, char *par)
  */
 static void bot_away(int idx, char *par)
 {
-  char *bot, *etc;
+  char *bot = NULL, *etc = NULL;
   int sock, partyidx, linking = 0;
 
   if (bot_flags(dcc[idx].user) & BOT_ISOLATE)
@@ -1265,7 +1275,7 @@ static void bot_away(int idx, char *par)
  */
 static void bot_idle(int idx, char *par)
 {
-  char *bot, *work;
+  char *bot = NULL, *work = NULL;
   int sock, idle;
 
   if (bot_flags(dcc[idx].user) & BOT_ISOLATE)
@@ -1299,8 +1309,8 @@ void bot_shareupdate(int idx, char *par)
  */
 static void bot_versions(int sock, char *par)
 {
-  char *frombot = newsplit(&par), *tobot, *from;
-  module_entry *me;
+  char *frombot = newsplit(&par), *tobot = NULL, *from = NULL;
+  module_entry *me = NULL;
 
   if (nextbot(frombot) != sock)
     fake_alert(sock, "versions-direction", frombot);
@@ -1375,10 +1385,10 @@ botcmd_t C_bot[] =
 
 void send_remote_simul(int idx, char *bot, char *cmd, char *par)
 {
-  char msg[SGRAB-110];
+  char msg[SGRAB - 110] = "";
+
   egg_snprintf(msg, sizeof msg, "r-s %d %s %d %s %lu %s %s", idx, dcc[idx].nick, dcc[idx].u.chat->con_flags, 
                dcc[idx].u.chat->con_chan, dcc[idx].status, cmd, par);
-
   putbot(bot, msg);
 }
 
@@ -1432,14 +1442,12 @@ static void bot_rsim(char *botnick, char *code, char *par)
 
 void bounce_simul(int idx, char *buf)
 {
-  char rmsg[SGRAB-110];
+  char rmsg[SGRAB - 110] = "";
 
-  if (!buf || !buf[0] || !dcc[idx].simulbot || !dcc[idx].simulbot[0] || idx < 0) {
+  if (!buf || !buf[0] || !dcc[idx].simulbot || !dcc[idx].simulbot[0] || idx < 0)
     return;
-  }
 
   egg_snprintf(rmsg, sizeof rmsg, "r-sr %d %s", dcc[idx].simul, buf);          /* remote-simul[r]eturn idx buf */
-
   putbot(dcc[idx].simulbot, rmsg);
 }
 
@@ -1447,6 +1455,7 @@ void bounce_simul(int idx, char *buf)
 static void bot_rsimr(char *botnick, char *code, char *par)
 {
   int idx = atoi(newsplit(&par));
+
   if (!par[0])
     return;
   dprintf(idx, "[%s] %s\n", botnick, par);

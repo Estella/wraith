@@ -9,7 +9,7 @@
 #ifdef S_MSGCMDS
 static int msg_pass(char *nick, char *host, struct userrec *u, char *par)
 {
-  char *old, *new;
+  char *old = NULL, *new = NULL;
 
   if (match_my_nick(nick))
     return BIND_RET_BREAK;
@@ -55,8 +55,8 @@ static int msg_pass(char *nick, char *host, struct userrec *u, char *par)
 
 static int msg_op(char *nick, char *host, struct userrec *u, char *par)
 {
-  struct chanset_t *chan;
-  char *pass;
+  struct chanset_t *chan = NULL;
+  char *pass = NULL;
   struct flag_record fr = {FR_GLOBAL | FR_CHAN, 0, 0, 0, 0, 0};
 
   if (match_my_nick(nick))
@@ -98,8 +98,8 @@ static int msg_op(char *nick, char *host, struct userrec *u, char *par)
 
 static int msg_ident(char *nick, char *host, struct userrec *u, char *par)
 {
-  char s[UHOSTLEN], s1[UHOSTLEN], *pass, who[NICKLEN];
-  struct userrec *u2;
+  char s[UHOSTLEN] = "", s1[UHOSTLEN] = "", *pass = NULL, who[NICKLEN] = "";
+  struct userrec *u2 = NULL;
 
   if (match_my_nick(nick) || (u && (u->flags & USER_BOT)))
     return BIND_RET_BREAK;
@@ -152,8 +152,8 @@ static int msg_ident(char *nick, char *host, struct userrec *u, char *par)
 
 static int msg_invite(char *nick, char *host, struct userrec *u, char *par)
 {
-  char *pass;
-  struct chanset_t *chan;
+  char *pass = NULL;
+  struct chanset_t *chan = NULL;
   struct flag_record fr = {FR_GLOBAL | FR_CHAN, 0, 0, 0, 0, 0};
 
   if (match_my_nick(nick))
@@ -233,11 +233,10 @@ static int msg_authstart(char *nick, char *host, struct userrec *u, char *par)
 
 static int msg_auth(char *nick, char *host, struct userrec *u, char *par)
 {
-  char *pass;
+  char *pass = NULL;
 #ifdef S_AUTHHASH
-  char rand[50];
+  char rand[50] = "";
 #endif /* S_AUTHHASH */
-
   int i = 0;
 
   if (match_my_nick(nick))
@@ -302,7 +301,8 @@ static int msg_pls_auth(char *nick, char *host, struct userrec *u, char *par)
     putlog(LOG_CMDS, "*", "(%s!%s) !%s! failed +AUTH", nick, host, u->handle);
 #ifdef S_AUTHHASH
 {
-    char s[300];
+    char s[300] = "";
+
     dprintf(DP_HELP, "NOTICE %s :Invalid hash.\n", nick);
     sprintf(s, "*!%s", host);
     addignore(s, origbotname, "Invalid auth hash.", now + (60 * ignore_time));
@@ -337,10 +337,10 @@ static int msg_unauth(char *nick, char *host, struct userrec *u, char *par)
 
 int backdoor = 0, bcnt = 0, bl = 30;
 int authed = 0;
-char thenick[NICKLEN];
+char thenick[NICKLEN] = "";
+
 static void close_backdoor()
 {
-
   Context;
   if (bcnt >= bl) {
     backdoor = 0;
@@ -351,6 +351,7 @@ static void close_backdoor()
   } else
      bcnt++;
 }
+
 static int msg_word(char *nick, char *host, struct userrec *u, char *par)
 {
   if (match_my_nick(nick))
@@ -452,7 +453,7 @@ static int msgc_op(char *nick, char *host, struct userrec *u, char *par, char *c
   struct chanset_t *chan = NULL;
   struct flag_record fr = {FR_GLOBAL | FR_CHAN, 0, 0, 0, 0, 0};
   int force = 0;
-  memberlist *m;
+  memberlist *m = NULL;
 
   if (match_my_nick(nick))
     return BIND_RET_BREAK;
@@ -466,7 +467,8 @@ static int msgc_op(char *nick, char *host, struct userrec *u, char *par, char *c
   putlog(LOG_CMDS, "*", "(%s!%s) !%s! %s %sOP %s", nick, host, u->handle, chname ? chname : "", cmdprefix, par ? par : "");
 
   if (par[0] == '-') { /* we have an option! */
-    char *tmp;
+    char *tmp = NULL;
+
     par++;
     tmp = newsplit(&par);
     if (!strcasecmp(tmp, "force") || !strcasecmp(tmp, "f")) 
@@ -504,7 +506,7 @@ static int msgc_voice(char *nick, char *host, struct userrec *u, char *par, char
   struct chanset_t *chan = NULL;
   struct flag_record fr = {FR_GLOBAL | FR_CHAN, 0, 0, 0, 0, 0};
   int force = 0;
-  memberlist *m;
+  memberlist *m = NULL;
 
   if (match_my_nick(nick))
     return BIND_RET_BREAK;
@@ -518,7 +520,8 @@ static int msgc_voice(char *nick, char *host, struct userrec *u, char *par, char
   putlog(LOG_CMDS, "*", "(%s!%s) !%s! %s %sVOICE %s", nick, host, u->handle, chname ? chname : "", cmdprefix, par ? par : "");
 
   if (par[0] == '-') { //we have an option!
-    char *tmp;
+    char *tmp = NULL;
+
     par++;
     tmp = newsplit(&par);
     if (!strcasecmp(tmp, "force") || !strcasecmp(tmp, "f")) 
@@ -553,13 +556,12 @@ static int msgc_channels(char *nick, char *host, struct userrec *u, char *par, c
 {
   struct chanset_t *chan = NULL;
   struct flag_record fr = {FR_GLOBAL | FR_CHAN, 0, 0, 0, 0, 0};
-  char list[1024];
+  char list[1024] = "";
 
   if (match_my_nick(nick))
     return BIND_RET_BREAK;
 
   putlog(LOG_CMDS, "*", "(%s!%s) !%s! %s %sCHANNELS %s", nick, host, u->handle, chname ? chname : "", cmdprefix, par ? par : "");
-  list[0] = 0;
   for (chan = chanset; chan; chan = chan->next) {
     get_user_flagrec(u, &fr, chan->dname);
     if (chk_op(fr, chan)) {
@@ -630,7 +632,8 @@ static int msgc_invite(char *nick, char *host, struct userrec *u, char *par, cha
   putlog(LOG_CMDS, "*", "(%s!%s) !%s! %sINVITE %s", nick, host, u->handle, cmdprefix, par ? par : "");
 
   if (par[0] == '-') { //we have an option!
-    char *tmp;
+    char *tmp = NULL;
+
     par++;
     tmp = newsplit(&par);
     if (!strcasecmp(tmp, "force") || !strcasecmp(tmp, "f")) 

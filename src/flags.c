@@ -243,8 +243,7 @@ static int bot2str(char *string, int bot)
   return string - old;
 }
 
-int build_flags(char *string, struct flag_record *plus,
-		struct flag_record *minus)
+int build_flags(char *string, struct flag_record *plus, struct flag_record *minus)
 {
   char *old = string;
 
@@ -297,8 +296,7 @@ int build_flags(char *string, struct flag_record *plus,
 }
 
 /* Returns 1 if flags match, 0 if they don't. */
-int flagrec_ok(struct flag_record *req,
-	       struct flag_record *have)
+int flagrec_ok(struct flag_record *req, struct flag_record *have)
 {
   if (req->match & FR_AND) {
     return flagrec_eq(req, have);
@@ -380,12 +378,11 @@ int flagrec_eq(struct flag_record *req, struct flag_record *have)
   return 0;			/* fr0k3 binding, dont pass it */
 }
 
-void set_user_flagrec(struct userrec *u, struct flag_record *fr,
-		      const char *chname)
+void set_user_flagrec(struct userrec *u, struct flag_record *fr, const char *chname)
 {
   struct chanuserrec *cr = NULL;
   int oldflags = fr->match;
-  char buffer[100];
+  char buffer[100] = "";
   struct chanset_t *ch;
 
   if (!u)
@@ -409,8 +406,7 @@ void set_user_flagrec(struct userrec *u, struct flag_record *fr,
 	break;
     ch = findchan_by_dname(chname);
     if (!cr && ch) {
-      cr = malloc(sizeof(struct chanuserrec));
-      egg_bzero(cr, sizeof(struct chanuserrec));
+      cr = calloc(1, sizeof(struct chanuserrec));
 
       cr->next = u->chanrec;
       u->chanrec = cr;
@@ -431,8 +427,7 @@ void set_user_flagrec(struct userrec *u, struct flag_record *fr,
 
 /* Always pass the dname (display name) to this function for chname <cybah>
  */
-void get_user_flagrec(struct userrec *u, struct flag_record *fr,
-		      const char *chname)
+void get_user_flagrec(struct userrec *u, struct flag_record *fr, const char *chname)
 {
   struct chanuserrec *cr = NULL;
 
@@ -488,13 +483,13 @@ static int botfl_unpack(struct userrec *u, struct user_entry *e)
 
 static int botfl_pack(struct userrec *u, struct user_entry *e)
 {
-  char x[100];
+  char x[100] = "";
   struct flag_record fr = {FR_BOT, 0, 0, 0, 0, 0};
 
   fr.bot = e->u.ulong;
-  e->u.list = malloc(sizeof(struct list_type));
+  e->u.list = calloc(1, sizeof(struct list_type));
   e->u.list->next = NULL;
-  e->u.list->extra = malloc (build_flags (x, &fr, NULL) + 1);
+  e->u.list->extra = calloc(1, build_flags (x, &fr, NULL) + 1);
   strcpy(e->u.list->extra, x);
   return 1;
 }
@@ -505,10 +500,9 @@ static int botfl_kill(struct user_entry *e)
   return 1;
 }
 
-static int botfl_write_userfile(FILE *f, struct userrec *u,
-				struct user_entry *e)
+static int botfl_write_userfile(FILE *f, struct userrec *u, struct user_entry *e)
 {
-  char x[100];
+  char x[100] = "";
   struct flag_record fr = {FR_BOT, 0, 0, 0, 0, 0};
 
   fr.bot = e->u.ulong;
@@ -545,7 +539,7 @@ static int botfl_set(struct userrec *u, struct user_entry *e, void *buf)
 static void botfl_display(int idx, struct user_entry *e, struct userrec *u)
 {
   struct flag_record fr = {FR_BOT, 0, 0, 0, 0, 0};
-  char x[100];
+  char x[100] = "";
 
   fr.bot = e->u.ulong;
   build_flags(x, &fr, NULL);

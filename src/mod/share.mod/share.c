@@ -37,7 +37,7 @@ static Function *irc_funcs = NULL;
 
 static int private_global = 0;
 static int private_user = 0;
-static char private_globals[50];
+static char private_globals[50] = "";
 static int allow_resync = 0;
 static struct flag_record fr = {0, 0, 0, 0, 0, 0};
 static int resync_time = 900;
@@ -94,17 +94,13 @@ static void add_delay(struct chanset_t *chan, int plsmns, int mode, char *mask)
 {
   struct delay_mode *d = NULL;
 
-  d = (struct delay_mode *) malloc(sizeof(struct delay_mode));
-  if (!d)
-    return;
+  d = (struct delay_mode *) calloc(1, sizeof(struct delay_mode));
+
   d->chan = chan;
   d->plsmns = plsmns;
   d->mode = mode;
-  d->mask = (char *) malloc(strlen(mask) + 1);
-  if (!d->mask) {
-    free(d);
-    return;
-  }
+  d->mask = (char *) calloc(1, strlen(mask) + 1);
+
   strncpyz(d->mask, mask, strlen(mask) + 1);
   d->seconds = (int) (now + (random() % 20));
   d->next = start_delay;
@@ -148,7 +144,7 @@ static void check_delay()
 
 static void share_stick_ban(int idx, char *par)
 {
-  char *host, *val;
+  char *host = NULL, *val = NULL;
   int yn;
 
   if (dcc[idx].status & STAT_SHARE) {
@@ -158,7 +154,7 @@ static void share_stick_ban(int idx, char *par)
     noshare = 1;
     if (!par[0]) {		/* Global ban */
 #ifdef LEAF
-      struct chanset_t *chan;
+      struct chanset_t *chan = NULL;
 #endif /* LEAF */
       if (u_setsticky_ban(NULL, host, yn) > 0) {
        putlog(LOG_CMDS, "@", "%s: %s %s", dcc[idx].nick, (yn) ? "stick" : "unstick", host);
@@ -196,7 +192,7 @@ static void share_stick_ban(int idx, char *par)
  */
 static void share_stick_exempt(int idx, char *par)
 {
-  char *host, *val;
+  char *host = NULL, *val = NULL;
   int yn;
 
   if (dcc[idx].status & STAT_SHARE) {
@@ -211,7 +207,7 @@ static void share_stick_exempt(int idx, char *par)
       }
     } else {
       struct chanset_t *chan = findchan_by_dname(par);
-      struct chanuserrec * cr;
+      struct chanuserrec *cr = NULL;
 
       if ((chan != NULL) && ((channel_shared(chan) &&
                              ((cr = get_chanrec(dcc[idx].user, par)) &&
@@ -232,7 +228,7 @@ static void share_stick_exempt(int idx, char *par)
 /* Same as share_stick_ban, only for invites.
  */
 static void share_stick_invite (int idx, char * par) {
-  char *host, *val;
+  char *host = NULL, *val = NULL;
   int yn;
 
   if (dcc[idx].status & STAT_SHARE) {
@@ -247,7 +243,7 @@ static void share_stick_invite (int idx, char * par) {
       }
     } else {
       struct chanset_t *chan = findchan_by_dname(par);
-      struct chanuserrec * cr;
+      struct chanuserrec *cr = NULL;
 
       if ((chan != NULL) && ((channel_shared(chan) &&
                              ((cr = get_chanrec(dcc[idx].user, par)) &&
@@ -267,8 +263,8 @@ static void share_stick_invite (int idx, char * par) {
 
 static void share_chhand(int idx, char *par)
 {
-  char *hand;
-  struct userrec *u;
+  char *hand = NULL;
+  struct userrec *u = NULL;
 
   if ((dcc[idx].status & STAT_SHARE) && !private_user) {
     hand = newsplit(&par);
@@ -285,12 +281,12 @@ static void share_chhand(int idx, char *par)
 
 static void share_chattr(int idx, char *par)
 {
-  char *hand, *atr, s[100];
-  struct chanset_t *cst;
-  struct userrec *u;
+  char *hand = NULL, *atr = NULL, s[100] = "";
+  struct chanset_t *cst = NULL;
+  struct userrec *u = NULL;
   struct flag_record fr2;
   int bfl, ofl;
-  module_entry *me;
+  module_entry *me = NULL;
 
   if ((dcc[idx].status & STAT_SHARE) && !private_user) {
     hand = newsplit(&par);
@@ -369,9 +365,9 @@ static void share_chattr(int idx, char *par)
 
 static void share_pls_chrec(int idx, char *par)
 {
-  char *user;
-  struct chanset_t *chan;
-  struct userrec *u;
+  char *user = NULL;
+  struct chanset_t *chan = NULL;
+  struct userrec *u = NULL;
 
   if ((dcc[idx].status & STAT_SHARE) && !private_user) {
     user = newsplit(&par);
@@ -399,9 +395,9 @@ static void share_pls_chrec(int idx, char *par)
 
 static void share_mns_chrec(int idx, char *par)
 {
-  char *user;
-  struct chanset_t *chan;
-  struct userrec *u;
+  char *user = NULL;
+  struct chanset_t *chan = NULL;
+  struct userrec *u = NULL;
 
   if ((dcc[idx].status & STAT_SHARE) && !private_user) {
     user = newsplit(&par);
@@ -427,8 +423,8 @@ static void share_mns_chrec(int idx, char *par)
 
 static void share_newuser(int idx, char *par)
 {
-  char *nick, *host, *pass, s[100];
-  struct userrec *u;
+  char *nick = NULL, *host = NULL, *pass = NULL, s[100] = "";
+  struct userrec *u = NULL;
 
   if ((dcc[idx].status & STAT_SHARE) && !private_user) {
     nick = newsplit(&par);
@@ -479,7 +475,7 @@ static void share_newuser(int idx, char *par)
 
 static void share_killuser(int idx, char *par)
 {
-  struct userrec *u;
+  struct userrec *u = NULL;
 
   /* If user is a share bot, ignore command */
   if ((dcc[idx].status & STAT_SHARE) && !private_user &&
@@ -499,8 +495,8 @@ static void share_killuser(int idx, char *par)
 
 static void share_pls_host(int idx, char *par)
 {
-  char *hand;
-  struct userrec *u;
+  char *hand = NULL;
+  struct userrec *u = NULL;
 
   if ((dcc[idx].status & STAT_SHARE) && !private_user) {
     hand = newsplit(&par);
@@ -519,8 +515,8 @@ static void share_pls_host(int idx, char *par)
 
 static void share_pls_bothost(int idx, char *par)
 {
-  char *hand, p[32];
-  struct userrec *u;
+  char *hand = NULL, p[32] = "";
+  struct userrec *u = NULL;
 
   if ((dcc[idx].status & STAT_SHARE) && !private_user) {
     hand = newsplit(&par);
@@ -547,8 +543,8 @@ static void share_pls_bothost(int idx, char *par)
 
 static void share_mns_host(int idx, char *par)
 {
-  char *hand;
-  struct userrec *u;
+  char *hand = NULL;
+  struct userrec *u = NULL;
 
   if ((dcc[idx].status & STAT_SHARE) && !private_user) {
     hand = newsplit(&par);
@@ -569,10 +565,10 @@ static void share_mns_host(int idx, char *par)
 
 static void share_change(int idx, char *par)
 {
-  char *key, *hand;
-  struct userrec *u;
-  struct user_entry_type *uet;
-  struct user_entry *e;
+  char *key = NULL, *hand = NULL;
+  struct userrec *u = NULL;
+  struct user_entry_type *uet = NULL;
+  struct user_entry *e = NULL;
 
   if ((dcc[idx].status & STAT_SHARE) && !private_user) {
     key = newsplit(&par);
@@ -587,7 +583,7 @@ static void share_change(int idx, char *par)
 	  shareout_but(NULL, idx, "c %s %s %s\n", key, hand, par);
 	noshare = 1;
 	if (!u && (uet == &USERENTRY_BOTADDR)) {
-	  char pass[30];
+	  char pass[30] = "";
 
 	  makepass(pass);
 	  userlist = adduser(userlist, hand, "none", pass, USER_BOT);
@@ -596,7 +592,7 @@ static void share_change(int idx, char *par)
 	  return;
 	if (uet->got_share) {
 	  if (!(e = find_user_entry(uet, u))) {
-	    e = malloc(sizeof(struct user_entry));
+	    e = calloc(1, sizeof(struct user_entry));
 
 	    e->type = uet;
 	    e->name = NULL;
@@ -618,9 +614,9 @@ static void share_change(int idx, char *par)
 
 static void share_chchinfo(int idx, char *par)
 {
-  char *hand, *chan;
-  struct chanset_t *cst;
-  struct userrec *u;
+  char *hand = NULL, *chan = NULL;
+  struct chanset_t *cst = NULL;
+  struct userrec *u = NULL;
 
   if ((dcc[idx].status & STAT_SHARE) && !private_user) {
     hand = newsplit(&par);
@@ -699,8 +695,8 @@ static void share_mns_invite(int idx, char *par)
 
 static void share_mns_banchan(int idx, char *par)
 {
-  char *chname;
-  struct chanset_t *chan;
+  char *chname = NULL;
+  struct chanset_t *chan = NULL;
 
   if (dcc[idx].status & STAT_SHARE) {
     chname = newsplit(&par);
@@ -709,13 +705,10 @@ static void share_mns_banchan(int idx, char *par)
     get_user_flagrec(dcc[idx].user, &fr, chname);
     if (!chan || !channel_shared(chan) ||
         !(bot_chan(fr) || bot_global(fr)))
-      putlog(LOG_CMDS, "*",
-             "Cancel channel ban %s on %s rejected - channel not shared.",
-             par, chname);
+      putlog(LOG_CMDS, "*", "Cancel channel ban %s on %s rejected - channel not shared.", par, chname);
     else {
       shareout_but(chan, idx, "-bc %s %s\n", chname, par);
-      putlog(LOG_CMDS, "@", "%s: cancel ban %s on %s", dcc[idx].nick,
-	     par, chname);
+      putlog(LOG_CMDS, "@", "%s: cancel ban %s on %s", dcc[idx].nick, par, chname);
       str_unescape(par, '\\');
       noshare = 1;
       if (u_delban(chan, par, 1) > 0)
@@ -727,8 +720,8 @@ static void share_mns_banchan(int idx, char *par)
 
 static void share_mns_exemptchan(int idx, char *par)
 {
-  char *chname;
-  struct chanset_t *chan;
+  char *chname = NULL;
+  struct chanset_t *chan = NULL;
 
   if (dcc[idx].status & STAT_SHARE) {
     chname = newsplit(&par);
@@ -755,8 +748,8 @@ static void share_mns_exemptchan(int idx, char *par)
 
 static void share_mns_invitechan (int idx, char *par)
 {
-  char *chname;
-  struct chanset_t *chan;
+  char *chname = NULL;
+  struct chanset_t *chan = NULL;
 
   if (dcc[idx].status & STAT_SHARE) {
     chname = newsplit(&par);
@@ -796,10 +789,10 @@ static void share_mns_ignore(int idx, char *par)
 static void share_pls_ban(int idx, char *par)
 {
 #ifdef LEAF
-  struct chanset_t *chan;
+  struct chanset_t *chan = NULL;
 #endif /* LEAF */
   time_t expire_time;
-  char *ban, *tm, *from;
+  char *ban = NULL, *tm = NULL, *from = NULL;
   int flags = 0;
 
   if (dcc[idx].status & STAT_SHARE) {
@@ -832,8 +825,8 @@ static void share_pls_banchan(int idx, char *par)
 {
   time_t expire_time;
   int flags = 0;
-  struct chanset_t *chan;
-  char *ban, *tm, *chname, *from;
+  struct chanset_t *chan = NULL;
+  char *ban = NULL, *tm = NULL, *chname = NULL, *from = NULL;
 
   if (dcc[idx].status & STAT_SHARE) {
     ban = newsplit(&par);
@@ -876,7 +869,7 @@ static void share_pls_banchan(int idx, char *par)
 static void share_pls_exempt(int idx, char *par)
 {
   time_t expire_time;
-  char *exempt, *tm, *from;
+  char *exempt = NULL, *tm = NULL, *from = NULL;
   int flags = 0;
 
   if (dcc[idx].status & STAT_SHARE) {
@@ -907,8 +900,8 @@ static void share_pls_exemptchan(int idx, char *par)
 {
   time_t expire_time;
   int flags = 0;
-  struct chanset_t *chan;
-  char *exempt, *tm, *chname, *from;
+  struct chanset_t *chan = NULL;
+  char *exempt = NULL, *tm = NULL, *chname = NULL, *from = NULL;
 
   if (dcc[idx].status & STAT_SHARE) {
     exempt = newsplit(&par);
@@ -948,7 +941,7 @@ static void share_pls_exemptchan(int idx, char *par)
 static void share_pls_invite(int idx, char *par)
 {
   time_t expire_time;
-  char *invite, *tm, *from;
+  char *invite = NULL, *tm = NULL, *from = NULL;
   int flags = 0;
 
   if (dcc[idx].status & STAT_SHARE) {
@@ -979,8 +972,8 @@ static void share_pls_invitechan(int idx, char *par)
 {
   time_t expire_time;
   int flags = 0;
-  struct chanset_t *chan;
-  char *invite, *tm, *chname, *from;
+  struct chanset_t *chan = NULL;
+  char *invite = NULL, *tm = NULL, *chname = NULL, *from = NULL;
 
   if (dcc[idx].status & STAT_SHARE) {
     invite = newsplit(&par);
@@ -1020,7 +1013,7 @@ static void share_pls_invitechan(int idx, char *par)
 static void share_pls_ignore(int idx, char *par)
 {
   time_t expire_time;
-  char *ign, *from, *ts;
+  char *ign = NULL, *from = NULL, *ts = NULL;
 
   if (dcc[idx].status & STAT_SHARE) {
     shareout_but(NULL, idx, "+i %s\n", par);
@@ -1109,10 +1102,10 @@ static void share_userfileq(int idx, char *par)
  */
 static void share_ufsend(int idx, char *par)
 {
-  char *ip=NULL, *port;
-  char s[1024];
+  char *ip = NULL, *port = NULL;
+  char s[1024] = "";
   int i, sock;
-  FILE *f;
+  FILE *f = NULL;
 
   egg_snprintf(s, sizeof s, "%s.share.%s.%lu.users", tempdir, conf.bot->nick, now);
   if (!(b_status(idx) & STAT_SHARE)) {
@@ -1303,7 +1296,7 @@ static botcmd_t C_share[] =
 
 static void sharein_mod(int idx, char *msg)
 {
-  char *code;
+  char *code = NULL;
   int f, i;
 
   code = newsplit(&msg);
@@ -1321,8 +1314,7 @@ static void sharein_mod(int idx, char *msg)
 static void shareout_mod (struct chanset_t *chan, ...)
 {
   int i, l;
-  char *format;
-  char s[601];
+  char *format = NULL, s[601] = "";
   va_list va;
 
   va_start(va, chan);
@@ -1350,8 +1342,7 @@ static void shareout_mod (struct chanset_t *chan, ...)
 static void shareout_but (struct chanset_t *chan, ...)
 {
   int i, x, l;
-  char *format;
-  char s[601];
+  char *format = NULL, s[601] = "";
   va_list va;
 
   va_start(va, chan);
@@ -1386,9 +1377,9 @@ static void shareout_but (struct chanset_t *chan, ...)
  */
 static void new_tbuf(char *bot)
 {
-  tandbuf **old = &tbuf, *new;
+  tandbuf **old = &tbuf, *new = NULL;
 
-  new = malloc(sizeof(tandbuf));
+  new = calloc(1, sizeof(tandbuf));
   strcpy(new->bot, bot);
   new->q = NULL;
   new->timer = now;
@@ -1399,7 +1390,7 @@ static void new_tbuf(char *bot)
 
 static void del_tbuf(tandbuf *goner)
 {
-  struct share_msgq *q, *r;
+  struct share_msgq *q = NULL, *r = NULL;
   tandbuf *t = NULL, *old = NULL;
 
   for (t = tbuf; t; old = t, t = t->next) {
@@ -1423,7 +1414,7 @@ static void del_tbuf(tandbuf *goner)
  */
 static int flush_tbuf(char *bot)
 {
-  tandbuf *t, *tnext = NULL;
+  tandbuf *t = NULL, *tnext = NULL;
 
   for (t = tbuf; t; t = tnext) {
     tnext = t->next;
@@ -1440,7 +1431,7 @@ static int flush_tbuf(char *bot)
 static void check_expired_tbufs()
 {
   int i;
-  tandbuf *t, *tnext = NULL;
+  tandbuf *t = NULL, *tnext = NULL;
 
   for (t = tbuf; t; t = tnext) {
     tnext = t->next;
@@ -1472,11 +1463,11 @@ static void check_expired_tbufs()
 static struct share_msgq *q_addmsg(struct share_msgq *qq,
 				   struct chanset_t *chan, char *s)
 {
-  struct share_msgq *q;
+  struct share_msgq *q = NULL;
   int cnt;
 
   if (!qq) {
-    q = (struct share_msgq *) malloc(sizeof(struct share_msgq));
+    q = (struct share_msgq *) calloc(1, sizeof(struct share_msgq));
 
     q->chan = chan;
     q->next = NULL;
@@ -1488,7 +1479,7 @@ static struct share_msgq *q_addmsg(struct share_msgq *qq,
     cnt++;
   if (cnt > 1000)
     return NULL;		/* Return null: did not alter queue */
-  q->next = (struct share_msgq *) malloc(sizeof(struct share_msgq));
+  q->next = (struct share_msgq *) calloc(1, sizeof(struct share_msgq));
 
   q = q->next;
   q->chan = chan;
@@ -1501,8 +1492,8 @@ static struct share_msgq *q_addmsg(struct share_msgq *qq,
  */
 static void q_tbuf(char *bot, char *s, struct chanset_t *chan)
 {
-  struct share_msgq *q;
-  tandbuf *t;
+  struct share_msgq *q = NULL;
+  tandbuf *t = NULL;
 
   for (t = tbuf; t && t->bot[0]; t = t->next)
     if (!egg_strcasecmp(t->bot, bot)) {
@@ -1521,8 +1512,8 @@ static void q_tbuf(char *bot, char *s, struct chanset_t *chan)
  */
 static void q_resync(char *s, struct chanset_t *chan)
 {
-  struct share_msgq *q;
-  tandbuf *t;
+  struct share_msgq *q = NULL;
+  tandbuf *t = NULL;
 
   for (t = tbuf; t && t->bot[0]; t = t->next) {
       if (chan) {
@@ -1540,7 +1531,7 @@ static void q_resync(char *s, struct chanset_t *chan)
  */
 static int can_resync(char *bot)
 {
-  tandbuf *t;
+  tandbuf *t = NULL;
 
   for (t = tbuf; t && t->bot[0]; t = t->next)
     if (!egg_strcasecmp(bot, t->bot))
@@ -1552,8 +1543,8 @@ static int can_resync(char *bot)
  */
 static void dump_resync(int idx)
 {
-  struct share_msgq *q;
-  tandbuf *t;
+  struct share_msgq *q = NULL;
+  tandbuf *t = NULL;
 
   for (t = tbuf; t && t->bot[0]; t = t->next)
     if (!egg_strcasecmp(dcc[idx].nick, t->bot)) {
@@ -1570,9 +1561,9 @@ static void dump_resync(int idx)
 static void status_tbufs(int idx)
 {
   int count, off = 0;
-  struct share_msgq *q;
-  char s[121];
-  tandbuf *t;
+  struct share_msgq *q = NULL;
+  char s[121] = "";
+  tandbuf *t = NULL;
 
   off = 0;
   for (t = tbuf; t && t->bot[0]; t = t->next) 
@@ -1591,8 +1582,8 @@ static void status_tbufs(int idx)
 
 static int write_tmp_userfile(char *fn, struct userrec *bu, int idx)
 {
-  FILE *f;
-  struct userrec *u;
+  FILE *f = NULL;
+  struct userrec *u = NULL;
   int ok = 0;
 
   if ((f = fopen(fn, "wb"))) {
@@ -1639,10 +1630,10 @@ static int write_tmp_userfile(char *fn, struct userrec *bu, int idx)
  */
 static struct userrec *dup_userlist(int t)
 {
-  struct userrec *u, *u1, *retu, *nu;
-  struct chanuserrec *ch;
-  struct user_entry *ue;
-  char *p;
+  struct userrec *u = NULL, *u1 = NULL, *retu = NULL, *nu = NULL;
+  struct chanuserrec *ch = NULL;
+  struct user_entry *ue = NULL;
+  char *p = NULL;
 
   nu = retu = NULL;
   noshare = 1;
@@ -1677,7 +1668,7 @@ static struct userrec *dup_userlist(int t)
 	  struct list_type *lt;
 	  struct user_entry *nue;
 
-	  nue = malloc(sizeof(struct user_entry));
+	  nue = calloc(1, sizeof(struct user_entry));
 	  nue->type = NULL;
 	  nue->u.list = NULL;
           nue->name = strdup(ue->name);
@@ -1685,7 +1676,7 @@ static struct userrec *dup_userlist(int t)
 	  for (lt = ue->u.list; lt; lt = lt->next) {
 	    struct list_type *list;
 
-	    list = malloc(sizeof(struct list_type));
+	    list = calloc(1, sizeof(struct list_type));
 	    list->next = NULL;
             list->extra = strdup(lt->extra);
 	    list_append((&nue->u.list), list);
@@ -1705,7 +1696,7 @@ static struct userrec *dup_userlist(int t)
 static void finish_share(int idx)
 {
   struct userrec *u = NULL, *ou = NULL;
-  struct chanset_t *chan;
+  struct chanset_t *chan = NULL;
   int i, j = -1;
 
   for (i = 0; i < dcc_total; i++)
@@ -1779,7 +1770,8 @@ static void finish_share(int idx)
   checkchans(0); /* flag all the channels.. */
 Context;
   if (!readuserfile(dcc[idx].u.xfer->filename, &u)) {
-    char xx[1024];
+    char xx[1024] = "";
+
 Context;
     unlink(dcc[idx].u.xfer->filename); /* why the fuck was this not here, stupid eggdev team. */
     loading = 0;
@@ -1907,11 +1899,11 @@ Context;
  */
 static void start_sending_users(int idx)
 {
-  struct userrec *u;
-  char share_file[1024], s1[64];
+  struct userrec *u = NULL;
+  char share_file[1024] = "", s1[64] = "";
   int i = 1;
-  struct chanuserrec *ch;
-  struct chanset_t *cst;
+  struct chanuserrec *ch = NULL;
+  struct chanset_t *cst = NULL;
 
   egg_snprintf(share_file, sizeof share_file, "%s.share.%s.%lu", tempdir, dcc[idx].nick, now);
   if (dcc[idx].u.bot->uff_flags & UFF_OVERRIDE) {
@@ -1960,8 +1952,8 @@ static void start_sending_users(int idx)
       for (u = userlist; u; u = u->next) {
         if ((u->flags & USER_BOT) && !(u->flags & USER_UNSHARED)) {
 	  struct bot_addr *bi = get_user(&USERENTRY_BOTADDR, u);
-	  struct list_type *t;
-	  char s2[1024];
+	  struct list_type *t = NULL;
+	  char s2[1024] = "";
 
 	  /* Send hostmasks */
 	  for (t = get_user(&USERENTRY_HOSTS, u); t; t = t->next) {

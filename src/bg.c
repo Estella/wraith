@@ -21,7 +21,7 @@ extern conf_t	conf;
  */
 static void bg_do_detach(pid_t p)
 {
-  FILE	*fp;
+  FILE *fp = NULL;
 
   /* Need to attempt to write pid now, not later. */
   unlink(conf.bot->pid_file);
@@ -84,7 +84,5 @@ void do_fork() {
 #endif
     exit(0);
   }
-
   lastfork = now;
 }
-

@@ -30,7 +30,7 @@ int 				cfg_count = 0, cfg_noshare = 0;
 struct cfg_entry 		**cfg = NULL;
 
 #if defined(S_AUTHHASH) || defined(S_DCCAUTH)
-char 				authkey[121];		/* This is one of the keys used in the auth hash */
+char 				authkey[121] = "";	/* This is one of the keys used in the auth hash */
 #endif /* S_AUTHHASH || S_DCCAUTH */
 
 char 				cmdprefix[1] = "+";	/* This is the prefix for msg/channel cmds */
@@ -130,28 +130,30 @@ void deflag_describe(struct cfg_entry *cfgent, int idx)
 {
   if (cfgent == &CFG_BADCOOKIE)
     dprintf(idx, STR("bad-cookie decides what happens to a bot if it does an illegal op (no/incorrect op cookie)\n"));
-  else if (cfgent==&CFG_MANUALOP)
+  else if (cfgent == &CFG_MANUALOP)
     dprintf(idx, STR("manop decides what happens to a user doing a manual op in a -manop channel\n"));
 #ifdef G_MEAN
-  else if (cfgent==&CFG_MEANDEOP)
+  else if (cfgent == &CFG_MEANDEOP)
     dprintf(idx, STR("mean-deop decides what happens to a user deopping a bot in a +mean channel\n"));
-  else if (cfgent==&CFG_MEANKICK)
+  else if (cfgent == &CFG_MEANKICK)
     dprintf(idx, STR("mean-kick decides what happens to a user kicking a bot in a +mean channel\n"));
-  else if (cfgent==&CFG_MEANBAN)
+  else if (cfgent == &CFG_MEANBAN)
     dprintf(idx, STR("mean-ban decides what happens to a user banning a bot in a +mean channel\n"));
 #endif /* G_MEAN */
-  else if (cfgent==&CFG_MDOP)
+  else if (cfgent == &CFG_MDOP)
     dprintf(idx, STR("mdop decides what happens to a user doing a mass deop\n"));
-  else if (cfgent==&CFG_MOP)
+  else if (cfgent == &CFG_MOP)
     dprintf(idx, STR("mop decides what happens to a user doing a mass op\n"));
   dprintf(idx, STR("Valid settings are: ignore (No flag changes), deop (set flags to +d), kick (set flags to +dk) or delete (remove from userlist)\n"));
 }
 
 void deflag_changed(struct cfg_entry *entry, char *oldval, int *valid) 
 {
-  char *p = (char *) entry->gdata;
-  if (!p)
+  char *p = NULL;
+
+  if (!(p = (char *) entry->gdata))
     return;
+
   if (strcmp(p, STR("ignore")) && strcmp(p, STR("deop")) && strcmp(p, STR("kick")) && strcmp(p, STR("delete")))
     *valid=0;
 }
@@ -196,9 +198,8 @@ struct cfg_entry CFG_MOP = {
 
 void deflag_user(struct userrec *u, int why, char *msg, struct chanset_t *chan)
 {
-  char tmp[256], tmp2[1024];
+  char tmp[256] = "", tmp2[1024] = "";
   struct cfg_entry *ent = NULL;
-
   struct flag_record fr = {FR_GLOBAL, FR_CHAN, 0, 0, 0};
 
   if (!u)
@@ -303,15 +304,15 @@ void misc_describe(struct cfg_entry *cfgent, int idx)
 void fork_lchanged(struct cfg_entry * cfgent, char * oldval, int * valid) {
   if (!cfgent->ldata)
     return;
-  if (atoi(cfgent->ldata)<=0)
-    *valid=0;
+  if (atoi(cfgent->ldata) <= 0)
+    *valid = 0;
 }
 
 void fork_gchanged(struct cfg_entry * cfgent, char * oldval, int * valid) {
   if (!cfgent->gdata)
     return;
-  if (atoi(cfgent->gdata)<=0)
-    *valid=0;
+  if (atoi(cfgent->gdata) <= 0)
+    *valid = 0;
 }
 
 void fork_describe(struct cfg_entry * cfgent, int idx) {
@@ -324,16 +325,17 @@ struct cfg_entry CFG_FORKINTERVAL = {
 };
 
 void detect_lchanged(struct cfg_entry * cfgent, char * oldval, int * valid) {
-  char * p = cfgent->ldata;
-  if (!p)
-    *valid=1;
+  char *p = NULL;
+
+  if (!(p = (char *) cfgent->ldata))
+    *valid = 1;
   else if (strcmp(p, STR("ignore")) && strcmp(p, STR("die")) && strcmp(p, STR("reject"))
            && strcmp(p, STR("suicide")) && strcmp(p, STR("warn")))
-    *valid=0;
+    *valid = 0;
 }
 
 void detect_gchanged(struct cfg_entry * cfgent, char * oldval, int * valid) {
-  char * p = (char *) cfgent->ldata;
+  char *p = (char *) cfgent->ldata;
   if (!p)
     *valid=1;
   else if (strcmp(p, STR("ignore")) && strcmp(p, STR("die")) && strcmp(p, STR("reject"))
@@ -472,9 +474,10 @@ void getin_changed(struct cfg_entry *cfgent, char *oldval, int *valid)
     return;
   }
   if (!strcmp(cfgent->name, STR("lock-threshold"))) {
-    int L,
-      R;
-    char *value = cfgent->gdata;
+    int L, R;
+    char *value = NULL;
+
+    value = cfgent->gdata;
 
     L = atoi(value);
     value = strchr(value, ':');
@@ -566,7 +569,7 @@ void add_cfg(struct cfg_entry *entry)
 struct cfg_entry *check_can_set_cfg(char *target, char *entryname)
 {
   int i;
-  struct userrec *u;
+  struct userrec *u = NULL;
   struct cfg_entry *entry = NULL;
 
   for (i = 0; i < cfg_count; i++)
@@ -592,7 +595,7 @@ struct cfg_entry *check_can_set_cfg(char *target, char *entryname)
 
 void set_cfg_str(char *target, char *entryname, char *data)
 {
-  struct cfg_entry *entry;
+  struct cfg_entry *entry = NULL;
 
   if (!(entry = check_can_set_cfg(target, entryname)))
     return;
@@ -623,8 +626,7 @@ void set_cfg_str(char *target, char *entryname, char *data)
         }
       }
     }
-    xk = malloc(sizeof(struct xtra_key));
-    egg_bzero(xk, sizeof(struct xtra_key));
+    xk = calloc(1, sizeof(struct xtra_key));
     xk->key = strdup(entry->name);
     if (data) {
       xk->data = strdup(data);
@@ -715,11 +717,11 @@ void init_config()
 #ifdef S_DCCPASS
 int check_cmd_pass(char *cmd, char *pass)
 {
-  struct cmd_pass *cp;
+  struct cmd_pass *cp = NULL;
 
   for (cp = cmdpass; cp; cp = cp->next)
     if (!egg_strcasecmp(cmd, cp->name)) {
-      char tmp[32];
+      char tmp[32] = "";
 
       encrypt_pass(pass, tmp);
       if (!strcmp(tmp, cp->pass))
@@ -731,7 +733,7 @@ int check_cmd_pass(char *cmd, char *pass)
 
 int has_cmd_pass(char *cmd) 
 {
-  struct cmd_pass *cp;
+  struct cmd_pass *cp = NULL;
 
   for (cp = cmdpass; cp; cp = cp->next)
     if (!egg_strcasecmp(cmd, cp->name))
@@ -741,8 +743,8 @@ int has_cmd_pass(char *cmd)
 
 void set_cmd_pass(char *ln, int shareit) 
 {
-  struct cmd_pass *cp;
-  char *cmd;
+  struct cmd_pass *cp = NULL;
+  char *cmd = NULL;
 
   cmd = newsplit(&ln);
   for (cp = cmdpass; cp; cp = cp->next)
@@ -771,7 +773,7 @@ void set_cmd_pass(char *ln, int shareit)
       free(cp);
   } else if (ln[0]) {
     /* create */
-    cp = malloc(sizeof(struct cmd_pass));
+    cp = calloc(1, sizeof(struct cmd_pass));
     cp->next = cmdpass;
     cmdpass = cp;
     cp->name = strdup(cmd);
@@ -784,7 +786,7 @@ void set_cmd_pass(char *ln, int shareit)
 
 void userfile_cfg_line(char *ln)
 {
-  char *name;
+  char *name = NULL;
   int i;
   struct cfg_entry *cfgent = NULL;
 
@@ -801,7 +803,7 @@ void userfile_cfg_line(char *ln)
 
 void got_config_share(int idx, char *ln)
 {
-  char *name;
+  char *name = NULL;
   int i;
   struct cfg_entry *cfgent = NULL;
 
@@ -821,7 +823,7 @@ void got_config_share(int idx, char *ln)
 void trigger_cfg_changed()
 {
   int i;
-  struct xtra_key *xk;
+  struct xtra_key *xk = NULL;
 
   for (i = 0; i < cfg_count; i++) {
     if (cfg[i]->flags & CFGF_LOCAL) {

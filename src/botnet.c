@@ -32,10 +32,10 @@ extern Tcl_Interp		*interp;
 extern struct cfg_entry 	**cfg;
 
 
-tand_t			*tandbot;			/* Keep track of tandem bots on the
+tand_t			*tandbot = NULL;		/* Keep track of tandem bots on the
 							   botnet */
 party_t			*party;				/* Keep track of people on the botnet */
-static int 		maxparty = 200;			/* Maximum space for party line members
+static int 		maxparty = 100;			/* Maximum space for party line members
 							   currently */
 int			tands = 0;			/* Number of bots on the botnet */
 int			parties = 0;			/* Number of people on the botnet */
@@ -44,15 +44,12 @@ int			share_unlinks = 1;		/* Allow remote unlinks of my
 
 void init_bots()
 {
-  tandbot = NULL;
-  /* Grab space for 50 bots for now -- expand later as needed */
-  maxparty = 50;
-  party = (party_t *) malloc(maxparty * sizeof(party_t));
+  party = (party_t *) calloc(1, maxparty * sizeof(party_t));
 }
 
 tand_t *findbot(char *who)
 {
-  tand_t *ptr;
+  tand_t *ptr = NULL;
 
   for (ptr = tandbot; ptr; ptr = ptr->next)
     if (!egg_strcasecmp(ptr->bot, who))
@@ -64,14 +61,14 @@ tand_t *findbot(char *who)
  */
 void addbot(char *who, char *from, char *next, char flag, int vernum)
 {
-  tand_t **ptr = &tandbot, *ptr2;
+  tand_t **ptr = &tandbot, *ptr2 = NULL;
 
   while (*ptr) {
     if (!egg_strcasecmp((*ptr)->bot, who))
       putlog(LOG_BOTS, "*", "!!! Duplicate botnet bot entry!!");
     ptr = &((*ptr)->next);
   }
-  ptr2 = malloc(sizeof(tand_t));
+  ptr2 = calloc(1, sizeof(tand_t));
   strncpy(ptr2->bot, who, HANDLEN);
   ptr2->bot[HANDLEN] = 0;
   ptr2->share = flag;
@@ -91,7 +88,7 @@ void addbot(char *who, char *from, char *next, char flag, int vernum)
 #ifdef G_BACKUP
 void check_should_backup()
 {
-  struct chanset_t *chan;
+  struct chanset_t *chan = NULL;
 
   for (chan = chanset; chan; chan = chan->next) {
     if (chan->channel.backup_time && (chan->channel.backup_time < now) && !channel_backup(chan)) {
@@ -250,7 +247,7 @@ int partyidle(char *bot, char *nick)
  */
 int partynick(char *bot, int sock, char *nick)
 {
-  char work[HANDLEN + 1];
+  char work[HANDLEN + 1] = "";
   int i;
 
   for (i = 0; i < parties; i++) {
@@ -288,8 +285,8 @@ void partyaway(char *bot, int sock, char *msg)
  */
 void rembot(char *who)
 {
-  tand_t **ptr = &tandbot, *ptr2;
-  struct userrec *u;
+  tand_t **ptr = &tandbot, *ptr2 = NULL;
+  struct userrec *u = NULL;
 
   while (*ptr) {
     if (!egg_strcasecmp((*ptr)->bot, who))
@@ -358,7 +355,7 @@ void rempartybot(char *bot)
  */
 void unvia(int idx, tand_t * who)
 {
-  tand_t *bot, *bot2;
+  tand_t *bot = NULL, *bot2 = NULL;
 
   if (!who)
     return;			/* Safety */
@@ -378,8 +375,8 @@ void unvia(int idx, tand_t * who)
 void besthub(char *hub)
 {
   tand_t *ptr = tandbot;
-  struct userrec *u, *besthub = NULL;
-  char bestlval[20], lval[20];
+  struct userrec *u = NULL, *besthub = NULL;
+  char bestlval[20] = "", lval[20] = "";
 
   hub[0] = 0;
   strcpy(bestlval, "z");
@@ -434,9 +431,8 @@ char *lastbot(char *who)
  */
 void answer_local_whom(int idx, int chan)
 {
-  char format[81];
-  char c, idle[40];
-  int i, t, nicklen, botnicklen, total=0;
+  char format[81] = "", c = 0, idle[40] = "";
+  int i, t, nicklen, botnicklen, total = 0;
 
   if (chan == (-1))
     dprintf(idx, "%s (+: %s, *: %s)\n", BOT_BOTNETUSERS, BOT_PARTYLINE,
@@ -559,9 +555,9 @@ void answer_local_whom(int idx, int chan)
  */
 void tell_bots(int idx)
 {
-  char s[512];
+  char s[512] = "";
   int i;
-  tand_t *bot;
+  tand_t *bot = NULL;
 
   if (!tands) {
     dprintf(idx, STR("No bots linked\n"));
@@ -593,18 +589,16 @@ void tell_bots(int idx)
  */
 void tell_bottree(int idx, int showver)
 {
-  char s[161];
-  tand_t *last[20], *this, *bot, *bot2 = NULL;
-  int lev = 0, more = 1, mark[20], ok, cnt, i, imark;
-  char work[1024];
-  int tothops = 0;
+  char s[161] = "", work[1024] = "";
+  tand_t *last[20] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+                       NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
+  tand_t *this = NULL, *bot = NULL, *bot2 = NULL;
+  int lev = 0, more = 1, mark[20], ok, cnt, i = 0, imark, tothops = 0;
 
   if (tands == 0) {
     dprintf(idx, "%s\n", BOT_NOBOTSLINKED);
     return;
   }
-  s[0] = 0;
-  i = 0;
 
   for (bot = tandbot; bot; bot = bot->next)
     if (!bot->uplink) {
@@ -749,11 +743,11 @@ void tell_bottree(int idx, int showver)
 void dump_links(int z)
 {
   register int i, l;
-  char x[1024];
-  tand_t *bot;
+  char x[1024] = "";
+  tand_t *bot = NULL;
 
   for (bot = tandbot; bot; bot = bot->next) {
-    char *p;
+    char *p = NULL;
 
     if (bot->uplink == (tand_t *) 1)
       p = conf.bot->nick;
@@ -809,7 +803,7 @@ int in_chain(char *who)
 int bots_in_subtree(tand_t *bot)
 {
   int nr = 1;
-  tand_t *b;
+  tand_t *b = NULL;
 
   if (!bot)
     return 0;
@@ -824,7 +818,7 @@ int bots_in_subtree(tand_t *bot)
 int users_in_subtree(tand_t *bot)
 {
   int i, nr;
-  tand_t *b;
+  tand_t *b = NULL;
 
   nr = 0;
   if (!bot)
@@ -842,10 +836,10 @@ int users_in_subtree(tand_t *bot)
  */
 int botunlink(int idx, char *nick, char *reason)
 {
-  char s[20];
   register int i;
   int bots, users;
-  tand_t *bot;
+  char s[20] = "";
+  tand_t *bot = NULL;
 
   if (nick[0] == '*')
     dprintf(idx, "%s\n", BOT_UNLINKALL);
@@ -951,8 +945,8 @@ static void botlink_resolve_failure(int);
  */
 int botlink(char *linker, int idx, char *nick)
 {
-  struct bot_addr *bi;
-  struct userrec *u;
+  struct bot_addr *bi = NULL;
+  struct userrec *u = NULL;
   register int i;
 
   u = get_user_by_handle(userlist, nick);
@@ -1123,9 +1117,9 @@ static void tandem_relay_resolve_success(int);
  */
 void tandem_relay(int idx, char *nick, register int i)
 {
-  struct userrec *u;
-  struct bot_addr *bi;
-  struct chat_info *ci;
+  struct userrec *u = NULL;
+  struct bot_addr *bi = NULL;
+  struct chat_info *ci = NULL;
 
   u = get_user_by_handle(userlist, nick);
   if (!u || !(u->flags & USER_BOT)) {
@@ -1196,7 +1190,7 @@ void tandem_relay(int idx, char *nick, register int i)
 
 static void tandem_relay_resolve_failure(int idx)
 {
-  struct chat_info *ci;
+  struct chat_info *ci = NULL;
   register int uidx = (-1), i;
 
   for (i = 0; i < dcc_total; i++)
@@ -1345,7 +1339,7 @@ static void failed_pre_relay(int idx)
 static void cont_tandem_relay(int idx, char *buf, register int i)
 {
   register int uidx = (-1);
-  struct relay_info *ri;
+  struct relay_info *ri = NULL;
 
   for (i = 0; i < dcc_total; i++)
     if ((dcc[i].type == &DCC_PRE_RELAY) &&
@@ -1384,7 +1378,7 @@ static void cont_tandem_relay(int idx, char *buf, register int i)
 static void eof_dcc_relay(int idx)
 {
   register int j;
-  struct chat_info *ci;
+  struct chat_info *ci = NULL;
 
   for (j = 0; j < dcc_total; j++)
     if (dcc[j].sock == dcc[idx].u.relay->sock)
@@ -1458,7 +1452,7 @@ static void dcc_relay(int idx, char *buf, int j)
       } else if (*p == '\033') {
 	unsigned char	*e;
 
-	// Search for the end of the escape sequence.
+	/* Search for the end of the escape sequence. */
 	for (e = p + 2; *e != 'm' && *e; e++)
 	  ;
 	strcpy((char *) p, (char *) (e + 1));
@@ -1480,7 +1474,7 @@ static void dcc_relay(int idx, char *buf, int j)
 
 static void dcc_relaying(int idx, char *buf, int j)
 {
-  struct chat_info *ci;
+  struct chat_info *ci = NULL;
 
   if (egg_strcasecmp(buf, "*bye*")) {
     dprintf(-dcc[idx].u.relay->sock, "%s\n", buf);
@@ -1611,7 +1605,7 @@ void check_botnet_pings()
 {
   int i;
   int bots, users;
-  tand_t *bot;
+  tand_t *bot = NULL;
 
   for (i = 0; i < dcc_total; i++) {
     if (dcc[i].type == &DCC_BOT)
@@ -1684,9 +1678,9 @@ void check_botnet_pings()
 
 void zapfbot(int idx)
 {
-  char s[1024];
+  char s[1024] = "";
   int bots, users;
-  tand_t *bot;
+  tand_t *bot = NULL;
 
   bot = findbot(dcc[idx].nick);
   bots = bots_in_subtree(bot);
@@ -1719,15 +1713,12 @@ void restart_chons()
 }
 static int get_role(char *bot)
 {
-  int rl,
-    i;
-  struct bot_addr *ba;
+  int rl, i;
+  struct bot_addr *ba = NULL;
   int r[5] = { 0, 0, 0, 0, 0 };
-  struct userrec *u,
-   *u2;
+  struct userrec *u = NULL, *u2 = NULL;
 
-  u2 = get_user_by_handle(userlist, bot);
-  if (!u2)
+  if (!(u2 = get_user_by_handle(userlist, bot)))
     return 1;
 
   for (u = userlist; u; u = u->next) {
@@ -1753,10 +1744,10 @@ static int get_role(char *bot)
 
 void lower_bot_linked(int idx)
 {
-  char tmp[6];
-  sprintf(tmp, STR("rl %d"), get_role(dcc[idx].nick));
-  botnet_send_zapf(nextbot(dcc[idx].nick), conf.bot->nick, dcc[idx].nick, tmp);
+  char tmp[6] = "";
 
+  sprintf(tmp, "rl %d", get_role(dcc[idx].nick));
+  botnet_send_zapf(nextbot(dcc[idx].nick), conf.bot->nick, dcc[idx].nick, tmp);
 }
 
 void higher_bot_linked(int idx)

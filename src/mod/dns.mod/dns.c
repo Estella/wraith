@@ -21,7 +21,6 @@ static void dns_event_failure(struct resolve *rp, int type);
 
 #include "coredns.c"
 
-
 /*
  *    DNS event related code
  */
