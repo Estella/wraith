@@ -83,7 +83,6 @@ struct cfg_entry CFG_SERVPORT = {
 #endif /* LEAF */
 };
 
-#if defined(S_AUTHHASH) || defined(S_DCCAUTH)
 #ifdef HUB
 static void authkey_describe(struct cfg_entry *entry, int idx) {
   dprintf(idx, 
@@ -99,7 +98,6 @@ struct cfg_entry CFG_AUTHKEY = {
 	NULL, NULL, authkey_describe
 #endif /* LEAF */
 };
-#endif /* S_AUTHHASH || S_DCCAUTH */
 
 #ifdef HUB
 static void msgcmds_describe(struct cfg_entry *entry, int idx) {
@@ -822,9 +820,7 @@ void init_config()
 {
   add_cfg(&CFG_SERVPORT);
   add_cfg(&CFG_CHANSET);
-#if defined(S_AUTHHASH) || defined(S_DCCAUTH)
   add_cfg(&CFG_AUTHKEY);
-#endif /* S_AUTHHASH || S_DCCAUTH */
   add_cfg(&CFG_MOTD);
   add_cfg(&CFG_FORKINTERVAL);
   add_cfg(&CFG_LOGIN);
