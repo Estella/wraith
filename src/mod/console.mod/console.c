@@ -24,7 +24,7 @@ struct console_info {
   int echoflags;
   int page;
   int conchan;
-  int color;
+  int colour;
 };
 
 static struct user_entry_type USERENTRY_CONSOLE;
@@ -50,7 +50,7 @@ static int console_unpack(struct userrec *u, struct user_entry *e)
   arg = newsplit(&par);
   ci->conchan = atoi(arg);
   arg = newsplit(&par);
-  ci->color = atoi(arg);
+  ci->colour = atoi(arg);
   list_type_kill(e->u.list);
   e->u.extra = ci;
   return 1;
@@ -67,7 +67,7 @@ static int console_pack(struct userrec *u, struct user_entry *e)
   l = simple_sprintf(work, "%s %s %s %d %d %d %d",
 		     ci->channel, masktype(ci->conflags),
 		     stripmasktype(ci->stripflags), ci->echoflags,
-		     ci->page, ci->conchan, ci->color);
+		     ci->page, ci->conchan, ci->colour);
 
   e->u.list = user_malloc(sizeof(struct list_type));
   e->u.list->next = NULL;
@@ -97,7 +97,7 @@ static int console_write_userfile(FILE *f, struct userrec *u,
   if (lfprintf(f, "--CONSOLE %s %s %s %d %d %d %d\n",
 	      i->channel, masktype(i->conflags),
 	      stripmasktype(i->stripflags), i->echoflags,
-	      i->page, i->conchan, i->color) == EOF)
+	      i->page, i->conchan, i->colour) == EOF)
     return 0;
   return 1;
 }
@@ -121,7 +121,7 @@ static int console_set(struct userrec *u, struct user_entry *e, void *buf)
     char string[501];    
     egg_snprintf(string, sizeof string, "%s %s %s %d %d %d %d", ci->channel, masktype(ci->conflags), 
                                     stripmasktype(ci->stripflags), ci->echoflags, ci->page, ci->conchan,
-                                    ci->color);
+                                    ci->colour);
     /* shareout(NULL, "c %s %s %s\n", e->type->name, u->handle, string); */
     shareout(NULL, "c CONSOLE %s %s\n", u->handle, string);
   }
@@ -153,7 +153,7 @@ static int console_gotshare(struct userrec *u, struct user_entry *e, char *par, 
   arg = newsplit(&par);
   ci->conchan = atoi(arg);
   arg = newsplit(&par);
-  ci->color = atoi(arg);
+  ci->colour = atoi(arg);
   e->u.extra = ci;
   /* now let's propogate to the dcc list */
   for (i = 0; i < dcc_total; i++) {
@@ -172,7 +172,7 @@ static int console_gotshare(struct userrec *u, struct user_entry *e, char *par, 
         if (!dcc[i].u.chat->line_count)
           dcc[i].u.chat->current_lines = 0;
       }
-      if (ci->color)
+      if (ci->colour)
         dcc[i].status |= (STAT_COLOR);
       else
         dcc[i].status &= ~(STAT_COLOR);
@@ -190,7 +190,7 @@ static int console_tcl_get(Tcl_Interp *irp, struct userrec *u,
   simple_sprintf(work, "%s %s %s %d %d %d %d",
 		 i->channel, masktype(i->conflags),
 		 stripmasktype(i->stripflags), i->echoflags,
-		 i->page, i->conchan, i->color);
+		 i->page, i->conchan, i->colour);
   Tcl_AppendResult(irp, work, NULL);
   return TCL_OK;
 }
@@ -225,7 +225,7 @@ static int console_tcl_set(Tcl_Interp *irp, struct userrec *u,
 	  if (argc > 8) {
 	    i->conchan = atoi(argv[8]);
             if (argc > 9)
-              i->color = atoi(argv[9]);
+              i->colour = atoi(argv[9]);
           }  
 	}
       }
@@ -257,7 +257,7 @@ static void console_display(int idx, struct user_entry *e, struct userrec *u)
             CONSOLE_CHANNEL2, (i->conchan < GLOBAL_CHANS) ? "" : "*",
             i->conchan % GLOBAL_CHANS);
     sprintf(tmp, "    Color:");
-    if (i->color == 1)
+    if (i->colour == 1)
      sprintf(tmp, "%s on", tmp);
     else
      sprintf(tmp, "%s off", tmp);
@@ -316,7 +316,7 @@ static int console_chon(char *handle, int idx)
 	if (!dcc[idx].u.chat->line_count)
 	  dcc[idx].u.chat->current_lines = 0;
       }
-      if (i->color)
+      if (i->colour)
         dcc[idx].status |= (STAT_COLOR);
       else
         dcc[idx].status &= ~(STAT_COLOR);
@@ -366,9 +366,9 @@ static int console_store(struct userrec *u, int idx, char *par)
   else
     i->page = 0;
   if (dcc[idx].status & STAT_COLOR)
-    i->color = 1;
+    i->colour = 1;
   else
-    i->color = 0;
+    i->colour = 0;
   i->conchan = dcc[idx].u.chat->channel;
   if (par) {
     char tmp[100];
@@ -381,7 +381,7 @@ static int console_store(struct userrec *u, int idx, char *par)
     dprintf(idx, "  %s %d, %s %d\n", CONSOLE_PAGE_SETTING, i->page,
             CONSOLE_CHANNEL2, i->conchan);
     sprintf(tmp, "    Color:");
-    if (i->color == 1)
+    if (i->colour == 1)
      sprintf(tmp, "%s on", tmp);
     else
      sprintf(tmp, "%s off", tmp);
