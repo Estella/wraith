@@ -2,6 +2,8 @@
 # $Id$
 #DO NOT RUN THIS FILE AT ALL.
 
+#need to exit because this is flawed
+exit 0
 hfiles="`find src/strings/ -name \*.h`"
 for s in $hfiles
 do
