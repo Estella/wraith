@@ -540,6 +540,7 @@ void chanprog()
   sdprintf("ip6: %s", myipstr(6));
   sdprintf("I am: %s", conf.bot->nick);
 #ifdef HUB
+  egg_snprintf(userfile, 121, "%s/.u", conf.binpath);
   loading = 1;
   checkchans(0);
   readuserfile(userfile, &userlist);

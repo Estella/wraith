@@ -737,10 +737,6 @@ printf("out: %s\n", out);
   myuid = geteuid();
 
 #ifdef HUB
-  egg_snprintf(userfile, 121, "%s/.u", confdir());
-#endif /* HUB */
-
-#ifdef HUB
   egg_snprintf(tempdir, sizeof tempdir, "%s/tmp/", confdir());
 #endif /* HUB */
 #ifdef LEAF 
