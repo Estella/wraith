@@ -156,7 +156,7 @@ int simple_sprintf (char *buf, ...)
 
 /* Ditto for tandem bots
  */
-void send_tand_but(int x, char *buf, int len)
+static void send_tand_but(int x, char *buf, int len)
 {
   int i, iso = 0;
 
@@ -168,6 +168,7 @@ void send_tand_but(int x, char *buf, int len)
     if ((dcc[i].type == &DCC_BOT) && (i != x) && (!iso || !(bot_flags(dcc[i].user) & BOT_ISOLATE)))
       tputs(dcc[i].sock, buf, len);
 }
+
 #ifdef S_DCCPASS
 void botnet_send_cmdpass(int idx, char *cmd, char *pass)
 {
@@ -407,7 +408,7 @@ void botnet_send_reject(int idx, char *fromp, char *frombot, char *top, char *to
   }
 }
 
-void putallbots(char *par)
+inline void putallbots(char *par)
 { 
   botnet_send_zapf_broad(-1, conf.bot->nick, NULL, par);
 }
