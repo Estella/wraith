@@ -8,5 +8,5 @@ if echo "#define CVSBUILD ${unixtime}			/* utc unixtime of cvs commit */" > src/
 	exit
  fi
 
-cvs commit "$@"
+cvs commit "$@" src/build.h
 
