@@ -61,10 +61,10 @@ static time_t flood_telnet_time = 5;       /* In how many seconds?              
 
 static void dcc_telnet_hostresolved(int);
 static void dcc_telnet_got_ident(int, char *);
-static void dcc_telnet_pass(int, size_t);
+static void dcc_telnet_pass(int, int);
 
 static void
-strip_telnet(sock_t sock, char *buf, size_t *len)
+strip_telnet(int sock, char *buf, int *len)
 {
   unsigned char *p = (unsigned char *) buf, *o = (unsigned char *) buf;
   int mark;
@@ -274,11 +274,11 @@ failed_link(int idx)
 }
 
 static void
-cont_link(int idx, char *buf, size_t ii)
+cont_link(int idx, char *buf, int ii)
 {
   /* Now set the initial link key (incoming only, we're not sending more until we get an OK)... */
 
-  sock_t snum = findanysnum(dcc[idx].sock);
+  int snum = findanysnum(dcc[idx].sock);
 
   if (snum >= 0) {
     struct sockaddr_in sa;
@@ -321,7 +321,7 @@ cont_link(int idx, char *buf, size_t ii)
 }
 
 static void
-dcc_bot_new(int idx, char *buf, size_t x)
+dcc_bot_new(int idx, char *buf, int x)
 {
 /*  struct userrec *u = get_user_by_handle(userlist, dcc[idx].nick); */
   char *code = NULL;
@@ -333,7 +333,7 @@ dcc_bot_new(int idx, char *buf, size_t x)
   } else if (!egg_strcasecmp(code, "v")) {
     bot_version(idx, buf);
   } else if (!egg_strcasecmp(code, "elink")) {
-    sock_t snum = findanysnum(dcc[idx].sock);
+    int snum = findanysnum(dcc[idx].sock);
 
     /* putlog(LOG_DEBUG, "*", "Got elink: %s %s", code, buf); */
     /* Set the socket key and we're linked */
@@ -415,7 +415,7 @@ struct dcc_table DCC_BOT_NEW = {
 extern botcmd_t C_bot[];
 
 static void
-dcc_bot(int idx, char *code, size_t i)
+dcc_bot(int idx, char *code, int i)
 {
   char *msg = NULL;
   int f;
@@ -525,7 +525,7 @@ struct dcc_table DCC_FORK_BOT = {
 };
 
 static void
-dcc_identd(int idx, char *buf, size_t atr)
+dcc_identd(int idx, char *buf, int atr)
 {
   char outbuf[1024] = "";
 
@@ -564,11 +564,11 @@ struct dcc_table DCC_IDENTD = {
 };
 
 static void
-dcc_identd_connect(int idx, char *buf, size_t atr)
+dcc_identd_connect(int idx, char *buf, int atr)
 {
   in_addr_t ip;
   port_t port;
-  sock_t j, sock;
+  int j, sock;
   char s[UHOSTLEN + 1] = "";
 
   if (dcc_total + 1 > max_dcc) {
@@ -613,7 +613,7 @@ struct dcc_table DCC_IDENTD_CONNECT = {
 };
 
 static void
-dcc_chat_secpass(int idx, char *buf, size_t atr)
+dcc_chat_secpass(int idx, char *buf, int atr)
 {
   int badauth = 0;
 
@@ -886,7 +886,7 @@ static struct dcc_table DCC_CHAT_SECPASS = {
 };
 
 static void
-dcc_chat_pass(int idx, char *buf, size_t atr)
+dcc_chat_pass(int idx, char *buf, int atr)
 {
   if (!atr)
     return;
@@ -999,7 +999,7 @@ eof_dcc_chat(int idx)
 }
 
 static void
-dcc_chat(int idx, char *buf, size_t len)
+dcc_chat(int idx, char *buf, int len)
 {
   int i = 0;
 
@@ -1193,14 +1193,14 @@ detect_telnet_flood(char *floodhost)
 }
 
 static void
-dcc_telnet(int idx, char *buf, size_t ii)
+dcc_telnet(int idx, char *buf, int ii)
 {
   in_addr_t ip;
   port_t port;
   char s[UHOSTLEN + 1] = "";
 
   if (dcc_total + 1 > max_dcc) {
-    sock_t j;
+    int j;
 
     j = answer(dcc[idx].sock, s, &ip, &port, 0);
     if (j != -1) {
@@ -1210,7 +1210,7 @@ dcc_telnet(int idx, char *buf, size_t ii)
     return;
   }
 
-  sock_t sock = answer(dcc[idx].sock, s, &ip, &port, 0);
+  int sock = answer(dcc[idx].sock, s, &ip, &port, 0);
 
   while ((sock == -1) && (errno == EAGAIN))
     sock = answer(sock, s, &ip, &port, 0);
@@ -1270,7 +1270,7 @@ static void
 dcc_telnet_hostresolved(int i)
 {
   int idx;
-  sock_t j = 0, sock;
+  int j = 0, sock;
   char s2[UHOSTLEN + 20] = "";
 
 #ifdef USE_IPV6
@@ -1386,7 +1386,7 @@ eof_dcc_dupwait(int idx)
 }
 
 static void
-dcc_dupwait(int idx, char *buf, size_t i)
+dcc_dupwait(int idx, char *buf, int i)
 {
   /* We just ignore any data at this point. */
   return;
@@ -1459,7 +1459,7 @@ dupwait_notify(const char *who)
 }
 
 static void
-dcc_telnet_id(int idx, char *buf, size_t atr)
+dcc_telnet_id(int idx, char *buf, int atr)
 {
   strip_telnet(dcc[idx].sock, buf, &atr);
   buf[HANDLEN] = 0;
@@ -1522,7 +1522,7 @@ dcc_telnet_id(int idx, char *buf, size_t atr)
 }
 
 static void
-dcc_telnet_pass(int idx, size_t atr)
+dcc_telnet_pass(int idx, int atr)
 {
   struct flag_record fr = { FR_GLOBAL | FR_CHAN | FR_ANYWH, 0, 0, 0 };
 
@@ -1569,7 +1569,7 @@ dcc_telnet_pass(int idx, size_t atr)
   }
 
   if (glob_bot(fr)) {
-    sock_t snum = findanysnum(dcc[idx].sock);
+    int snum = findanysnum(dcc[idx].sock);
 
     if (snum >= 0) {
       char initkey[33] = "", *tmp2 = NULL;
@@ -1652,7 +1652,7 @@ struct dcc_table DCC_TELNET_ID = {
 };
 
 static void
-dcc_socket(int idx, char *buf, size_t len)
+dcc_socket(int idx, char *buf, int len)
 {
 }
 
@@ -1702,7 +1702,7 @@ struct dcc_table DCC_LOST = {
 };
 
 void
-dcc_identwait(int idx, char *buf, size_t len)
+dcc_identwait(int idx, char *buf, int len)
 {
   /* Ignore anything now */
 }
@@ -1743,7 +1743,7 @@ struct dcc_table DCC_IDENTWAIT = {
 };
 
 void
-dcc_ident(int idx, char *buf, size_t len)
+dcc_ident(int idx, char *buf, int len)
 {
   char ident_response[512] = "", uid[512] = "", buf1[UHOSTLEN] = "";
 
@@ -1784,7 +1784,7 @@ eof_dcc_ident(int idx)
 static void
 display_dcc_ident(int idx, char *buf)
 {
-  sprintf(buf, "idnt  (sock %li)", dcc[idx].u.ident_sock);
+  sprintf(buf, "idnt  (sock %d)", dcc[idx].u.ident_sock);
 }
 
 struct dcc_table DCC_IDENT = {
