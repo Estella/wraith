@@ -35,9 +35,8 @@ void init_flags()
 
 /* Some flags are mutually exclusive -- this roots them out
  */
-int sanity_check(flag_t atr)
+flag_t sanity_check(flag_t atr)
 {
-/* bots shouldnt have +pmcnaijlys */
   if ((atr & USER_BOT) &&
       (atr & (USER_PARTY | USER_MASTER | USER_OWNER | USER_ADMIN | USER_HUBA | USER_CHUBA)))
     atr &= ~(USER_PARTY | USER_MASTER | USER_OWNER | USER_ADMIN | USER_HUBA | USER_CHUBA);
@@ -47,6 +46,8 @@ int sanity_check(flag_t atr)
     atr &= ~(USER_DOLIMIT | USER_DOVOICE | USER_UPDATEHUB | USER_CHANHUB);
   if ((atr & USER_OP) && (atr & USER_DEOP))
     atr &= ~(USER_OP | USER_DEOP);
+  if ((atr & USER_AUTOOP) && (atr & USER_DEOP))
+    atr &= ~(USER_AUTOOP | USER_DEOP);
   if ((atr & USER_VOICE) && (atr & USER_QUIET))
     atr &= ~(USER_VOICE | USER_QUIET);
  
@@ -71,13 +72,15 @@ int sanity_check(flag_t atr)
 
 /* Sanity check on channel attributes
  */
-int chan_sanity_check(int chatr, int atr)
+flag_t chan_sanity_check(flag_t chatr, flag_t atr)
 {
   /* admin for chan does shit.. */
   if (chatr & USER_ADMIN)
     chatr &= ~(USER_ADMIN);
   if ((chatr & USER_OP) && (chatr & USER_DEOP))
     chatr &= ~(USER_OP | USER_DEOP);
+  if ((chatr & USER_AUTOOP) && (chatr & USER_DEOP))
+    chatr &= ~(USER_AUTOOP | USER_DEOP);
   if ((chatr & USER_VOICE) && (chatr & USER_QUIET))
     chatr &= ~(USER_VOICE | USER_QUIET);
   /* Can't be channel owner without also being channel master */
@@ -157,26 +160,31 @@ void break_down_flags(const char *string, struct flag_record *plus, struct flag_
         chan = 1;
       break;		/* switch() */
     default:
-      if ((*string >= 'a') && (*string <= 'z')) {
+     {
+      flag_t flagbit = FLAG[(unsigned char) *string];
+
+      if (flagbit) {
 	switch (chan) {
 	case 0:
 	  /* which->global |= (flag_t) 1 << (*string - 'a'); */
-          which->global |= FLAG[(unsigned char) *string];
+          which->global |= flagbit;
 	  break;
 	case 1:
 	  /* which->chan |= (flag_t) 1 << (*string - 'a'); */
-          which->chan |= FLAG[(unsigned char) *string];
+          which->chan |= flagbit;
 	  break;
 	}
       } 
+     }
     }
     string++;
   }
+  /*
   for (which = plus; which; which = (which == plus ? minus : 0)) {
     which->global &= USER_VALID;
-
     which->chan &= CHAN_VALID;
   }
+  */
   plus->match |= flags;
   if (minus) {
     minus->match |= flags;
@@ -395,6 +403,15 @@ int chk_op(struct flag_record fr, struct chanset_t *chan)
 {
   if (!chan || (!private(fr, chan, PRIV_OP) && !chk_deop(fr, chan))) {
     if (chan_op(fr) || (glob_op(fr) && !chan_deop(fr)))
+      return 1;
+  }
+  return 0;
+}
+
+int chk_autoop(struct flag_record fr, struct chanset_t *chan)
+{
+  if (!chan || (!private(fr, chan, PRIV_OP) && chk_op(fr, chan) && !chk_deop(fr, chan))) {
+    if (channel_autoop(chan) || chan_autoop(fr) || glob_autoop(fr))
       return 1;
   }
   return 0;
