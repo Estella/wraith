@@ -137,21 +137,6 @@ int def_gotshare(struct userrec *u, struct user_entry *e,
   return e->type->set(u, e, data);
 }
 
-int def_tcl_get(Tcl_Interp * interp, struct userrec *u,
-		struct user_entry *e, int argc, char **argv)
-{
-  Tcl_AppendResult(interp, e->u.string, NULL);
-  return TCL_OK;
-}
-
-int def_tcl_set(Tcl_Interp * irp, struct userrec *u,
-		struct user_entry *e, int argc, char **argv)
-{
-  BADARGS(4, 4, " handle type setting");
-  e->type->set(u, e, argv[3]);
-  return TCL_OK;
-}
-
 void def_display(int idx, struct user_entry *e, struct userrec *u)
 {
   dprintf(idx, "  %s: %s\n", e->type->name, e->u.string);
@@ -181,8 +166,6 @@ struct user_entry_type USERENTRY_COMMENT =
   def_kill,
   def_get,
   def_set,
-  def_tcl_get,
-  def_tcl_set,
   comment_display,
   "COMMENT"
 };
@@ -198,8 +181,6 @@ struct user_entry_type USERENTRY_INFO =
   def_kill,
   def_get,
   def_set,
-  def_tcl_get,
-  def_tcl_set,
   def_display,
   "INFO"
 };
@@ -240,8 +221,6 @@ struct user_entry_type USERENTRY_ADDED = {
   def_kill,
   def_get,
   def_set,
-  0,
-  0,
   added_display,
   "ADDED"
 };
@@ -449,8 +428,6 @@ struct user_entry_type USERENTRY_CONFIG = {
   config_kill,
   def_get,
   config_set,
-  0,
-  0,
   config_display,
   "CONFIG"
 };
@@ -506,8 +483,6 @@ struct user_entry_type USERENTRY_STATS = {
   def_kill,
   def_get,
   def_set,
-  0,
-  0,
   stats_display,
   "STATS"
 };
@@ -554,8 +529,6 @@ struct user_entry_type USERENTRY_MODIFIED =
   def_kill,
   def_get,
   def_set,
-  0,
-  0,
   modified_display,
   "MODIFIED"
 };
@@ -590,14 +563,6 @@ int pass_set(struct userrec *u, struct user_entry *e, void *buf)
   return 1;
 }
 
-static int pass_tcl_set(Tcl_Interp * irp, struct userrec *u,
-			struct user_entry *e, int argc, char **argv)
-{
-  BADARGS(3, 4, " handle PASS ?newpass?");
-  pass_set(u, e, argc == 3 ? NULL : argv[3]);
-  return TCL_OK;
-}
-
 struct user_entry_type USERENTRY_PASS =
 {
   0,
@@ -609,8 +574,6 @@ struct user_entry_type USERENTRY_PASS =
   def_kill,
   def_get,
   pass_set,
-  def_tcl_get,
-  pass_tcl_set,
   0,
   "PASS"
 };
@@ -646,8 +609,6 @@ struct user_entry_type USERENTRY_SECPASS =
   def_kill,
   def_get,
   def_set,
-  0,
-  0,
   secpass_display,
   "SECPASS"
 };
@@ -724,59 +685,6 @@ static int laston_set(struct userrec *u, struct user_entry *e, void *buf)
   return 1;
 }
 
-static int laston_tcl_get(Tcl_Interp * irp, struct userrec *u,
-			  struct user_entry *e, int argc, char **argv)
-{
-  struct laston_info *li = (struct laston_info *) e->u.extra;
-  char number[20];
-  struct chanuserrec *cr;
-
-  BADARGS(3, 4, " handle LASTON ?channel?");
-  if (argc == 4) {
-    for (cr = u->chanrec; cr; cr = cr->next)
-      if (!rfc_casecmp(cr->channel, argv[3])) {
-	Tcl_AppendResult(irp, int_to_base10(cr->laston), NULL);
-	break;
-      }
-    if (!cr)
-      Tcl_AppendResult(irp, "0", NULL);
-  } else {
-    sprintf(number, "%lu ", li->laston);
-    Tcl_AppendResult(irp, number, li->lastonplace, NULL);
-  }
-  return TCL_OK;
-}
-
-static int laston_tcl_set(Tcl_Interp * irp, struct userrec *u,
-			  struct user_entry *e, int argc, char **argv)
-{
-  struct laston_info *li;
-  struct chanuserrec *cr;
-
-  BADARGS(4, 5, " handle LASTON time ?place?");
-
-  if ((argc == 5) && argv[4][0] && strchr(CHANMETA, argv[4][0])) {
-    /* Search for matching channel */
-    for (cr = u->chanrec; cr; cr = cr->next)
-      if (!rfc_casecmp(cr->channel, argv[4])) {
-	cr->laston = atoi(argv[3]);
-	break;
-      }
-  }
-  /* Save globally */
-  li = malloc(sizeof(struct laston_info));
-
-  if (argc == 5) {
-    li->lastonplace = strdup(argv[4]);
-  } else {
-    li->lastonplace = malloc(1);
-    li->lastonplace[0] = 0;
-  }
-  li->laston = atoi(argv[3]);
-  set_user(&USERENTRY_LASTON, u, li);
-  return TCL_OK;
-}
-
 static int laston_dupuser(struct userrec *new, struct userrec *old,
 			  struct user_entry *e)
 {
@@ -803,8 +711,6 @@ struct user_entry_type USERENTRY_LASTON =
   laston_kill,
   def_get,
   laston_set,
-  laston_tcl_get,
-  laston_tcl_set,
   0,
   "LASTON"
 };
@@ -928,51 +834,6 @@ static int botaddr_set(struct userrec *u, struct user_entry *e, void *buf)
   return 1;
 }
 
-static int botaddr_tcl_get(Tcl_Interp *interp, struct userrec *u,
-			   struct user_entry *e, int argc, char **argv)
-{
-  register struct bot_addr *bi = (struct bot_addr *) e->u.extra;
-  char number[20];
-
-  Context;
-  sprintf(number, STR(" %d"), bi->telnet_port);
-  Tcl_AppendResult(interp, bi->address, number, NULL);
-  sprintf(number, STR(" %d"), bi->relay_port);
-  Tcl_AppendResult(interp, number, NULL);
-  sprintf(number, STR(" %d"), bi->hublevel);
-  Tcl_AppendResult(interp, number, NULL);
-  Tcl_AppendResult(interp, bi->uplink, NULL);
-  return TCL_OK;
-}
-
-static int botaddr_tcl_set(Tcl_Interp *irp, struct userrec *u,
-			   struct user_entry *e, int argc, char **argv)
-{
-  register struct bot_addr *bi = (struct bot_addr *) e->u.extra;
-
-  BADARGS(4, 6, " handle type address ?telnetport ?relayport??");
-  if (u->flags & USER_BOT) {
-    /* Silently ignore for users */
-    if (!bi) {
-      bi = malloc(sizeof(struct bot_addr));
-      egg_bzero(bi, sizeof (struct bot_addr));
-    } else {
-      free(bi->address);
-    }
-    bi->address = strdup(argv[3]);
-    if (argc > 4)
-      bi->telnet_port = atoi(argv[4]);
-    if (argc > 5)
-      bi->relay_port = atoi(argv[5]);
-    if (!bi->telnet_port)
-      bi->telnet_port = 3333;
-    if (!bi->relay_port)
-      bi->relay_port = bi->telnet_port;
-    botaddr_set(u, e, bi);
-  }
-  return TCL_OK;
-}
-
 static void botaddr_display(int idx, struct user_entry *e, struct userrec *u)
 {
 #ifdef HUB
@@ -1047,8 +908,6 @@ struct user_entry_type USERENTRY_BOTADDR =
   botaddr_kill,
   def_get,
   botaddr_set,
-  botaddr_tcl_get,
-  botaddr_tcl_set,
   botaddr_display,
   "BOTADDR"
 };
@@ -1093,32 +952,6 @@ int xtra_set(struct userrec *u, struct user_entry *e, void *buf)
     free(new->key);
     free(new);
   }
-  return TCL_OK;
-}
-static int xtra_tcl_set(Tcl_Interp * irp, struct userrec *u,
-                        struct user_entry *e, int argc, char **argv)
-{
-  struct xtra_key *xk;
-  int l;
-
-  BADARGS(4, 5, " handle type key ?value?");
-  xk = malloc(sizeof(struct xtra_key));
-  l = strlen(argv[3]);
-  egg_bzero(xk, sizeof (struct xtra_key));
-  if (l > 500)
-    l = 500;
-  xk->key = malloc(l + 1);
-  strncpyz(xk->key, argv[3], l + 1);
-
-  if (argc == 5) {
-    int k = strlen(argv[4]);
-
-    if (k > 500 - l)
-      k = 500 - l;
-    xk->data = malloc(k + 1);
-    strncpyz(xk->data, argv[4], k + 1);
-  }
-  xtra_set(u, e, xk);
   return TCL_OK;
 }
 
@@ -1257,36 +1090,6 @@ int xtra_kill(struct user_entry *e)
   free(e);
   return 1;
 }
-static int xtra_tcl_get(Tcl_Interp *irp, struct userrec *u,
-                        struct user_entry *e, int argc, char **argv)
-{
-  struct xtra_key *x;
-
-  BADARGS(3, 4, " handle XTRA ?key?");
-  if (argc == 4) {
-    for (x = e->u.extra; x; x = x->next)
-      if (!egg_strcasecmp(argv[3], x->key)) {
-        Tcl_AppendResult(irp, x->data, NULL);
-        return TCL_OK;
-      }
-    return TCL_OK;
-  }
-  for (x = e->u.extra; x; x = x->next) {
-    char *p;
-#if ((TCL_MAJOR_VERSION == 8) && (TCL_MINOR_VERSION >= 4))
-    CONST char *list[2];
-#else
-    char *list[2];
-#endif
-
-    list[0] = x->key;
-    list[1] = x->data;
-    p = Tcl_Merge(2, list);
-    Tcl_AppendElement(irp, p);
-    Tcl_Free((char *) p);
-  }
-  return TCL_OK;
-}
 
 struct user_entry_type USERENTRY_XTRA =
 {
@@ -1299,8 +1102,6 @@ struct user_entry_type USERENTRY_XTRA =
   xtra_kill,
   def_get,
   xtra_set,
-  xtra_tcl_get,
-  xtra_tcl_set,
   xtra_display,
   "XTRA"
 };
@@ -1416,28 +1217,6 @@ static int hosts_set(struct userrec *u, struct user_entry *e, void *buf)
   return 1;
 }
 
-static int hosts_tcl_get(Tcl_Interp *irp, struct userrec *u,
-			 struct user_entry *e, int argc, char **argv)
-{
-  struct list_type *x;
-
-  BADARGS(3, 3, " handle HOSTS");
-  for (x = e->u.list; x; x = x->next)
-    Tcl_AppendElement(irp, x->extra);
-  return TCL_OK;
-}
-
-static int hosts_tcl_set(Tcl_Interp * irp, struct userrec *u,
-			 struct user_entry *e, int argc, char **argv)
-{
-  BADARGS(3, 4, " handle HOSTS ?host?");
-  if (argc == 4)
-    addhost_by_handle(u->handle, argv[3]);
-  else
-    addhost_by_handle(u->handle, "none"); /* drummer */
-  return TCL_OK;
-}
-
 static int hosts_gotshare(struct userrec *u, struct user_entry *e,
 			  char *buf, int idx)
 {
@@ -1456,8 +1235,6 @@ struct user_entry_type USERENTRY_HOSTS =
   hosts_kill,
   def_get,
   hosts_set,
-  hosts_tcl_get,
-  hosts_tcl_set,
   hosts_display,
   "HOSTS"
 };
