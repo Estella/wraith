@@ -591,10 +591,8 @@ static void startup_checks(int hack) {
         /* never reached */
         exit(0);
       }
-      if (conf.bot->hub) {
-        spawnbots();
-        exit(0); /* our job is done! */
-      }
+      spawnbots();
+      exit(0); /* our job is done! */
     }
   }
   if (!conf.bot->localhub)
