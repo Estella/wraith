@@ -999,10 +999,13 @@ void enforce_closed(struct chanset_t *chan) {
 static char *
 take_massopline(char *op, char **to_op)
 {
-  char *nicks = (char *) calloc(1, 51), *modes = (char *) calloc(1, 10), *ret = (char *) calloc(1, 61), *nick = NULL;
+  char *nicks = (char *) calloc(1, 151),
+       *modes = (char *) calloc(1, 31),
+       *ret = (char *) calloc(1, 182),
+       *nick = NULL;
   register bool useop = 0;
 
-  for (int i = 0; i < 4; i++) {
+  for (int i = 0; i < modesperline; i++) {
     if (*to_op[0] || op) {
       /* if 'op' then use it, then move on to to_op */
       if (!useop && op) {
@@ -1027,13 +1030,13 @@ take_massopline(char *op, char **to_op)
   return ret;
 }
 
-static char *
+inline static char *
 take_makeline(char *op, char *deops, unsigned int deopn)
 {
   bool opn = op ? 1 : 0;
   unsigned int n = opn + deopn;		/* op + deops */
   unsigned int pos = randint(deopn), i;
-  char *ret = (char *) calloc(1, 101);
+  char *ret = (char *) calloc(1, 151);
   
   for (i = 0; i < n; i++) {
     if (opn && i == pos)
@@ -1101,7 +1104,7 @@ do_take(struct chanset_t *chan)
     if (to_op[0])
       op = newsplit(&to_op);
 
-    for (i = 0; i < modesperline; i ++) {
+    for (i = 0; i < modesperline; i++) {
       if (to_deop[0] && ((i < (modesperline - 1)) || (!op))) {
         deopn++; 
         strcat(deops, newsplit(&to_deop)); 
@@ -1118,8 +1121,7 @@ do_take(struct chanset_t *chan)
     else
       modeline = take_massopline(op, &to_op);
     strcat(work, modeline);
-    strcat(work, "\r");
-    strcat(work, "\n");
+    strcat(work, "\r\n");
     lines++;
     free(modeline);
 
