@@ -18,6 +18,7 @@ static const char rcsid[] = "$Id$";
 #include "dccutil.h"
 #include "userent.h"
 #include "users.h"
+#include "chanprog.h"
 
 flag_t FLAG[128];
 
