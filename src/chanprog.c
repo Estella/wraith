@@ -33,7 +33,7 @@
 extern struct userrec	*userlist;
 extern char		 ver[], botnetnick[], firewall[], myip[], 
 			 motdfile[], userfile[], tempdir[],
-			 notify_new[], owner[], 
+			 owner[], 
                          botuser[], *owners, *hubs;
 
 extern time_t		 now, online_since;
@@ -302,7 +302,7 @@ void tell_verbose_status(int idx)
 #ifdef HUB
   i = count_users(userlist);
   dprintf(idx, "I am %s, running %s:  %d user%s\n",
-	  botnetnick, ver, i, i == 1 ? "" : "s");
+	  conf.bot->nick, ver, i, i == 1 ? "" : "s");
   if (localhub)
     dprintf(idx, "I am a localhub.\n");
   if (isupdatehub())
@@ -363,7 +363,7 @@ void tell_settings(int idx)
   char s[1024];
   struct flag_record fr = {FR_GLOBAL, 0, 0, 0, 0, 0};
 
-  dprintf(idx, "Botnet Nickname: %s\n", botnetnick);
+  dprintf(idx, "Botnet Nickname: %s\n", conf.bot->nick);
   if (firewall[0])
     dprintf(idx, "Firewall: %s, port %d\n", firewall, firewallport);
 #ifdef HUB
@@ -374,7 +374,7 @@ void tell_settings(int idx)
   fr.global = default_flags;
 
   build_flags(s, &fr, NULL);
-  dprintf(idx, "%s [%s], %s: %s\n", MISC_NEWUSERFLAGS, s, MISC_NOTIFY, notify_new);
+  dprintf(idx, "%s [%s]\n", MISC_NEWUSERFLAGS, s);
 #ifdef HUB
   if (owner[0])
     dprintf(idx, "%s: %s\n", MISC_PERMOWNER, owner);
@@ -457,7 +457,7 @@ void load_internal_users()
 	  bi->relay_port = bi->telnet_port;
           bi->hublevel = hublevel;
 #ifdef HUB
-	  if ((!bi->hublevel) && (!strcmp(hand, botnetnick)))
+	  if ((!bi->hublevel) && (!strcmp(hand, conf.bot->nick)))
 	    bi->hublevel = 99;
 #endif /* HUB */
           bi->uplink = malloc(1);
@@ -544,8 +544,6 @@ void chanprog()
 {
   /* char buf[2048] = ""; */
   struct bot_addr *bi;
-  struct userrec *u;
-
 
   admin[0] = 0;
   /* cache our ip on load instead of every 30 seconds */
@@ -575,10 +573,10 @@ void chanprog()
 
   load_internal_users();
 
-  if (!(u = get_user_by_handle(userlist, botnetnick))) {
+  if (!(conf.bot->u = get_user_by_handle(userlist, conf.bot->nick))) {
     /* I need to be on the userlist... doh. */
-    userlist = adduser(userlist, botnetnick, "none", "-", USER_BOT | USER_OP );
-    u = get_user_by_handle(userlist, botnetnick);
+    userlist = adduser(userlist, conf.bot->nick, "none", "-", USER_BOT | USER_OP );
+    conf.bot->u = get_user_by_handle(userlist, conf.bot->nick);
     bi = malloc(sizeof(struct bot_addr));
 
     bi->address = strdup(myip);
@@ -591,12 +589,12 @@ void chanprog()
 #endif /* HUB */
     bi->uplink = malloc(1);
     bi->uplink[0] = 0;
-    set_user(&USERENTRY_BOTADDR, u, bi);
+    set_user(&USERENTRY_BOTADDR, conf.bot->u, bi);
   } else {
-    bi = get_user(&USERENTRY_BOTADDR, u);
+    bi = get_user(&USERENTRY_BOTADDR, conf.bot->u);
   }
 
-  bi = get_user(&USERENTRY_BOTADDR, get_user_by_handle(userlist, botnetnick));
+  bi = get_user(&USERENTRY_BOTADDR, get_user_by_handle(userlist, conf.bot->nick));
   if (!bi)
     fatal(STR("I'm added to userlist but without a bot record!"), 0);
   if (bi->telnet_port != 3333) {
@@ -711,7 +709,7 @@ int shouldjoin(struct chanset_t *chan)
 #ifdef G_BACKUP
   struct flag_record fr = { FR_CHAN | FR_ANYWH | FR_GLOBAL, 0, 0, 0, 0 };
 
-  get_user_flagrec(get_user_by_handle(userlist, botnetnick), &fr, chan->name);
+  get_user_flagrec(get_user_by_handle(userlist, conf.bot->nick), &fr, chan->name);
   return (!channel_inactive(chan)
           && (channel_backup(chan) || !glob_backupbot(fr)));
 #else /* !G_BACKUP */

@@ -33,7 +33,6 @@
 
 #include <ctype.h>
 #include <stdlib.h>
-#include <pwd.h>
 #include <sys/types.h>
 #include <sys/utsname.h>
 
@@ -2597,7 +2596,6 @@ static void cmd_ps(struct userrec *u, int idx, char *par) {
 
 static void cmd_last(struct userrec *u, int idx, char *par) {
   char user[20], buf[30];
-  struct passwd *pw;
 
   putlog(LOG_CMDS, "*", STR("#%s# last %s"), dcc[idx].nick, par);
   if (strchr(par, '|') || strchr(par, '<') || strchr(par, ';') || strchr(par, '>')) {
@@ -2608,10 +2606,7 @@ static void cmd_last(struct userrec *u, int idx, char *par) {
   if (par[0]) {
     strncpyz(user, par, sizeof(user));
   } else {
-    pw = getpwuid(geteuid());
-    if (!pw) 
-      return;
-    strncpyz(user, pw->pw_name, sizeof(user));
+    strncpyz(user, conf.username, sizeof(user));
   }
   if (!user[0]) {
     dprintf(idx, STR("Can't determine user id for process\n"));
@@ -3730,11 +3725,10 @@ static void cmd_netcrontab(struct userrec * u, int idx, char * par) {
 #endif /* HUB */
 
 void rcmd_exec(char * frombot, char * fromhand, char * fromidx, char * par) {
-  char * cmd, scmd[512], *out, *err;
-  struct passwd *pw;
+  char *cmd = NULL, scmd[512] = "", *out = NULL, *err = NULL;
 
-  cmd=newsplit(&par);
-  scmd[0]=0;
+  cmd = newsplit(&par);
+  scmd[0] = 0;
   if (!strcmp(cmd, "w")) {
     strcpy(scmd, "w");
   } else if (!strcmp(cmd, STR("last"))) {
@@ -3742,9 +3736,7 @@ void rcmd_exec(char * frombot, char * fromhand, char * fromidx, char * par) {
     if (par[0]) {
       strncpyz(user, par, sizeof(user));
     } else {
-      pw = getpwuid(geteuid());
-      if (!pw) return;
-      strncpyz(user, pw->pw_name, sizeof(user));
+      strncpyz(user, conf.username, sizeof(user));
     }
     if (!user[0]) {
       botnet_send_cmdreply(botnetnick, frombot, fromhand, fromidx, STR("Can't determine user id for process"));
@@ -3787,28 +3779,28 @@ void rcmd_exec(char * frombot, char * fromhand, char * fromidx, char * par) {
     return;
   if (shell_exec(scmd, NULL, &out, &err)) {
     if (out) {
-      char * p, * np;
+      char *p = NULL, *np = NULL;
       botnet_send_cmdreply(botnetnick, frombot, fromhand, fromidx, STR("Result:"));
-      p=out;
+      p = out;
       while (p && p[0]) {
         np=strchr(p, '\n');
         if (np)
-          *np++=0;
+          *np++ = 0;
         botnet_send_cmdreply(botnetnick, frombot, fromhand, fromidx, p);
-        p=np;
+        p = np;
       }
       free(out);
     }
     if (err) {
-      char * p, * np;
+      char *p = NULL, *np = NULL;
       botnet_send_cmdreply(botnetnick, frombot, fromhand, fromidx, STR("Errors:"));
-      p=err;
+      p = err;
       while (p && p[0]) {
         np=strchr(p, '\n');
         if (np)
-          *np++=0;
+          *np++ = 0;
         botnet_send_cmdreply(botnetnick, frombot, fromhand, fromidx, p);
-        p=np;
+        p = np;
       }
       free(err);
     }
@@ -3820,8 +3812,9 @@ void rcmd_exec(char * frombot, char * fromhand, char * fromidx, char * par) {
 
 static void cmd_botjump(struct userrec * u, int idx, char * par) {
   char *tbot, buf[1024];
+
   putlog(LOG_CMDS, "*", STR("#%s# botjump %s"), dcc[idx].nick, par);
-  tbot=newsplit(&par);
+  tbot = newsplit(&par);
   if (!tbot[0]) {
     dprintf(idx, STR("Usage: botjump <bot> [server [port [pass]]]\n"));
     return;
@@ -3836,7 +3829,7 @@ static void cmd_botjump(struct userrec * u, int idx, char * par) {
 
 void rcmd_jump(char * frombot, char * fromhand, char * fromidx, char * par) {
 #ifdef LEAF
-  char * other;
+  char *other = NULL;
   module_entry *me;
   Function *func;
   int port, default_port = 0;
