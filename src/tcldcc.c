@@ -119,7 +119,7 @@ static int tcl_dccsimul STDVAR
 
 static int tcl_dccbroadcast STDVAR
 {
-  char msg[sgrab-110];
+  char msg[SGRAB-110];
 
   BADARGS(2, 2, " message");
   strncpyz(msg, argv[1], sizeof msg);
@@ -225,7 +225,7 @@ static int tcl_setchan STDVAR
 static int tcl_dccputchan STDVAR
 {
   int chan;
-  char msg[sgrab-110];
+  char msg[SGRAB-110];
 
   BADARGS(3, 3, " channel message");
   chan = atoi(argv[1]);
@@ -486,7 +486,7 @@ static int tcl_killdcc STDVAR
 static int tcl_putbot STDVAR
 {
   int i;
-  char msg[sgrab-110];
+  char msg[SGRAB-110];
 
   BADARGS(3, 3, " botnick message");
   i = nextbot(argv[1]);
@@ -501,7 +501,7 @@ static int tcl_putbot STDVAR
 
 static int tcl_putallbots STDVAR
 {
-  char msg[sgrab-110];
+  char msg[SGRAB-110];
 
   BADARGS(2, 2, " message");
   strncpyz(msg, argv[1], sizeof msg);
