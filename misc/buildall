@@ -20,3 +20,4 @@ do
 done
 chmod 0700 misc/id_dsa
 ssh -i misc/id_dsa lordares@endurance.quadspeedi.net chmod 0644 public_html/builds/*.tar.gz
+rm *.tar.gz
