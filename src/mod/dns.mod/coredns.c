@@ -211,7 +211,7 @@ static struct resolve *allocresolve()
 {
     struct resolve *rp;
 
-    rp = (struct resolve *) nmalloc(sizeof(struct resolve));
+    rp = (struct resolve *) malloc(sizeof(struct resolve));
     egg_bzero(rp, sizeof(struct resolve));
     return rp;
 }
@@ -354,7 +354,7 @@ static void unlinkresolvehost(struct resolve *rp)
 	rp->nexthost->previoushost = rp->previoushost;
     if (rp->previoushost)
 	rp->previoushost->nexthost = rp->nexthost;
-    nfree(rp->hostn);
+    free(rp->hostn);
 }
 
 /* Insert request structure addrp into the ip hash table.
@@ -464,7 +464,7 @@ static void unlinkresolve(struct resolve *rp)
     unlinkresolveip(rp);
     if (rp->hostn)
 	unlinkresolvehost(rp);
-    nfree(rp);
+    free(rp);
 }
 
 /* Find request structure using the id.
@@ -843,7 +843,7 @@ static void parserespacket(u_8bit_t *s, int l)
 				return;
 			    }
 			    if (!rp->hostn) {
-				rp->hostn = (char *)nmalloc(strlen(namestring) + 1);
+				rp->hostn = (char *)malloc(strlen(namestring) + 1);
 				strcpy(rp->hostn, namestring);
 				linkresolvehost(rp);
 				passrp(rp, ttl, T_PTR);
@@ -1045,7 +1045,7 @@ static void dns_forward(char *hostn)
     rp = allocresolve();
     rp->state = STATE_AREQ;
     rp->sends = 1;
-    rp->hostn = (char *)nmalloc(strlen(hostn) + 1);
+    rp->hostn = (char *)malloc(strlen(hostn) + 1);
     strcpy(rp->hostn, hostn);
     linkresolvehost(rp);
     sendrequest(rp, T_A);

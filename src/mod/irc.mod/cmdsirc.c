@@ -541,10 +541,10 @@ void cmd_mdop(struct userrec *u, int idx, char *par)
   }
 
 
-  targets = nmalloc(chan->channel.members * sizeof(memberlist *));
+  targets = malloc(chan->channel.members * sizeof(memberlist *));
   egg_bzero(targets, chan->channel.members * sizeof(memberlist *));
 
-  chanbots = nmalloc(chan->channel.members * sizeof(memberlist *));
+  chanbots = malloc(chan->channel.members * sizeof(memberlist *));
   egg_bzero(chanbots, chan->channel.members * sizeof(memberlist *));
 
 ContextNote("!mdop!");
@@ -562,14 +562,14 @@ ContextNote("!mdop!");
     }
   if (!chanbotcount) {
     dprintf(idx, "No bots opped on %s\n", chan->name);
-    nfree(targets);
-    nfree(chanbots);
+    free(targets);
+    free(chanbots);
     return;
   }
   if (!targetcount) {
     dprintf(idx, "Noone to deop on %s\n", chan->name);
-    nfree(targets);
-    nfree(chanbots);
+    free(targets);
+    free(chanbots);
     return;
   }
   while (par && par[0]) {
@@ -579,8 +579,8 @@ ContextNote("!mdop!");
       force_bots = atoi(p);
       if ((force_bots < 1) || (force_bots > chanbotcount)) {
 	dprintf(idx, "bots must be within 1-%i\n", chanbotcount);
-	nfree(targets);
-	nfree(chanbots);
+	free(targets);
+	free(chanbots);
 	return;
       }
     } else if (!strncmp(p, "alines=", 7)) {
@@ -588,8 +588,8 @@ ContextNote("!mdop!");
       force_alines = atoi(p);
       if ((force_alines < 1) || (force_alines > 5)) {
 	dprintf(idx, "alines must be within 1-5\n");
-	nfree(targets);
-	nfree(chanbots);
+	free(targets);
+	free(chanbots);
 	return;
       }
     } else if (!strncmp(p, "slines=", 7)) {
@@ -597,8 +597,8 @@ ContextNote("!mdop!");
       force_slines = atoi(p);
       if ((force_slines < 1) || (force_slines > 6)) {
 	dprintf(idx, "slines must be within 1-6\n");
-	nfree(targets);
-	nfree(chanbots);
+	free(targets);
+	free(chanbots);
 	return;
       }
     } else if (!strncmp(p, "overlap=", 8)) {
@@ -606,8 +606,8 @@ ContextNote("!mdop!");
       force_overlap = atoi(p);
       if ((force_overlap < 1) || (force_overlap > 8)) {
 	dprintf(idx, "overlap must be within 1-8\n");
-	nfree(targets);
-	nfree(chanbots);
+	free(targets);
+	free(chanbots);
 	return;
       }
     } else if (!strcmp(p, "bitch")) {
@@ -616,8 +616,8 @@ ContextNote("!mdop!");
       simul = 1;
     } else {
       dprintf(idx, "Unrecognized mdop option %s\n", p);
-      nfree(targets);
-      nfree(chanbots);
+      free(targets);
+      free(chanbots);
       return;
     }
   }
@@ -631,8 +631,8 @@ ContextNote("!mdop!");
       dprintf(idx, "Not enough bots.\n");
     else
       dprintf(idx, "Not enough bots. Try with overlap=1\n");
-    nfree(targets);
-    nfree(chanbots);
+    free(targets);
+    free(chanbots);
     return;
   }
 
@@ -663,8 +663,8 @@ ContextNote("!mdop!");
       if (bots > chanbotcount) {
 	putlog(LOG_MISC, "*", "Totally fucked calculations in cmd_mdop. this CAN'T happen.");
 	dprintf(idx, "Something's wrong... bug the coder\n");
-	nfree(targets);
-	nfree(chanbots);
+	free(targets);
+	free(chanbots);
 	return;
       }
     }
@@ -719,8 +719,8 @@ ContextNote("!mdop!");
     chan->status |= CHAN_BITCH;
     do_chanset(chan, STR("+bitch"), 1);
   }
-  nfree(targets);
-  nfree(chanbots);
+  free(targets);
+  free(chanbots);
   return;
 }
 
@@ -1062,8 +1062,8 @@ static void cmd_find(struct userrec *u, int idx, char *par)
         if (wild_match(par, tmp)) {
           fcount++;
           if (!found) {
-            found = nmalloc(sizeof(memberlist *) * 100);
-            cfound = nmalloc(sizeof(struct chanset_t *) * 100);
+            found = malloc(sizeof(memberlist *) * 100);
+            cfound = malloc(sizeof(struct chanset_t *) * 100);
           }
           found[fcount - 1] = m;
           cfound[fcount - 1] = chan;
@@ -1099,8 +1099,8 @@ static void cmd_find(struct userrec *u, int idx, char *par)
         dprintf(idx, STR("%s\n"), tmp);
       }
     }
-    nfree(found);
-    nfree(cfound);
+    free(found);
+    free(cfound);
   } else {
     dprintf(idx, STR("No matches for %s on any channels.\n"), par);
   }

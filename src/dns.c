@@ -54,10 +54,10 @@ static void kill_dcc_dnswait(int idx, void *x)
 
   if (p) {
     if (p->host)
-      nfree(p->host);
+      free(p->host);
     if (p->cbuf)
-      nfree(p->cbuf);
-    nfree(p);
+      free(p->cbuf);
+    free(p);
   }
 }
 
@@ -91,7 +91,7 @@ static void dns_dcchostbyip(IP ip, char *hostn, int ok, void *other)
         (dcc[idx].u.dns->dns_type == RES_HOSTBYIP) &&
         (dcc[idx].u.dns->ip == ip)) {
       if (dcc[idx].u.dns->host)
-        nfree(dcc[idx].u.dns->host);
+        free(dcc[idx].u.dns->host);
       dcc[idx].u.dns->host = get_data_ptr(strlen(hostn) + 1);
       strcpy(dcc[idx].u.dns->host, hostn);
       if (ok)
@@ -146,7 +146,7 @@ void dcc_dnsipbyhost(char *hostn)
     }
   }
 
-  de = nmalloc(sizeof(devent_t));
+  de = malloc(sizeof(devent_t));
   egg_bzero(de, sizeof(devent_t));
 
   /* Link into list. */
@@ -155,7 +155,7 @@ void dcc_dnsipbyhost(char *hostn)
 
   de->type = &DNS_DCCEVENT_IPBYHOST;
   de->lookup = RES_IPBYHOST;
-  de->res_data.hostname = nmalloc(strlen(hostn) + 1);
+  de->res_data.hostname = malloc(strlen(hostn) + 1);
   strcpy(de->res_data.hostname, hostn);
 
   /* Send request. */
@@ -175,7 +175,7 @@ void dcc_dnshostbyip(IP ip)
     }
   }
 
-  de = nmalloc(sizeof(devent_t));
+  de = malloc(sizeof(devent_t));
   egg_bzero(de, sizeof(devent_t));
 
   /* Link into list. */
@@ -204,10 +204,10 @@ static void dns_tcl_iporhostres(IP ip, char *hostn, int ok, void *other)
     putlog(LOG_MISC, "*", DCC_TCLERROR, tclinfo->proc, interp->result);
 
   /* Free the memory. It will be unused after this event call. */
-  nfree(tclinfo->proc);
+  free(tclinfo->proc);
   if (tclinfo->paras)
-    nfree(tclinfo->paras);
-  nfree(tclinfo);
+    free(tclinfo->paras);
+  free(tclinfo);
 }
 
 devent_type DNS_TCLEVENT_HOSTBYIP = {
@@ -245,7 +245,7 @@ void call_hostbyip(IP ip, char *hostn, int ok)
       else
 	putlog(LOG_MISC, "*", "(!) Unknown DNS event type found: %s",
 	       (de->type && de->type->name) ? de->type->name : "<empty>");
-      nfree(de);
+      free(de);
       de = ode;
     }
     ode = de;
@@ -276,8 +276,8 @@ void call_ipbyhost(char *hostn, IP ip, int ok)
 	       (de->type && de->type->name) ? de->type->name : "<empty>");
 
       if (de->res_data.hostname)
-	nfree(de->res_data.hostname);
-      nfree(de);
+	free(de->res_data.hostname);
+      free(de);
       de = ode;
     }
     ode = de;
