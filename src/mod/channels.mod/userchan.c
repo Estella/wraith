@@ -877,7 +877,7 @@ int write_bans(FILE *f, int idx)
   }
   for (chan = chanset; chan; chan = chan->next)
     if ((idx < 0)  || 1) {
-      struct flag_record fr = {FR_CHAN | FR_GLOBAL | FR_BOT, 0, 0, 0, 0, 0};
+      struct flag_record fr = {FR_CHAN | FR_GLOBAL | FR_BOT, 0, 0, 0};
 
       if (idx >= 0)
 	get_user_flagrec(dcc[idx].user, &fr, chan->dname);
@@ -930,7 +930,7 @@ int write_exempts(FILE *f, int idx)
   }
   for (chan = chanset;chan;chan=chan->next)
     if ((idx < 0) || 1) {
-      struct flag_record fr = {FR_CHAN | FR_GLOBAL | FR_BOT, 0, 0, 0, 0, 0};
+      struct flag_record fr = {FR_CHAN | FR_GLOBAL | FR_BOT, 0, 0, 0};
 
       if (idx >= 0)
 	get_user_flagrec(dcc[idx].user,&fr,chan->dname);
@@ -983,7 +983,7 @@ int write_invites(FILE *f, int idx)
   }
   for (chan = chanset; chan; chan = chan->next)
     if ((idx < 0) || (1)) {
-      struct flag_record fr = {FR_CHAN | FR_GLOBAL | FR_BOT, 0, 0, 0, 0, 0};
+      struct flag_record fr = {FR_CHAN | FR_GLOBAL | FR_BOT, 0, 0, 0};
 
       if (idx >= 0)
 	get_user_flagrec(dcc[idx].user,&fr,chan->dname);
@@ -1023,7 +1023,7 @@ int write_chans(FILE *f, int idx)
 
   for (chan = chanset; chan; chan = chan->next) {
     if ((idx < 0) || (1)) {
-      struct flag_record fr = {FR_CHAN | FR_GLOBAL | FR_BOT, 0, 0, 0, 0, 0};
+      struct flag_record fr = {FR_CHAN | FR_GLOBAL | FR_BOT, 0, 0, 0};
       if (idx >= 0)
         get_user_flagrec(dcc[idx].user,&fr,chan->dname);
       else

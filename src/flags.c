@@ -86,7 +86,7 @@ int chan_sanity_check(int chatr, int atr)
  */
 char geticon(int idx)
 {
-  struct flag_record fr = {FR_GLOBAL | FR_CHAN | FR_ANYWH, 0, 0, 0, 0, 0};
+  struct flag_record fr = {FR_GLOBAL | FR_CHAN | FR_ANYWH, 0, 0, 0};
 
   if (!dcc[idx].user)
     return '-';
@@ -102,8 +102,7 @@ char geticon(int idx)
   return '-';
 }
 
-void break_down_flags(const char *string, struct flag_record *plus,
-		      struct flag_record *minus)
+void break_down_flags(const char *string, struct flag_record *plus, struct flag_record *minus)
 {
   struct flag_record	*which = plus;
   int			 mode = 0;	/* 0 = glob, 1 = chan, 2 = bot */
@@ -455,7 +454,7 @@ void get_user_flagrec(struct userrec *u, struct flag_record *fr, const char *chn
 
 static int botfl_unpack(struct userrec *u, struct user_entry *e)
 {
-  struct flag_record fr = {FR_BOT, 0, 0, 0, 0, 0};
+  struct flag_record fr = {FR_BOT, 0, 0, 0};
 
   break_down_flags(e->u.list->extra, &fr, NULL);
   list_type_kill(e->u.list);
@@ -466,7 +465,7 @@ static int botfl_unpack(struct userrec *u, struct user_entry *e)
 static int botfl_pack(struct userrec *u, struct user_entry *e)
 {
   char x[100] = "";
-  struct flag_record fr = {FR_BOT, 0, 0, 0, 0, 0};
+  struct flag_record fr = {FR_BOT, 0, 0, 0};
 
   fr.bot = e->u.ulong;
   e->u.list = calloc(1, sizeof(struct list_type));
@@ -485,7 +484,7 @@ static int botfl_kill(struct user_entry *e)
 static int botfl_write_userfile(FILE *f, struct userrec *u, struct user_entry *e)
 {
   char x[100] = "";
-  struct flag_record fr = {FR_BOT, 0, 0, 0, 0, 0};
+  struct flag_record fr = {FR_BOT, 0, 0, 0};
 
   fr.bot = e->u.ulong;
   build_flags(x, &fr, NULL);
@@ -520,7 +519,7 @@ static int botfl_set(struct userrec *u, struct user_entry *e, void *buf)
 
 static void botfl_display(int idx, struct user_entry *e, struct userrec *u)
 {
-  struct flag_record fr = {FR_BOT, 0, 0, 0, 0, 0};
+  struct flag_record fr = {FR_BOT, 0, 0, 0};
   char x[100] = "";
 
   fr.bot = e->u.ulong;
@@ -622,7 +621,7 @@ int ischanhub()
 
 int dovoice(struct chanset_t *chan)
 {
-  struct flag_record fr = { FR_GLOBAL | FR_CHAN, 0, 0 };
+  struct flag_record fr = { FR_GLOBAL | FR_CHAN, 0, 0, 0};
 
   if (!chan) return 0;
 
@@ -634,7 +633,7 @@ int dovoice(struct chanset_t *chan)
 
 int dolimit(struct chanset_t *chan)
 {
-  struct flag_record fr = { FR_GLOBAL | FR_CHAN, 0, 0 };
+  struct flag_record fr = { FR_GLOBAL | FR_CHAN, 0, 0, 0};
 
   if (!chan) return 0;
 
@@ -646,8 +645,7 @@ int dolimit(struct chanset_t *chan)
 
 int whois_access(struct userrec *user, struct userrec *whois_user)
 {
-  struct flag_record fr = {FR_GLOBAL | FR_CHAN, 0, 0, 0, 0, 0};
-  struct flag_record whois = {FR_GLOBAL | FR_CHAN, 0, 0, 0, 0, 0};
+  struct flag_record fr = {FR_GLOBAL | FR_CHAN, 0, 0, 0}, whois = {FR_GLOBAL | FR_CHAN, 0, 0, 0};
 
   get_user_flagrec(user, &fr, NULL);
   get_user_flagrec(whois_user, &whois, NULL);
