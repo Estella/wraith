@@ -383,12 +383,6 @@ static void got_term(int z)
   putlog(LOG_MISC, "*", STR("RECEIVED TERMINATE SIGNAL (IGNORING)"));
 }
 
-static void got_stop(int z) 
-{
-  putlog(LOG_MISC, "*", STR("GOT SIGSTOP POSSIBLE HIJACK."));
-  exit(1);
-}
-
 static void got_abort(int z)
 {
 #ifdef DEBUG_CONTEXT
@@ -1467,8 +1461,6 @@ int main(int argc, char **argv)
   sigaction(SIGFPE, &sv, NULL);
   sv.sa_handler = got_term;
   sigaction(SIGTERM, &sv, NULL);
-  sv.sa_handler = got_stop;
-  sigaction(SIGSTOP, &sv, NULL);
 #ifdef S_HIJACKCHECK
   sv.sa_handler = got_cont;
   sigaction(SIGCONT, &sv, NULL);
