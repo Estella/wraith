@@ -27,8 +27,8 @@ alias setauth {
 }
 
 ALIAS -l psy {
-  if ($1 != $chr(40) && $1 != $chr(41)) {
-    return 0
+  if ($1 == $chr(40) || $1 == $chr(41)) {
+    return 1
   }
 }
 
@@ -43,7 +43,7 @@ ON *:TEXT:auth*:?:{
   var %c = %auth. [ $+ [ $nick ] ]
   if (!$3) {
     ;if this is a MSG not psybnc DCC, and we arent cleared to auth with them, IGNORE.
-    if (!$psy($left($nick, 1) && !%c) {
+    if (!$psy($left($nick, 1)) && !%c) {
       return
     }
     if ($right($1,1) == . && %c) {
