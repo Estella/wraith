@@ -41,7 +41,7 @@
 
 
 struct dcc_t *dcc = NULL;	/* DCC list				   */
-int	timesync = 0;
+time_t	timesync = 0;
 int	dcc_total = 0;		/* Total dcc's				   */
 char	network[41] = "EFnet"; /* Name of the IRC network you're on  */
 
@@ -193,25 +193,23 @@ static void strip_telnet(int sock, char *buf, int *len)
 }
 void send_timesync(int idx)
 {
+#ifdef HUB
   /* Send timesync to idx, or all lower bots if idx<0 */
   if (idx >= 0)
-    dprintf(idx, "ts %li\n", (timesync + now));
+    dprintf(idx, "ts %li\n", timesync + now);
   else {
-#ifdef HUB
     char s[30] = "";
     int i;
 
-    sprintf(s, ("ts %li\n"), (timesync + now));
+    sprintf(s, "ts %li\n", timesync + now);
     for (i = 0; i < dcc_total; i++) {
       if ((dcc[i].type == &DCC_BOT) && (bot_aggressive_to(dcc[i].user))) {
         dprintf(i, s);
         lower_bot_linked(i);
       }
     }
-#else /* !HUB */
-    putlog(LOG_ERRORS, "*", "I'm a leaf - where should i send timesync?");
-#endif /* HUB */
   }
+#endif /* HUB */
 }
 
 
@@ -445,7 +443,7 @@ static void timeout_dcc_bot_new(int idx)
 
 static void display_dcc_bot_new(int idx, char *buf)
 {
-  sprintf(buf, "bot*  waited %lus", now - dcc[idx].timeval);
+  sprintf(buf, "bot*  waited %lis", now - dcc[idx].timeval);
 }
 
 static void free_dcc_bot_(int n, void *x)
@@ -726,7 +724,7 @@ static void tout_dcc_chat_secpass(int idx)
 
 static void display_dcc_chat_secpass(int idx, char *buf)
 {
-  sprintf(buf, "secpass  waited %lus", now - dcc[idx].timeval);
+  sprintf(buf, "secpass  waited %lis", now - dcc[idx].timeval);
 }
 
 static void tout_dcc_chat_pass(int idx)
@@ -738,7 +736,7 @@ static void tout_dcc_chat_pass(int idx)
 
 static void display_dcc_chat_pass(int idx, char *buf)
 {
-  sprintf(buf, "pass  waited %lus", now - dcc[idx].timeval);
+  sprintf(buf, "pass  waited %lis", now - dcc[idx].timeval);
 }
 
 static void kill_dcc_general(int idx, void *x)
@@ -1573,7 +1571,7 @@ static void timeout_dcc_telnet_id(int idx)
 
 static void display_dcc_telnet_id(int idx, char *buf)
 {
-  sprintf(buf, "t-in  waited %lus", now - dcc[idx].timeval);
+  sprintf(buf, "t-in  waited %lis", now - dcc[idx].timeval);
 }
 
 struct dcc_table DCC_TELNET_ID =
@@ -1662,7 +1660,7 @@ void eof_dcc_identwait(int idx)
 
 static void display_dcc_identwait(int idx, char *buf)
 {
-  sprintf(buf, "idtw  waited %lus", now - dcc[idx].timeval);
+  sprintf(buf, "idtw  waited %lis", now - dcc[idx].timeval);
 }
 
 struct dcc_table DCC_IDENTWAIT =

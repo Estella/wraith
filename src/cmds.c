@@ -540,7 +540,7 @@ static void cmd_motd(struct userrec *u, int idx, char *par)
 
     s = malloc(strlen(par) + 1 + strlen(dcc[idx].nick) + 10 + 1 + 1); /* +2: ' 'x2 */
 
-    sprintf(s, "%s %lu %s", dcc[idx].nick, now, par);
+    sprintf(s, "%s %li %s", dcc[idx].nick, now, par);
     set_cfg_str(NULL, "motd", s);
     free(s);
     dprintf(idx, "Motd set\n");
@@ -560,7 +560,7 @@ static void cmd_about(struct userrec *u, int idx, char *par)
   dprintf(idx, STR("Wraith botpack by lordares\n"));
   egg_strftime(c, sizeof c, "%c %Z", gmtime(&buildts));
   dprintf(idx, STR("Version: %s\n"), egg_version);
-  dprintf(idx, STR("Build: %s (%lu)\n"), c, buildts);
+  dprintf(idx, STR("Build: %s (%li)\n"), c, buildts);
   dprintf(idx, STR("(written from a base of Eggdrop 1.6.12)\n"));
   dprintf(idx, STR("..with credits and thanks to the following:\n"));
   dprintf(idx, STR(" \n"));
@@ -1288,8 +1288,10 @@ static void cmd_console(struct userrec *u, int idx, char *par)
 static void cmd_date(struct userrec *u, int idx, char *par)
 {
   char date[50] = "", utctime[50] = "", ltime[50] = "";
+  time_t hub;
 
   putlog(LOG_CMDS, "*", "#%s# date", dcc[idx].nick);
+
   egg_strftime(date, sizeof date, "%c %Z", localtime(&now));
 #ifndef S_UTCTIME
   sprintf(ltime, "<-- This time is used on the bot.");
@@ -1300,6 +1302,10 @@ static void cmd_date(struct userrec *u, int idx, char *par)
   sprintf(utctime, "<-- This time is used on the bot.");
 #endif /* S_UTCTIME */
   dprintf(idx, "%s %s\n", date, (utctime && utctime[0]) ? utctime : "");
+  
+  hub = now + timesync;
+  egg_strftime(date, sizeof date, "%c %Z", gmtime(&hub));
+  dprintf(idx, "%s <-- Botnet uses this\n", date);
 }
 
 #ifdef HUB
@@ -1880,8 +1886,20 @@ static void cmd_die(struct userrec *u, int idx, char *par)
 
 static void cmd_debug(struct userrec *u, int idx, char *par)
 {
+  char *cmd = NULL;
+
   putlog(LOG_CMDS, "*", STR("#%s# debug"), dcc[idx].nick);
-  tell_netdebug(idx);
+
+  if (par[0])
+    cmd = newsplit(&par);
+  if (!strcmp(cmd, "timesync") || !cmd)
+    dprintf(idx, "Timesync: %li (%li)\n", now + timesync, timesync);
+  if (!strcmp(cmd, "now") || !cmd)
+    dprintf(idx, "Now: %li\n", now);
+  if (!strcmp(cmd, "role") || !cmd)
+    dprintf(idx, "Role: %d\n", role);
+  if (!strcmp(cmd, "net") || !cmd)
+    tell_netdebug(idx);
 }
 
 static void cmd_timers(struct userrec *u, int idx, char *par)
@@ -3019,7 +3037,7 @@ static void cmd_newleaf(struct userrec *u, int idx, char *par)
       bi->hublevel = 0;
       set_user(&USERENTRY_BOTADDR, u1, bi);
       /* set_user(&USERENTRY_PASS, u1, SALT2); */
-      sprintf(tmp, STR("%lu %s"), now, u->handle);
+      sprintf(tmp, "%li %s", now, u->handle);
       set_user(&USERENTRY_ADDED, u1, tmp);
       dprintf(idx, STR("Added new leaf: %s\n"), handle);
       while (par[0]) {
@@ -3187,7 +3205,7 @@ static void cmd_pls_user(struct userrec *u, int idx, char *par)
 
     userlist = adduser(userlist, handle, host, "-", USER_DEFAULT);
     u2 = get_user_by_handle(userlist, handle);
-    sprintf(tmp, STR("%lu %s"), now, u->handle);
+    sprintf(tmp, "%li %s", now, u->handle);
     set_user(&USERENTRY_ADDED, u2, tmp);
     dprintf(idx, STR("Added %s (%s) with no flags.\n"), handle, host);
     while (par[0]) {
@@ -3583,7 +3601,7 @@ static void cmd_netlag(struct userrec * u, int idx, char * par) {
   
   timer_get_now(&tv);
   tm = (tv.sec % 10000) * 100 + (tv.usec * 100) / (1000000);
-  sprintf(tmp, STR("ping %lu"), tm);
+  sprintf(tmp, "ping %li", tm);
   dprintf(idx, STR("Sent ping to all linked bots\n"));
   botnet_send_cmd_broad(-1, conf.bot->nick, u->handle, idx, tmp);
 }
