@@ -366,8 +366,7 @@ static void cmd_config(struct userrec *u, int idx, char *par)
   }
 #ifdef HUB
   write_userfile(idx);
-#endif
-
+#endif /* HUB */
 }
 
 static void cmd_botconfig(struct userrec *u, int idx, char *par)
@@ -408,9 +407,9 @@ static void cmd_botconfig(struct userrec *u, int idx, char *par)
     return;
   }
   if (!par[0]) {
-    for (i=0;i<cfg_count;i++) {
+    for (i = 0; i < cfg_count; i++) {
       if ((cfg[i]->flags & CFGF_LOCAL) && (cfg[i]->describe)) {
-	k=get_user(&USERENTRY_CONFIG, u2);
+	k = get_user(&USERENTRY_CONFIG, u2);
 	while (k && strcmp(k->key, cfg[i]->name))
 	  k=k->next;
 	if (k)
@@ -421,7 +420,7 @@ static void cmd_botconfig(struct userrec *u, int idx, char *par)
     }
     return;
   }
-  p=newsplit(&par);
+  p = newsplit(&par);
   cfgent=NULL;
   for (i=0;!cfgent && (i<cfg_count);i++)
     if (!strcmp(cfg[i]->name, p) && (cfg[i]->flags & CFGF_LOCAL) && (cfg[i]->describe))
@@ -431,14 +430,17 @@ static void cmd_botconfig(struct userrec *u, int idx, char *par)
     return;
   }
   if (par[0]) {
+    char tmp[100];    
     set_cfg_str(u2->handle, cfgent->name, (strcmp(par, "-")) ? par : NULL);
+    snprintf(tmp, sizeof tmp, "%s %s", cfgent->name, par);
+    update_mod(u2->handle, dcc[idx].nick, "botconfig", tmp);
     dprintf(idx, STR("Now: "));
     write_userfile(idx);
   } else {
     if (cfgent->describe)
       cfgent->describe(cfgent, idx);
   }
-  k=get_user(&USERENTRY_CONFIG, u2);
+  k = get_user(&USERENTRY_CONFIG, u2);
   while (k && strcmp(k->key, cfgent->name))
     k=k->next;
   if (k)
@@ -1690,6 +1692,7 @@ static void cmd_comment(struct userrec *u, int idx, char *par)
     return;
   }
   dprintf(idx, STR("Changed comment.\n"));
+  update_mod(handle, dcc[idx].nick, "comment", NULL);
   set_user(&USERENTRY_COMMENT, u1, par);
 }
 
@@ -2242,12 +2245,15 @@ static void cmd_chattr(struct userrec *u, int idx, char *par)
     }
     set_user_flagrec(u2, &user, par);
   }
-  if (chan)
-    putlog(LOG_CMDS, "*", STR("#%s# (%s) chattr %s %s"),
-	   dcc[idx].nick, chan ? chan->dname : "*", hand, chg ? chg : "");
-  else
-    putlog(LOG_CMDS, "*", STR("#%s# chattr %s %s"), dcc[idx].nick, hand,
-	   chg ? chg : "");
+  if (chan) {
+    char tmp[100];
+    putlog(LOG_CMDS, "*", STR("#%s# (%s) chattr %s %s"), dcc[idx].nick, chan ? chan->dname : "*", hand, chg ? chg : "");
+    snprintf(tmp, sizeof tmp, "chattr %s", chg);
+    update_mod(hand, dcc[idx].nick, tmp, chan->dname);
+  } else {
+    putlog(LOG_CMDS, "*", STR("#%s# chattr %s %s"), dcc[idx].nick, hand, chg ? chg : "");
+    update_mod(hand, dcc[idx].nick, "chattr", chg);
+  }
   /* Get current flags and display them */
   if (user.match & FR_GLOBAL) {
     user.match = FR_GLOBAL;
@@ -3259,6 +3265,7 @@ static void cmd_pls_host(struct userrec *u, int idx, char *par)
       return;
     }
   addhost_by_handle(handle, host);
+  update_mod(handle, dcc[idx].nick, "+host", host);
   dprintf(idx, STR("Added '%s' to %s.\n"), host, handle);
   if ((me = module_find("irc", 0, 0))) {
     Function *func = me->funcs;
@@ -3331,6 +3338,7 @@ static void cmd_mns_host(struct userrec *u, int idx, char *par)
   }
   if (delhost_by_handle(handle, host)) {
     dprintf(idx, STR("Removed '%s' from %s.\n"), host, handle);
+    update_mod(handle, dcc[idx].nick, "-host", host);
     if ((me = module_find("irc", 0, 0))) {
       Function *func = me->funcs;
 
