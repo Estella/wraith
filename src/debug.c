@@ -288,8 +288,7 @@ got_hup(int z)
 static void
 got_usr1(int z)
 {
-  putlog(LOG_MISC, "*", "GOT SIGUSR1 -- RECHECKING BINARY");
-  
+  putlog(LOG_DEBUG, "*", "GOT SIGUSR1 -- RECHECKING BINARY");
   reload_bin_data();
 }
 
