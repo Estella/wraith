@@ -23,6 +23,9 @@
 #include "bg.h"
 #include "stat.h"
 #include "users.h"
+#ifdef LEAF
+#include "src/mod/server.mod/server.h"
+#endif /* LEAF */
 
 #include <sys/types.h>
 #include <pwd.h>
@@ -83,13 +86,8 @@ int clear_tmp()
 void check_mypid()
 {
   if (getpid() != checkpid(conf.bot->nick, NULL)) {
-    module_entry *me = NULL;
-
     fatal(STR("getpid() does not match pid in file. Possible cloned process, exiting.."), 1);
-    if ((me = module_find("server", 0, 0))) {
-      Function *func = me->funcs;
-      (func[SERVER_NUKESERVER]) ("cloned process");
-    }
+    nuke_server("Cloned Process...");
     botnet_send_bye();
     exit(1);
   }
@@ -495,9 +493,6 @@ int shell_exec(char *cmdline, char *input, char **output, char **erroutput)
 
 void detected(int code, char *msg)
 {
-#ifdef LEAF
-  module_entry *me = NULL;
-#endif /* LEAF */
   char *p = NULL, tmp[512] = "";
   struct userrec *u = NULL;
   struct flag_record fr = { FR_GLOBAL, 0, 0, 0, 0};
@@ -559,10 +554,7 @@ void detected(int code, char *msg)
     sprintf(tmp, STR("Dying: %s"), msg);
     set_user(&USERENTRY_COMMENT, u, tmp);
 #ifdef LEAF
-    if ((me = module_find("server", 0, 0))) {
-      Function *func = me->funcs;
-      (func[SERVER_NUKESERVER]) ("BBL");
-    }
+    nuke_server("BBL");
 #endif /* LEAF */
     sleep(1);
     fatal(msg, 0);
@@ -572,10 +564,7 @@ void detected(int code, char *msg)
     sprintf(tmp, STR("Suicide: %s"), msg);
     set_user(&USERENTRY_COMMENT, u, tmp);
 #ifdef LEAF
-    if ((me = module_find("server", 0, 0))) {
-      Function *func = me->funcs;
-      (func[SERVER_NUKESERVER]) ("HARAKIRI!!");
-    }
+    nuke_server("HARAKIRI!!");
 #endif /* LEAF */
     sleep(1);
     unlink(binname);

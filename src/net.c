@@ -488,6 +488,7 @@ int getsock(int options)
   int af_def = AF_INET;
 #endif /* USE_IPV6 */
   int sock;
+
   sock = socket(af_def, SOCK_STREAM, 0);
 
   if (sock >= 0)
@@ -540,7 +541,7 @@ void real_killsock(register int sock, const char *file, int line)
 	socklist[i].outbuf = NULL;
 	socklist[i].outbuflen = 0;
       }
-      egg_bzero(&socklist[i],sizeof(socklist[i]));
+      egg_bzero(&socklist[i], sizeof(socklist[i]));
       socklist[i].flags = SOCK_UNUSED;
       return;
     }
@@ -1603,7 +1604,7 @@ void tputs(register int z, char *s, unsigned int len)
 */
 }
 
-static int findanyidx(register int z)
+int findanyidx(register int z)
 {
   register int j;
 
