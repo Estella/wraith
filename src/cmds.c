@@ -925,7 +925,7 @@ static void cmd_uptime(struct userrec *u, int idx, char *par)
 
 static void cmd_userlist(struct userrec *u, int idx, char *par)
 {
-  int cnt=0;
+  int cnt=0, tt = 0;
   putlog(LOG_CMDS, "*", STR("#%s# userlist"), dcc[idx].nick);
 
   for (u=userlist;u;u=u->next) {
@@ -936,6 +936,7 @@ static void cmd_userlist(struct userrec *u, int idx, char *par)
         dprintf(idx, STR("Chathubs: "));
       dprintf(idx, u->handle);
       cnt++;
+      tt++;
       if (cnt==15) {
         dprintf(idx, "\n");
         cnt=0;
@@ -956,6 +957,7 @@ static void cmd_userlist(struct userrec *u, int idx, char *par)
         dprintf(idx, STR("Admins  : "));
       dprintf(idx, u->handle);
       cnt++;
+      tt++;
       if (cnt==15) {
         dprintf(idx, "\n");
         cnt=0;
@@ -976,6 +978,7 @@ static void cmd_userlist(struct userrec *u, int idx, char *par)
         dprintf(idx, STR("Owners  : "));
       dprintf(idx, u->handle);
       cnt++;
+      tt++;
       if (cnt==15) {
         dprintf(idx, "\n");
         cnt=0;
@@ -995,6 +998,7 @@ static void cmd_userlist(struct userrec *u, int idx, char *par)
         dprintf(idx, STR("Masters : "));
       dprintf(idx, u->handle);
       cnt++;
+      tt++;
       if (cnt==15) {
         dprintf(idx, "\n");
         cnt=0;
@@ -1018,6 +1022,7 @@ static void cmd_userlist(struct userrec *u, int idx, char *par)
         dprintf(idx, STR("Ops     : "));
       dprintf(idx, u->handle);
       cnt++;
+      tt++;
       if (cnt==15) {
         dprintf(idx, "\n");
         cnt=0;
@@ -1036,6 +1041,7 @@ static void cmd_userlist(struct userrec *u, int idx, char *par)
         dprintf(idx, STR("Users   : "));
       dprintf(idx, u->handle);
       cnt++;
+      tt++;
       if (cnt==15) {
         dprintf(idx, "\n");
         cnt=0;
@@ -1045,6 +1051,7 @@ static void cmd_userlist(struct userrec *u, int idx, char *par)
   if (cnt)
     dprintf(idx, "\n");
   cnt=0;
+  dprintf(idx, STR("Total users: %d\n"), tt);
 }
 
 static void cmd_channels(struct userrec *u, int idx, char *par) {
