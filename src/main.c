@@ -696,6 +696,7 @@ int main(int argc, char **argv)
 
   binname = getfullbinname(argv[0]);
 
+#ifndef CYGWIN_HACKS
   /*printf("Verifying Binary MD5 HASH\n"); */
   if (!encdata.data[1]) {
     /* printf("Generated Hash (First time ran)\n"); */
@@ -716,6 +717,7 @@ int main(int argc, char **argv)
   printf("Internal HASH: %s\nShould be: %s\n", encdata.data, bin_md5(binname, GET_MD5));
   printf("Verified.\n");
   */
+#endif /* !CYGWIN_HACKS */
 #ifdef HUB
   egg_snprintf(userfile, 121, "%s/.u", confdir());
 #endif /* HUB */
