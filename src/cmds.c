@@ -635,7 +635,7 @@ static void cmd_newpass(struct userrec *u, int idx, char *par)
     return;
 
   set_user(&USERENTRY_PASS, u, pass);
-  dprintf(idx, "Changed password to '%s'.\n", pass);
+  dprintf(idx, "Changed your password to: %s.\n", pass);
 }
 
 static void cmd_secpass(struct userrec *u, int idx, char *par)
@@ -662,8 +662,9 @@ static void cmd_secpass(struct userrec *u, int idx, char *par)
   if (strlen(pass) > 16)
     pass[16] = 0;
   set_user(&USERENTRY_SECPASS, u, pass);
-  dprintf(idx, "Changed secpass to '%s'.\n", pass);
+  dprintf(idx, "Changed your secpass to: %s.\n", pass);
 }
+
 #ifdef HUB
 static void cmd_bots(struct userrec *u, int idx, char *par)
 {
@@ -696,7 +697,8 @@ static void cmd_downbots(struct userrec *u, int idx, char *par)
     }
   }
   if (work[0])
-    dprintf(idx, STR("Down bots (%d): %s\n"), tot, work);
+    dprintf(idx, STR("Down bots: %s\n"), work);
+  dprintf(idx, STR("Total down: %d\n", tot);
 }
 
 
@@ -705,14 +707,14 @@ static void cmd_bottree(struct userrec *u, int idx, char *par)
   putlog(LOG_CMDS, "*", "#%s# bottree", dcc[idx].nick);
   tell_bottree(idx, 0);
 }
+
 static void cmd_vbottree(struct userrec *u, int idx, char *par)
 {
   putlog(LOG_CMDS, "*", "#%s# vbottree", dcc[idx].nick);
   tell_bottree(idx, 1);
 }
 
-#endif
-
+#endif /* HUB */
 
 int my_cmp (const mycmds *c1, const mycmds *c2)
 {
@@ -1380,7 +1382,7 @@ static void cmd_chpass(struct userrec *u, int idx, char *par)
         set_user(&USERENTRY_PASS, u, pass);
         putlog(LOG_CMDS, "*", "#%s# chpass %s [something]", dcc[idx].nick,
 	       handle);
-        dprintf(idx, "%s password changed to: %s\n", handle, pass);
+        dprintf(idx, "Password for '%s' changed to: %s\n", handle, pass);
       }
     }
   }
@@ -1409,7 +1411,7 @@ static void cmd_chsecpass(struct userrec *u, int idx, char *par)
     else if (!par[0]) {
       putlog(LOG_CMDS, "*", "#%s# chsecpass %s [nothing]", dcc[idx].nick,
 	     handle);
-      set_user(&USERENTRY_PASS, u, NULL);
+      set_user(&USERENTRY_SECPASS, u, NULL);
       dprintf(idx, "Removed secpass.\n");
     } else {
 
@@ -1431,6 +1433,7 @@ static void cmd_chsecpass(struct userrec *u, int idx, char *par)
       set_user(&USERENTRY_SECPASS, u, pass);
       putlog(LOG_CMDS, "*", "#%s# chsecpass %s [something]", dcc[idx].nick,
             handle);
+      dprintf(idx, "Secpass for '%s' changed to: %s\n", handle, pass);
     }
   }
 }
