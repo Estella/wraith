@@ -731,7 +731,7 @@ intt open_address_listen(in_addr_t addr, port_t *port)
     struct sockaddr_in6 name6;
     sock = getsock(SOCK_LISTEN, af_def);
 
-    if (sock < 1)
+    if (sock < 0)
       return -1;
 
     debug2("Opening listen socket on port %d with AF_INET6, sock: %d", *port, sock);
@@ -751,6 +751,7 @@ intt open_address_listen(in_addr_t addr, port_t *port)
     }
     *port = ntohs(name6.sin6_port);
     if (listen(sock, 1) < 0) {
+      sdprintf("Failed to open sock '%d' for listen on port '%d'", sock, *port);
       killsock(sock);
       return -1;
     }
@@ -760,7 +761,7 @@ intt open_address_listen(in_addr_t addr, port_t *port)
     sock = getsock(SOCK_LISTEN);
 #endif /* USE_IPV6 */
 
-    if (sock < 1)
+    if (sock < 0)
       return -1;
 
     debug2("Opening listen socket on port %d with AF_INET, sock: %d", *port, sock);
@@ -780,6 +781,7 @@ intt open_address_listen(in_addr_t addr, port_t *port)
     }
     *port = ntohs(name.sin_port);
     if (listen(sock, 1) < 0) {
+      sdprintf("Failed to open sock '%d' for listen on port '%d'", sock, *port);
       killsock(sock);
       return -1;
     }
