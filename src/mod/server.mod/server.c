@@ -32,7 +32,6 @@ static const char rcsid_[] = "$Id$";
 #include <stdarg.h>
 
 bool floodless = 0;		/* floodless iline? */
-bool checked_hostmask = 0;	/* Used in request_op()/check_hostmask() cleared on connect */
 int ctcp_mode;
 int serv = -1;		/* sock # of server currently */
 int servidx = -1;		/* idx of server */
