@@ -708,7 +708,6 @@ int main(int argc, char **argv)
   notes_init();
   console_init();
   ctcp_init();
-  compress_init();
   chanprog();
 
 
