@@ -1277,6 +1277,14 @@ dcc_telnet_hostresolved(int i)
     if ((dcc[idx].type == &DCC_TELNET) && (dcc[idx].sock == dcc[i].u.dns->ibuf)) {
       break;
     }
+
+  sprintf(s2, "-telnet!telnet@%s", dcc[i].host);
+  if (match_ignore(s2) || detect_telnet_flood(s2)) {
+    killsock(dcc[i].sock);
+    lostdcc(i);
+    return;
+  }
+
   if (dcc_total == idx) {
     putlog(LOG_BOTS, "*", "Lost listening socket while resolving %s", dcc[i].host);
     killsock(dcc[i].sock);
@@ -1291,12 +1299,6 @@ dcc_telnet_hostresolved(int i)
       lostdcc(i);
       return;
     }
-  }
-  sprintf(s2, "-telnet!telnet@%s", dcc[i].host);
-  if (match_ignore(s2) || detect_telnet_flood(s2)) {
-    killsock(dcc[i].sock);
-    lostdcc(i);
-    return;
   }
 /* .  ssl_link(dcc[i].sock, ACCEPT_SSL); */
 
@@ -1819,6 +1821,13 @@ dcc_telnet_got_ident(int i, char *host)
   }
   strncpyz(dcc[i].host, host, UHOSTLEN);
   egg_snprintf(x, sizeof x, "-telnet!%s", dcc[i].host);
+
+  if (match_ignore(x)) {
+    killsock(dcc[i].sock);
+    lostdcc(i);
+    return;
+  }
+
   if (protect_telnet) {
     struct userrec *u;
     int ok = 1;
@@ -1848,11 +1857,7 @@ dcc_telnet_got_ident(int i, char *host)
       return;
     }
   }
-  if (match_ignore(x)) {
-    killsock(dcc[i].sock);
-    lostdcc(i);
-    return;
-  }
+
   /* Do not buffer data anymore. All received and stored data is passed
    * over to the dcc functions from now on.  */
   sockoptions(dcc[i].sock, EGG_OPTION_UNSET, SOCK_BUFFER);
