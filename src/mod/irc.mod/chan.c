@@ -805,7 +805,8 @@ static void resetmasks(struct chanset_t *chan, masklist *m, maskrec *mrec, maskr
       break;
   }
 }
-static void check_this_ban(struct chanset_t *chan, char *banmask, int sticky)
+
+void check_this_ban(struct chanset_t *chan, char *banmask, int sticky)
 {
   memberlist *m = NULL;
   char user[UHOSTLEN] = "";
@@ -825,7 +826,7 @@ static void check_this_ban(struct chanset_t *chan, char *banmask, int sticky)
     add_mode(chan, '+', 'b', banmask);
 }
 
-static void recheck_channel_modes(struct chanset_t *chan)
+void recheck_channel_modes(struct chanset_t *chan)
 {
   int cur = chan->channel.mode,
       mns = chan->mode_mns_prot,
@@ -960,7 +961,7 @@ static void check_this_member(struct chanset_t *chan, char *nick, struct flag_re
   }
 }
 
-static void check_this_user(char *hand, int delete, char *host)
+void check_this_user(char *hand, int delete, char *host)
 {
   char s[UHOSTLEN] = "";
   memberlist *m = NULL;
@@ -1006,7 +1007,7 @@ time_t last_eI; /* this will stop +e and +I from being checked over and over if 
 
 /* Things to do when i just became a chanop:
  */
-static void recheck_channel(struct chanset_t *chan, int dobans)
+void recheck_channel(struct chanset_t *chan, int dobans)
 {
   memberlist *m = NULL;
   char s[UHOSTLEN] = "";
@@ -1236,7 +1237,7 @@ static int got324(char *from, char *msg)
   return 0;
 }
 
-void memberlist_reposition(struct chanset_t * chan, memberlist * target) {
+static void memberlist_reposition(struct chanset_t * chan, memberlist * target) {
   /* Move target from it's current position to it's correct sorted position */
   memberlist *old = NULL, *m = NULL;
   if (chan->channel.member == target) {

@@ -6,8 +6,6 @@
  * $Id$
  */
 
-#define MODULE_NAME "server"
-#define MAKING_SERVER
 #undef MAKING_MODS
 #include "src/common.h"
 #include "src/cfg.h"

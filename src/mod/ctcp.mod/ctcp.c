@@ -5,8 +5,6 @@
  * $Id$
  */
 
-#define MODULE_NAME "ctcp"
-#define MAKING_CTCP
 #undef MAKING_MODS /* TEMP HACK */
 #include "ctcp.h"
 #include "src/common.h"
