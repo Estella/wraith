@@ -6,7 +6,8 @@ dnl
 
 dnl  EGG_CHECK_CC()
 dnl
-AC_DEFUN(EGG_CHECK_CC, [dnl
+AC_DEFUN([EGG_CHECK_CC], 
+[
 if test "${cross_compiling-x}" = "x"
 then
   cat << 'EOF' >&2
@@ -23,11 +24,12 @@ if test -n "$GXX"; then
   CXXFLAGS="$CXXFLAGS -O3"
 fi
 
-])dnl
+])
 
 dnl  EGG_IPV6_OPTIONS()
 dnl
-AC_DEFUN(EGG_IPV6_OPTIONS, [dnl
+AC_DEFUN([EGG_IPV6_OPTIONS], 
+[
 AC_MSG_CHECKING(whether or not you disabled IPv6 support)
 AC_ARG_ENABLE(ipv6, [  --disable-ipv6           disable IPv6 support],
 [ ac_cv_dipv6="yes"
@@ -45,12 +47,13 @@ if ! test "$EGG_CYGWIN" = "yes"; then
    AC_DEFINE(USE_IPV6, 1, [Define if you want ipv6 support])
  fi
 fi
-])dnl
+])
 
 
 dnl  EGG_CHECK_SOCKLEN_T()
 dnl
-AC_DEFUN(EGG_CHECK_SOCKLEN_T, [dnl
+AC_DEFUN([EGG_CHECK_SOCKLEN_T], 
+[
 AC_MSG_CHECKING(for socklen_t)
 AC_CACHE_VAL(egg_cv_socklen_t,[
   AC_TRY_RUN([
@@ -74,7 +77,7 @@ if test "$egg_cv_socklen_t" = "yes"; then
 else
   AC_MSG_RESULT(no)
 fi
-])dnl
+])
 
 
 dnl EGG_CHECK_CCPIPE()
@@ -139,7 +142,8 @@ AC_DEFUN([EGG_CHECK_CCWALL],
 dnl  EGG_CHECK_CCSTATIC()
 dnl
 dnl  Checks whether the compiler supports the `-static' flag.
-AC_DEFUN(EGG_CHECK_CCSTATIC, [dnl
+AC_DEFUN([EGG_CHECK_CCSTATIC],
+[
 if test -z "$no_static"
 then
   if test -n "$GXX"
@@ -167,12 +171,13 @@ EOF
     fi
   fi
 fi
-])dnl
+])
 
 dnl EGG_PROG_HEAD_1()
 dnl
-AC_DEFUN(EGG_PROG_HEAD_1,
-[cat << 'EOF' > conftest.head
+AC_DEFUN([EGG_PROG_HEAD_1],
+[
+cat << 'EOF' > conftest.head
 a
 b
 c
@@ -212,12 +217,12 @@ fi
 rm -f conftest.head
 HEAD_1=$ac_cv_prog_HEAD_1
 AC_SUBST(HEAD_1)dnl
-])dnl
-
+])
 
 dnl  EGG_PROG_AWK()
 dnl
-AC_DEFUN(EGG_PROG_AWK, [dnl
+AC_DEFUN([EGG_PROG_AWK], 
+[
 # awk is needed for Tcl library and header checks, and eggdrop version subst
 AC_PROG_AWK
 if test "${AWK-x}" = "x"
@@ -231,12 +236,13 @@ configure: error:
 EOF
   exit 1
 fi
-])dnl
+])
 
 
 dnl  EGG_PROG_BASENAME()
 dnl
-AC_DEFUN(EGG_PROG_BASENAME, [dnl
+AC_DEFUN([EGG_PROG_BASENAME],
+[
 # basename is needed for Tcl library and header checks
 AC_CHECK_PROG(BASENAME, basename, basename)
 if test "${BASENAME-x}" = "x"
@@ -250,15 +256,15 @@ configure: error:
 EOF
   exit 1
 fi
-])dnl
+])
 
 
 dnl  EGG_CHECK_OS()
 dnl
 dnl
-AC_DEFUN(EGG_CHECK_OS, [dnl
+AC_DEFUN([EGG_CHECK_OS],
+[
 EGG_CYGWIN=no
-
 AC_CACHE_CHECK(system type, egg_cv_var_system_type, egg_cv_var_system_type=`$UNAME -s`)
 AC_CACHE_CHECK(system release, egg_cv_var_system_release, egg_cv_var_system_release=`$UNAME -r`)
 AC_CACHE_CHECK(system machine, egg_cv_var_system_machine, egg_cv_var_system_machine=`$UNAME -m`)
@@ -342,7 +348,7 @@ case "$egg_cv_var_system_type" in
     fi
   ;;
 esac
-])dnl
+])
 
 dnl EGG_CYGWIN_BINMODE
 dnl
@@ -364,7 +370,8 @@ AC_DEFUN([EGG_CYGWIN_BINMODE],
 
 dnl  EGG_CHECK_LIBS()
 dnl
-AC_DEFUN(EGG_CHECK_LIBS, [dnl
+AC_DEFUN([EGG_CHECK_LIBS], 
+[
   AC_CHECK_LIB(socket, socket)
 #  AC_CHECK_LIB(nsl, connect)
   AC_CHECK_LIB(dns, gethostbyname)
@@ -385,11 +392,12 @@ AC_DEFUN(EGG_CHECK_LIBS, [dnl
 #        ac_cv_lib_pthread_pthread_mutex_init=yes
 #        ac_cv_lib_pthread=""],
 #        ac_cv_lib_pthread_pthread_mutex_init=no)])])])
-])dnl
+])
 
 dnl  EGG_CHECK_FUNC_VSPRINTF()
 dnl
-AC_DEFUN(EGG_CHECK_FUNC_VSPRINTF, [dnl
+AC_DEFUN([EGG_CHECK_FUNC_VSPRINTF], 
+[
 AC_CHECK_FUNCS(vsprintf)
 if test "$ac_cv_func_vsprintf" = "no"
 then
@@ -402,11 +410,12 @@ configure: error:
 EOF
   exit 1
 fi
-])dnl
+])
 
 dnl  EGG_CHECK_FUNC_UNAME()
 dnl
-AC_DEFUN(EGG_CHECK_FUNC_UNAME, [dnl
+AC_DEFUN([EGG_CHECK_FUNC_UNAME], 
+[
 AC_CHECK_FUNCS(uname)
 if test "$ac_cv_func_uname" = "no"
 then
@@ -419,11 +428,12 @@ configure: error:
 EOF
   exit 1
 fi
-])dnl
+])
 
 dnl  EGG_CHECK_ZLIB()
 dnl
-AC_DEFUN(EGG_CHECK_ZLIB, [dnl
+AC_DEFUN([EGG_CHECK_ZLIB], 
+[
 if test "x${ZLIB}" = x; then
   cat >&2 <<EOF
 configure: error:
@@ -445,12 +455,13 @@ EOF
     exit 1
   fi
 fi
-])dnl
+])
 
 
 dnl  EGG_CHECK_SSL()
 dnl
-AC_DEFUN(EGG_CHECK_SSL, [dnl
+AC_DEFUN([EGG_CHECK_SSL], 
+[
 if test "x${SSL}" = x; then
   cat >&2 <<EOF
 configure: error:
@@ -472,11 +483,12 @@ EOF
     exit 1
   fi
 fi
-])dnl
+])
 
 dnl  EGG_HEADER_STDC()
 dnl
-AC_DEFUN(EGG_HEADER_STDC, [dnl
+AC_DEFUN([EGG_HEADER_STDC], 
+[
 if test "$ac_cv_header_stdc" = "no"
 then
   cat << 'EOF' >&2
@@ -488,27 +500,29 @@ configure: error:
 EOF
   exit 1
 fi
-])dnl
+])
 
 
 dnl  EGG_CACHE_UNSET(CACHE-ID)
 dnl
 dnl  Unsets a certain cache item. Typically called before using
 dnl  the AC_CACHE_*() macros.
-AC_DEFUN(EGG_CACHE_UNSET, [dnl
+AC_DEFUN([EGG_CACHE_UNSET], 
+[
   unset $1
 ])
 
 
 dnl  EGG_SUBST_VERSION()
 dnl
-AC_DEFUN(EGG_SUBST_VERSION, [dnl
+AC_DEFUN([EGG_SUBST_VERSION], 
+[
 VERSION=`grep "char" $srcdir/src/main.c | $AWK '/egg_version/ {print [$]5}' | sed -e 's/\"//g' | sed -e 's/\;//g'`
 version_num=`echo $VERSION | $AWK 'BEGIN {FS = "."} {printf("%d%02d%02d", [$]1, [$]2, [$]3)}'`
 AC_DEFINE_UNQUOTED(EGG_VERSION, $version_num, [Defines the current pack version])dnl
 AC_SUBST(VERSION)dnl
 AC_SUBST(NUMVER)dnl
-])dnl
+])
 
 
 dnl  EGG_SUBST_MOD_UPDIR()
@@ -517,7 +531,8 @@ dnl  Since module's Makefiles aren't generated by configure, some
 dnl  paths in src/mod/Makefile.in take care of them. For correct
 dnl  path "calculation", we need to keep absolute paths in mind
 dnl  (which don't need a "../" pre-pended).
-AC_DEFUN(EGG_SUBST_MOD_UPDIR, [dnl
+AC_DEFUN([EGG_SUBST_MOD_UPDIR],
+[
 case "$srcdir" in
   [[\\/]]* | ?:[[\\/]]*)
     MOD_UPDIR=""
@@ -554,7 +569,8 @@ m4_define(EGG_REPLACE_IF_CHANGED,
 
 dnl  EGG_SAVE_PARAMETERS()
 dnl
-AC_DEFUN(EGG_SAVE_PARAMETERS, [dnl
+AC_DEFUN([EGG_SAVE_PARAMETERS],
+[
   # Remove --cache-file and --srcdir arguments so they do not pile up.
   egg_ac_parameters=
   ac_prev=
@@ -582,10 +598,11 @@ AC_DEFUN(EGG_SAVE_PARAMETERS, [dnl
   done
 
   AC_SUBST(egg_ac_parameters)dnl
-])dnl
+])
 
 
-AC_DEFUN([AC_PROG_CC_WIN32], [
+AC_DEFUN([AC_PROG_CC_WIN32], 
+[
 AC_MSG_CHECKING([how to access the Win32 API])
 WIN32FLAGS=
 AC_TRY_COMPILE(,[
@@ -622,7 +639,7 @@ AC_MSG_RESULT([not found])
 ])
 
 ])
-dnl
+
 
 AC_DEFUN([EGG_CHECK_RANDOM_MAX],
 [
