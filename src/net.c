@@ -1671,7 +1671,7 @@ void dequeue_sockets()
       if (!socklist[i].outbuf) {
 	int idx = findanyidx(socklist[i].sock);
 
-	if (idx > 0 && dcc[idx].type && dcc[idx].type->outdone)
+	if (idx >= 0 && dcc[idx].type && dcc[idx].type->outdone)
 	  dcc[idx].type->outdone(idx);
       }
     }
