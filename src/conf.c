@@ -69,6 +69,20 @@ tellconf(conf_t * inconf)
   }
 }
 
+void spawnbot(const char *nick)
+{
+  size_t size = strlen(nick) + strlen(binname) + 20;
+  char *run = (char *) my_calloc(1, size);
+  int status = 0;
+
+  egg_snprintf(run, size, "%s -B %s", binname, nick);
+  sdprintf("Spawning '%s': %s", nick, run);
+  status = system(run);
+  if (status == -1 || WEXITSTATUS(status))
+    sdprintf("Failed to spawn '%s': %s", nick, strerror(errno));
+  free(run);
+}
+
 #ifdef LEAF
 /* spawn and kill bots accordingly
  * bots prefixxed with '/' will be killed auto if running.
@@ -80,6 +94,7 @@ spawnbots()
 
   for (bot = conffile.bots; bot && bot->nick; bot = bot->next) {
     sdprintf("checking bot: %s", bot->nick);
+
     if (bot->nick[0] == '/') {
       /* kill it if running */
       if (bot->pid)
@@ -94,10 +109,6 @@ spawnbots()
       sdprintf(" ... skipping. Updating: %d, pid: %d", updating, bot->pid);
       continue;
     } else {
-      int status = 0;
-      char *run = NULL;
-      size_t size = 0;
-
       /* if we are updating with -L -P, then we need to restart ALL bots */
       if (updating == UPDATE_AUTO && bot->pid) {
         kill(bot->pid, SIGKILL);
@@ -105,20 +116,13 @@ spawnbots()
         unlink(bot->pid_file);
       }
 
-      size = strlen(bot->nick) + strlen(binname) + 20;
-      run = (char *) my_calloc(1, size);
-      egg_snprintf(run, size, "%s -B %s", binname, bot->nick);
-      sdprintf("Spawning '%s': %s", bot->nick, run);
-      status = system(run);
-      if (status == -1 || WEXITSTATUS(status))
-        sdprintf("Failed to spawn '%s': %s", bot->nick, strerror(errno));
-      free(run);
+      spawnbot(bot->nick);
     }
   }
 }
 
 int
-killbot(char *botnick)
+killbot(char *botnick, int signal)
 {
   conf_bot *bot = NULL;
 
@@ -127,7 +131,7 @@ killbot(char *botnick)
       continue;
     else if (!egg_strcasecmp(botnick, bot->nick)) {
       if (bot->pid)
-        return kill(bot->pid, SIGKILL);
+        return kill(bot->pid, signal);
     }
   }
   return -1;
@@ -437,7 +441,7 @@ conf_delbot(char *botn)
   for (bot = conffile.bots; bot && bot->nick; bot = bot->next) {
     if (!strcmp(bot->nick, botn)) {     /* found it! */
       bot->pid = checkpid(bot->nick, bot);
-      killbot(bot->nick);
+      killbot(bot->nick, SIGKILL);
       free_bot(bot->nick);
       return 0;
     }
