@@ -33,7 +33,9 @@ static int do_op(char *nick, struct chanset_t *chan, int force)
   if (channel_fastop(chan) || channel_take(chan)) {
     add_mode(chan, '+', 'o', nick);
   } else {
-    char *tmp = calloc(1, strlen(chan->name) + 200);
+    char *tmp = NULL;
+    
+    tmp = malloc(strlen(chan->name) + 200);
     makeopline(chan, nick, tmp);
     dprintf(DP_MODE, tmp);
     free(tmp);
@@ -844,7 +846,9 @@ flush_mode(chan, QUICK);
   m->flags |= WASOP;
   if (check_chan) {
     /* tell other bots to set jointime to 0 and join */
-    char *buf = calloc(1, strlen(chan->dname) + 3 + 1);
+    char *buf = NULL;
+   
+    buf = malloc(strlen(chan->dname) + 3 + 1);
 
     sprintf(buf, "jn %s", chan->dname);
     putallbots(buf);

@@ -424,9 +424,9 @@ static int u_addban(struct chanset_t *chan, char *ban, char *from, char *note,
   }
 
   if (p == NULL) {
-  p = calloc(1, sizeof(maskrec));
-  p->next = *u;
-  *u = p;
+    p = calloc(1, sizeof(maskrec));
+    p->next = *u;
+    *u = p;
   }
   else {
     free( p->mask );
@@ -503,9 +503,9 @@ static int u_addinvite(struct chanset_t *chan, char *invite, char *from,
   }
 
   if (p == NULL) {  
-  p = calloc(1, sizeof(maskrec));
-  p->next = *u;
-  *u = p;
+    p = calloc(1, sizeof(maskrec));
+    p->next = *u;
+    *u = p;
   }
   else {
     free( p->mask );
@@ -582,9 +582,9 @@ static int u_addexempt(struct chanset_t *chan, char *exempt, char *from,
   }
 
   if (p == NULL) {  
-  p = calloc(1, sizeof(maskrec));
-  p->next = *u;
-  *u = p;
+    p = calloc(1, sizeof(maskrec));
+    p->next = *u;
+    *u = p;
   }
   else {
     free( p->mask );
