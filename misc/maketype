@@ -1,4 +1,6 @@
 #!/bin/sh
+# $Id$
+
 cd $PWD
 if test ! -f stamp.$1
 then
