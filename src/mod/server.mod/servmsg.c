@@ -248,7 +248,7 @@ static void nuke_server(char *reason)
 {
   if (serv >= 0) {
     if (reason && (servidx > 0)) dprintf(servidx, "QUIT :%s\r\n", reason);
-    disconnect_server();
+    disconnect_server(1);
   }
 }
 
@@ -889,22 +889,20 @@ static int gotmode(char *from, char *msg)
   return 0;
 }
 
-static void disconnect_server()
+
+static void disconnect_server(int dolost)
 {
-	int idx;
-
 	if (server_online > 0) check_bind_event("disconnect-server");
-
 	server_online = 0;
-	if (servidx != -1 && dcc[servidx].sock >= 0) {
+
+	if (servidx != -1 && dcc[servidx].sock >= 0 && serv == dcc[servidx].sock) {
 		killsock(dcc[servidx].sock);
-		dcc[servidx].sock = (-1);
+		dcc[servidx].sock = -1;
+		if (dolost) lostdcc(servidx);
 	}
+	servidx = -1;
 	serv = -1;
 	botuserhost[0] = 0;
-	idx = servidx;
-	servidx = -1;
-	lostdcc(idx);
 }
 
 static void eof_server(int idx)
@@ -920,7 +918,7 @@ static void eof_server(int idx)
   }
 }
 #endif /* S_AUTH */
-  disconnect_server();
+  disconnect_server(1);
 }
 
 static void display_server(int idx, char *buf)
@@ -935,7 +933,7 @@ static void kill_server(int idx, void *x)
 {
   module_entry *me;
 
-  disconnect_server();
+  disconnect_server(0);
   if ((me = module_find("channels", 0, 0)) && me->funcs) {
     struct chanset_t *chan;
 
@@ -949,7 +947,7 @@ static void kill_server(int idx, void *x)
 static void timeout_server(int idx)
 {
   putlog(LOG_SERV, "*", "Timeout: connect to %s", dcc[idx].host);
-  disconnect_server();
+  disconnect_server(1);
 }
 
 static void server_activity(int idx, char *msg, int len);

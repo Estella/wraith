@@ -853,7 +853,7 @@ static void newmask(masklist *m, char *s, char *who)
 
 /* Removes a nick from the channel member list (returns 1 if successful)
  */
-static int killmember(struct chanset_t *chan, char *nick)
+static int real_killmember(struct chanset_t *chan, char *nick, const char *file, int line)
 {
   memberlist *x, *old;
 
@@ -863,7 +863,7 @@ static int killmember(struct chanset_t *chan, char *nick)
       break;
   if (!x || !x->nick[0]) {
     if (!channel_pending(chan))
-      putlog(LOG_MISC, "*", "(!) killmember(%s) -> nonexistent", nick);
+      putlog(LOG_MISC, "*", "(!) killmember(%s, %s) -> nonexistent (%s: %d)", chan->dname, nick, file, line);
     return 0;
   }
   if (old)
@@ -880,8 +880,7 @@ static int killmember(struct chanset_t *chan, char *nick)
      chan->channel.members = 0;
      for (x = chan->channel.member; x && x->nick[0]; x = x->next)
        chan->channel.members++;
-     putlog(LOG_MISC, "*", "(!) actually I know of %d members.",
-	    chan->channel.members);
+     putlog(LOG_MISC, "*", "(!) actually I know of %d members.", chan->channel.members);
   }
   if (!chan->channel.member) {
     chan->channel.member = (memberlist *) calloc(1, sizeof(memberlist));
@@ -1271,9 +1270,7 @@ static void check_expired_chanstuff()
 static int check_bind_pubc(char *cmd, char *nick, char *from, struct userrec *u, char *args, char *chan)
 {
   struct flag_record fr = {FR_GLOBAL | FR_CHAN, 0, 0, 0, 0, 0};
-  int x;
-
-  x = check_bind(BT_msgc, cmd, &fr, nick, from, u, args, chan);
+  int x = check_bind(BT_msgc, cmd, &fr, nick, from, u, args, chan);
 
   if (x & BIND_RET_LOG)
     putlog(LOG_CMDS, "*", "(%s!%s) !%s! %s %s%s %s", nick, from, u ? u->handle : "*", chan, cmdprefix, cmd, args);
@@ -1604,6 +1601,7 @@ char *irc_start(Function * global_funcs)
 
   BT_ctcp = bind_table_lookup("ctcp");
   BT_ctcr = bind_table_lookup("ctcr");
+  BT_msgc = bind_table_lookup("msgc");
 
   /* Add our commands to the imported tables. */
   add_builtins("dcc", irc_dcc);

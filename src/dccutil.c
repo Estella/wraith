@@ -325,7 +325,7 @@ void lostdcc(int n)
     free(dcc[n].u.other);
   egg_bzero(&dcc[n], sizeof(struct dcc_t));
 
-  dcc[n].sock = (-1);
+  dcc[n].sock = -1;
   dcc[n].type = &DCC_LOST;
 }
 
@@ -359,7 +359,7 @@ void dcc_remove_lost(void)
   for (i = 0; i < dcc_total; i++) {
     if (dcc[i].type == &DCC_LOST) {
       dcc[i].type = NULL;
-      dcc[i].sock = (-1);
+      dcc[i].sock = -1;
       removedcc(i);
       i--;
     }
