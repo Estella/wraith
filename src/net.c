@@ -454,7 +454,6 @@ void real_killsock(register int sock, const char *file, int line)
     return;
   }
 
-  sdprintf("killsock(%d, %s, %d)", sock, file, line);
   for (register int i = 0; i < MAXSOCKS; i++) {
     if ((socklist[i].sock == sock) && !(socklist[i].flags & SOCK_UNUSED)) {
 #ifdef HAVE_SSL
@@ -475,6 +474,7 @@ void real_killsock(register int sock, const char *file, int line)
       egg_bzero(&socklist[i], sizeof(socklist[i]));
       socklist[i].flags = SOCK_UNUSED;
       socks_total--;
+      sdprintf("killsock(%d, %s, %d) (socklist: %d)", sock, file, line, i);
       return;
     }
   }
