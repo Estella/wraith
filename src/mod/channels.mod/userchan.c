@@ -158,9 +158,11 @@ static int u_setsticky_mask(struct chanset_t *chan, maskrec *u, char *uhost,
 {
   int j;
 
-  j = atoi(uhost);
-  if (!j)
+  if (str_isdigit(uhost))
+    j = atoi(uhost);
+  else
     j = (-1);
+
   while(u) {
     if (j >= 0)
       j--;
@@ -170,7 +172,7 @@ static int u_setsticky_mask(struct chanset_t *chan, maskrec *u, char *uhost,
 	u->flags |= MASKREC_STICKY;
       else if (!sticky)
 	u->flags &= ~MASKREC_STICKY;
-      else	/* We don't actually want to change, just skip over */
+      else				/* We don't actually want to change, just skip over */
 	return 0;
       if (!j)
 	strcpy(uhost, u->mask);
@@ -183,6 +185,7 @@ static int u_setsticky_mask(struct chanset_t *chan, maskrec *u, char *uhost,
 
     u = u->next;
   }
+
   if (j >= 0)
     return -j;
 
@@ -223,7 +226,8 @@ static int u_delban(struct chanset_t *c, char *who, int doit)
   maskrec **u = (c) ? &c->bans : &global_bans;
   char temp[256];
 
-  if (!strchr(who, '!') && (j = atoi(who))) {
+  if (!strchr(who, '!') && str_isdigit(who)) {
+    j = atoi(who);
     j--;
     for (; (*u) && j; u = &((*u)->next), j--);
     if (*u) {
@@ -277,7 +281,8 @@ static int u_delexempt (struct chanset_t * c, char * who, int doit)
   maskrec *t;
   maskrec **u = c ? &(c->exempts) : &global_exempts;
 
-  if (!strchr(who,'!') && (j = atoi(who))) {
+  if (!strchr(who, '!') && str_isdigit(who)) {
+    j = atoi(who);
     j--;
     for (;(*u) && j;u=&((*u)->next),j--);
     if (*u) {
@@ -326,7 +331,8 @@ static int u_delinvite(struct chanset_t *c, char *who, int doit)
   maskrec *t;
   maskrec **u = c ? &(c->invites) : &global_invites;
 
-  if (!strchr(who,'!') && (j = atoi(who))) {
+  if (!strchr(who, '!') && str_isdigit(who)) {
+    j = atoi(who);
     j--;
     for (;(*u) && j;u=&((*u)->next),j--);
     if (*u) {
@@ -1172,7 +1178,7 @@ static int write_exempts(FILE *f, int idx)
   for (e = global_exempts; e; e = e->next) {
     mask = str_escape(e->mask, ':', '\\');
     if (!mask ||
-	lfprintf(f, "%s %s:%s%lu%s:+%lu:%lu:%s:%s\n", "%", e->mask,
+        lfprintf(f, "%s %s:%s%lu%s:+%lu:%lu:%s:%s\n", "%", mask,
 		(e->flags & MASKREC_PERM) ? "+" : "", e->expire,
 		(e->flags & MASKREC_STICKY) ? "*" : "", e->added,
 		e->lastactive, e->user ? e->user : botnetnick,
@@ -1197,7 +1203,7 @@ static int write_exempts(FILE *f, int idx)
 	for (e = chan->exempts; e; e = e->next) {
 	  mask = str_escape(e->mask, ':', '\\');
 	  if (!mask ||
-	      lfprintf(f,"%s %s:%s%lu%s:+%lu:%lu:%s:%s\n","%",e->mask,
+	      lfprintf(f,"%s %s:%s%lu%s:+%lu:%lu:%s:%s\n","%", mask,
 		      (e->flags & MASKREC_PERM) ? "+" : "", e->expire,
 		      (e->flags & MASKREC_STICKY) ? "*" : "", e->added,
 		      e->lastactive, e->user ? e->user : botnetnick,
@@ -1227,7 +1233,7 @@ static int write_invites(FILE *f, int idx)
   for (ir = global_invites; ir; ir = ir->next)  {
     mask = str_escape(ir->mask, ':', '\\');
     if (!mask ||
-	lfprintf(f,"@ %s:%s%lu%s:+%lu:%lu:%s:%s\n",ir->mask,
+	lfprintf(f,"@ %s:%s%lu%s:+%lu:%lu:%s:%s\n", mask,
 		(ir->flags & MASKREC_PERM) ? "+" : "", ir->expire,
 		(ir->flags & MASKREC_STICKY) ? "*" : "", ir->added,
 		ir->lastactive, ir->user ? ir->user : botnetnick,
@@ -1252,7 +1258,7 @@ static int write_invites(FILE *f, int idx)
 	for (ir = chan->invites; ir; ir = ir->next) {
 	  mask = str_escape(ir->mask, ':', '\\');
 	  if (!mask ||
-	      lfprintf(f,"@ %s:%s%lu%s:+%lu:%lu:%s:%s\n",ir->mask,
+	      lfprintf(f,"@ %s:%s%lu%s:+%lu:%lu:%s:%s\n", mask,
 		      (ir->flags & MASKREC_PERM) ? "+" : "", ir->expire,
 		      (ir->flags & MASKREC_STICKY) ? "*" : "", ir->added,
 		      ir->lastactive, ir->user ? ir->user : botnetnick,
