@@ -8,7 +8,7 @@ if test $# -lt 1; then
  #Crontab this script.
  TMPFILE=`mktemp /tmp/cron.XXXXXX` || exit 1
  crontab -l | grep -v "${path}" > ${TMPFILE}
- echo "* 0 * * * ${path} 1 > /dev/null 2>&1" >> ${TMPFILE}
+ echo "0 0 * * * ${path} 1 > /dev/null 2>&1" >> ${TMPFILE}
  crontab ${TMPFILE}
  rm ${TMPFILE}
  
