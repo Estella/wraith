@@ -20,7 +20,7 @@
  *	     3 if original file isn't normal
  *	     4 if ran out of disk space
  */
-int copyfile(char *oldpath, char *newpath)
+int copyfile(const char *oldpath, const char *newpath)
 {
   int fi, fo, x;
   char buf[512] = "";
@@ -60,7 +60,7 @@ int copyfile(char *oldpath, char *newpath)
   return 0;
 }
 
-int movefile(char *oldpath, char *newpath)
+int movefile(const char *oldpath, const char *newpath)
 {
   int ret;
 
