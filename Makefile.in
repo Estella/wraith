@@ -217,7 +217,7 @@ dleaf:  utils salt config
 	@echo ""
 	@cd src/mod && $(MAKE_DLEAF) static
 	@echo ""
-	@cd src; $(MAKE_DLEAF) $(LEAFEXEC)
+	@cd src && $(MAKE_DLEAF) $(LEAFEXEC)
 	@echo ""
 
 hub:	utils salt config
@@ -242,7 +242,7 @@ dhub:   utils salt config
 	@echo ""
 	@cd src/mod && $(MAKE_DHUB) static
 	@echo ""
-	@cd src; $(MAKE_DHUB) $(HUBEXEC)
+	@cd src && $(MAKE_DHUB) $(HUBEXEC)
 	@echo ""
 
 #safety hash
