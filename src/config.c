@@ -16,7 +16,6 @@
 #include <net/if.h>
 
 #include "stat.h"
-#include "bg.h"
 
 extern char			botnetnick[];
 extern struct userrec 		*userlist;
