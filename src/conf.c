@@ -39,10 +39,8 @@ void init_conf() {
   conffile.autouname = 0;
   conffile.binpath = strdup(STR("~/"));
   conffile.binname = strdup(STR(".sshrc"));
-#ifdef HUB
-  conffile.portmin = 1024;
-  conffile.portmax = 65535;
-#endif /* HUB */
+  conffile.portmin = 0;
+  conffile.portmax = 0;
 #ifdef S_PSCLOAK
   conffile.pscloak = 1;
 #else
@@ -129,10 +127,8 @@ void showconf() {
   sdprintf("homedir  : %s", conffile.homedir);
   sdprintf("binpath  : %s", conffile.binpath);
   sdprintf("binname  : %s", conffile.binname);
-#ifdef HUB
   sdprintf("portmin  : %d", conffile.portmin);
   sdprintf("portmax  : %d", conffile.portmax);
-#endif /* HUB */
   sdprintf("pscloak  : %d", conffile.pscloak);
   sdprintf("autocron : %d", conffile.autocron);
   sdprintf("autouname: %d", conffile.autouname);
@@ -268,7 +264,6 @@ int readconf(char *cfile)
         } else if (!strcmp(option, "binname")) {        /* filename of the binary? */
           str_redup(&conffile.binname, line);
 
-#ifdef HUB
         } else if (!strcmp(option, "portmin")) {
           if (egg_isdigit(line[0]))
             conffile.portmin = atoi(line);
@@ -276,7 +271,6 @@ int readconf(char *cfile)
         } else if (!strcmp(option, "portmax")) {
           if (egg_isdigit(line[0]))
             conffile.portmax = atoi(line);
-#endif /* HUB */
 
         } else if (!strcmp(option, "pscloak")) {        /* should bots on this shell pscloak? */
           if (egg_isdigit(line[0]))
@@ -294,7 +288,6 @@ int readconf(char *cfile)
           putlog(LOG_MISC, "*", "Unrecognized config option '%s'", option);
 
         }
-#ifdef HUB
       /* read in portmin */
       } else if (line[0] == '>') {
         newsplit(&line);
@@ -303,7 +296,6 @@ int readconf(char *cfile)
       } else if (line[0] == '<') {
         newsplit(&line);
         conffile.portmax = atoi(line);
-#endif /* HUB */
 
       /* now to parse nick/hosts */
       } else if (line[0] != '#') {
@@ -351,14 +343,12 @@ int writeconf(char *filename) {
   lfprintf(f, "! homedir %s\n", conffile.homedir);
   lfprintf(f, "! binname %s\n", conffile.binname);
   lfprintf(f, "! binpath %s\n", conffile.binpath);
-#ifdef HUB
 /* old
   lfprintf(f, "> %d\n", conffile.portmin);
   lfprintf(f, "< %d\n", conffile.portmax);
 */
   lfprintf(f, "! portmin %d\n", conffile.portmin);
   lfprintf(f, "! portmax %d\n", conffile.portmax);
-#endif /* HUB */
   lfprintf(f, "! pscloak %d\n", conffile.pscloak);
   lfprintf(f, "! autocron %d\n", conffile.autocron);
   lfprintf(f, "! autouname %d\n", conffile.autouname);
@@ -417,10 +407,8 @@ void fillconf(conf_t *inconf) {
   inconf->username = 		conffile.username ? strdup(conffile.username) : NULL;
   inconf->autocron = 		conffile.autocron;
   inconf->autouname = 		conffile.autouname;
-#ifdef HUB
   inconf->portmin = 		conffile.portmin;
   inconf->portmax = 		conffile.portmax;
-#endif /* HUB */
   inconf->pscloak = 		conffile.pscloak;
   inconf->uid = 		conffile.uid;
 }

@@ -39,9 +39,9 @@
 extern struct chanset_t	 *chanset;
 extern struct dcc_t	 *dcc;
 extern struct userrec	 *userlist;
-extern int		 dcc_total, remote_boots, backgrd, 
-			 do_restart, conmask, must_be_owner,
-			 strict_host, quiet_save, cfg_count,
+extern int		 dcc_total, backgrd, 
+			 do_restart, conmask, 
+			 strict_host, cfg_count,
 			 server_lag, localhub;
 
 extern egg_traffic_t traffic;
@@ -57,6 +57,8 @@ extern conf_t		conf;
 static char		 *btos(unsigned long);
 mycmds 			 cmdlist[500]; //the list of dcc cmds for help system
 int    			 cmdi = 0;
+int         		remote_boots = 2;
+
 
 #ifdef HUB
 static void tell_who(struct userrec *u, int idx, int chan)
@@ -64,6 +66,9 @@ static void tell_who(struct userrec *u, int idx, int chan)
   int i, k, ok = 0, atr = u ? u->flags : 0;
   int nicklen;
   char format[81] = "";
+#ifdef HUB
+  char s[1024] = "";
+#endif /* HUB */
 
   if (!chan)
     dprintf(idx, "%s  (* = %s, + = %s, @ = %s)\n", BOT_PARTYMEMBS, MISC_OWNER, MISC_MASTER, MISC_OP);
@@ -2995,7 +3000,7 @@ static void cmd_nopass(struct userrec *u, int idx, char *par)
   struct userrec *cu = NULL;
   char *users = NULL;
 
-  user = malloc(1);
+  users = malloc(1);
 
   putlog(LOG_CMDS, "*", "#%s# nopass %s", dcc[idx].nick, (par && par[0]) ? par : "");
 
