@@ -884,7 +884,7 @@ void crontab_create(int interval) {
       strcpy(buf, "*");
     else {
       int i = 1;
-      int si = random() % interval;
+      int si = randint(interval);
 
       while (i < 60) {
         if (buf[0])

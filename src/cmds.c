@@ -1573,7 +1573,7 @@ static void cmd_botcmd(struct userrec *u, int idx, char *par)
         tbots++;
     }
     if (tbots)
-      rleaf = random() % tbots;
+      rleaf = randint(tbots);
   }
   
   for (tbot = tandbot; tbot; tbot = tbot->next) {
