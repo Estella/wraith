@@ -49,6 +49,11 @@ AC_CHECK_PROG(DISTCC, distcc, distcc)
 EGG_CHECK_OS
 EGG_CHECK_DNS
 
+# Check for IPv6 support
+#EGG_IPV6_SUPPORTED
+EGG_IPV6_OPTIONS
+EGG_CHECK_SOCKLEN_T
+
 #checkpoint
 AC_CACHE_SAVE 
 
@@ -76,8 +81,6 @@ AC_CACHE_SAVE
 AC_SUBST(ZLIB)dnl
 #AC_SUBST(SSL)dnl
 
-
-
 # Checks for typedefs, structures, and compiler characteristics
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
@@ -102,17 +105,7 @@ AC_STRUCT_TM
 #checkpoint
 AC_CACHE_SAVE 
 
-# Check for IPv6 support
-#EGG_IPV6_SUPPORTED
-EGG_IPV6_OPTIONS
-EGG_CHECK_SOCKLEN_T
-
 # Checks for library functions
-
-#checkpoint
-AC_CACHE_SAVE
-
-# Checks for library functions.
 AC_FUNC_FORK
 AC_FUNC_LSTAT
 AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK

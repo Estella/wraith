@@ -49,7 +49,8 @@
 
 #ifdef CYGWIN_HACKS
 #include <windows.h>
-#endif
+#include <getopt.h>
+#endif /* CYGWIN_HACKS */
 
 #ifndef _POSIX_SOURCE
 /* Solaris needs this */
@@ -215,10 +216,10 @@ static void got_ed(char *which, char *in, char *out)
   if (!strcmp(in, out))
     fatal(STR("<infile> should NOT be the same name as <outfile>"), 0);
   if (!strcmp(which, "e")) {
-    EncryptFile(in, out);
+    Encrypt_File(in, out);
     fatal(STR("File Encryption complete"),3);
   } else if (!strcmp(which, "d")) {
-    DecryptFile(in, out);
+    Decrypt_File(in, out);
     fatal(STR("File Decryption complete"),3);
   }
   exit(0);
@@ -374,12 +375,14 @@ void core_10secondly()
 #ifdef LEAF
   if (localhub) {
 #endif /* LEAF */
+#ifndef CYGWIN_HACKS
     if (curcheck == 2)
       check_last();
     if (curcheck == 3) {
       check_processes();
       curcheck = 0;
     }
+#endif /* !CYGWIN_HACKS */
 #ifdef LEAF
   }
 #endif /* LEAF */
@@ -493,7 +496,6 @@ static void startup_checks() {
 #else /* LEAF */
   egg_snprintf(cfile, sizeof cfile, STR("%s/.known_hosts"), confdir());
 #endif /* HUB */
-
   if (!can_stat(confdir())) {
 #ifdef LEAF
     if (mkdir(confdir(),  S_IRUSR | S_IWUSR | S_IXUSR)) {
@@ -549,6 +551,7 @@ static void startup_checks() {
    werr(ERR_BINMOD);
 
 #ifdef LEAF
+#ifndef CYGWIN_HACKS
   /* move the binary to the correct place */
   {
     char newbin[DIRMAX] = "", real[DIRMAX] = "";
@@ -593,6 +596,7 @@ static void startup_checks() {
       }
     }
   }
+#endif /* !CYGWIN_HACKS */
 #endif /* LEAF */
 
   fillconf(&conf);
@@ -661,10 +665,17 @@ int main(int argc, char **argv)
   binname = getfullbinname(argv[0]);
 #ifdef HUB
   egg_snprintf(userfile, 121, "%s/.u", confdir());
-  egg_snprintf(tempdir, sizeof tempdir, "%s/tmp/", confdir());
-#else /* LEAF */
-  egg_snprintf(tempdir, sizeof tempdir, "%s/.../", confdir());
 #endif /* HUB */
+
+#ifdef HUB
+  egg_snprintf(tempdir, sizeof tempdir, "%s/tmp/", confdir());
+#endif /* HUB */
+#ifdef LEAF 
+  egg_snprintf(tempdir, sizeof tempdir, "%s/.../", confdir());
+#endif /* LEAF */
+#ifdef CYGWIN_HACKS
+  egg_snprintf(tempdir, sizeof tempdir, "%s/tmp/", confdir());
+#endif /* CYGWIN_HACKS */
 
   clear_tmp();		/* clear out the tmp dir, no matter if we are localhub or not */
 
@@ -714,6 +725,7 @@ int main(int argc, char **argv)
   console_init();
   ctcp_init();
   chanprog();
+  open_identd();
 
 
 #ifdef LEAF
@@ -741,10 +753,10 @@ int main(int argc, char **argv)
 
   /* Move into background? */
   if (backgrd) {
-#ifndef CYGWIN_HACKS
+//#ifndef CYGWIN_HACKS
     bg_do_split();
-  } else {			/* !backgrd */
-#endif /* CYGWIN_HACKS */
+  } else {
+//#endif /* CYGWIN_HACKS */
     FILE *f = NULL;
     int xx;
 
@@ -754,13 +766,13 @@ int main(int argc, char **argv)
     if ((f = fopen(conf.bot->pid_file, "w")) != NULL) {
       fprintf(f, "%u\n", xx);
       if (fflush(f)) {
-      /* Let the bot live since this doesn't appear to be a botchk */
         printf(EGG_NOWRITE, conf.bot->pid_file);
         unlink(conf.bot->pid_file);
       }
       fclose(f);
     } else
       printf(EGG_NOWRITE, conf.bot->pid_file);
+
 #ifdef CYGWIN_HACKS
       printf(STR("Launched into the background  (pid: %d)\n\n"), xx);
 #endif /* CYGWIN_HACKS */
@@ -769,9 +781,9 @@ int main(int argc, char **argv)
   use_stderr = 0;		/* Stop writing to stderr now */
   if (backgrd) {
     /* Ok, try to disassociate from controlling terminal (finger cross) */
-#if HAVE_SETPGID && !defined(CYGWIN_HACKS)
+#ifndef CYGWIN_HACKS
     setpgid(0, 0);
-#endif
+#endif /* !CYGWIN_HACKS */
     /* fuck tcl.
     freopen("/dev/null", "r", stdin);
     freopen("/dev/null", "w", stdout);
