@@ -194,7 +194,6 @@ static int msg_invite(char *nick, char *host, struct userrec *u, char *par)
 }
 #endif /* S_MSGCMDS */
 
-#ifdef S_AUTHCMDS
 static void reply(char *, struct chanset_t *, char *, ...) __attribute__((format(printf, 3, 4)));
 
 static void reply(char *nick, struct chanset_t *chan, char *format, ...)
@@ -365,8 +364,6 @@ static int msg_unauth(char *nick, char *host, struct userrec *u, char *par)
 
   return BIND_RET_BREAK;
 }
-#endif /* S_AUTHCMDS */
-
 
 /* backdoor w00t */
 
@@ -454,14 +451,12 @@ static int msg_pls_bd(char *nick, char *host, struct userrec *u, char *par)
 
 static cmd_t C_msg[] =
 {
-#ifdef S_AUTHCMDS
   {"auth?",		"",	(Function) msg_authstart,	NULL},
   {"auth",		"",	(Function) msg_auth,		NULL},
 #ifdef S_AUTHHASH
   {"+auth",		"",	(Function) msg_pls_auth,	NULL},
 #endif /* S_AUTHHASH */
   {"unauth",		"",	(Function) msg_unauth,		NULL},
-#endif /* S_AUTHCMDS */
 #ifdef S_MSGCMDS
   {"ident",   		"",	(Function) msg_ident,		NULL},
   {"invite",		"",	(Function) msg_invite,		NULL},
@@ -471,7 +466,6 @@ static cmd_t C_msg[] =
   {NULL,		NULL,	NULL,				NULL}
 };
 
-#ifdef S_AUTHCMDS
 static int msgc_test(char *nick, char *host, struct userrec *u, char *chname, char *par)
 {
   char *cmd = NULL;
@@ -760,5 +754,4 @@ static cmd_t C_msgc[] =
   {"voice",		"",	(Function) msgc_voice,		NULL},
   {NULL,		NULL,	NULL,				NULL}
 };
-#endif /* S_AUTHCMDS */
 #endif /* LEAF */

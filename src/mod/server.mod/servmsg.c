@@ -118,7 +118,6 @@ static void check_bind_msg(char *cmd, char *nick, char *uhost, struct userrec *u
     putlog(LOG_MSGS, "*", "[%s!%s] %s %s", nick, uhost, cmd, args);
 }
 
-#ifdef S_AUTHCMDS
 static int check_bind_msgc(char *cmd, char *nick, char *from, struct userrec *u, char *args)
 {
   struct flag_record fr = {FR_GLOBAL | FR_CHAN | FR_ANYWH, 0, 0, 0 };
@@ -133,7 +132,6 @@ static int check_bind_msgc(char *cmd, char *nick, char *from, struct userrec *u,
   if (x & BIND_RET_BREAK) return(1);
   return(0);
 }
-#endif /* S_AUTHCMDS */
 
 /* Return 1 if processed.
  */
@@ -340,10 +338,8 @@ static int detect_flood(char *floodnick, char *floodhost, char *from, int which)
   if ((u && u->bot) || (atr & USER_NOFLOOD))
     return 0;
 
-#ifdef S_AUTHCMDS
   if (findauth(floodhost) > -1) 
     return 0;
-#endif /* S_AUTHCMDS */
 
   /* Determine how many are necessary to make a flood */
   switch (which) {
@@ -423,11 +419,7 @@ static int gotmsg(char *from, char *msg)
   char *to = NULL, buf[UHOSTLEN] = "", *nick = NULL, ctcpbuf[512] = "", *uhost = buf, 
        *ctcp = NULL, *p = NULL, *p1 = NULL, *code = NULL;
   struct userrec *u = NULL;
-  int ctcp_count = 0;
-#ifdef S_AUTHCMDS
-  int i = 0;
-#endif /* S_AUTHCMDS */
-  int ignoring = 0;
+  int ctcp_count = 0, i = 0, ignoring = 0;
 
   if (msg[0] && ((strchr(CHANMETA, *msg) != NULL) ||
      (*msg == '@')))           /* Notice to a channel, not handled here */
@@ -556,7 +548,6 @@ static int gotmsg(char *from, char *msg)
       my_u = get_user_by_host(from);
       my_code = newsplit(&msg);
       rmspace(msg);
-#ifdef S_AUTHCMDS
       i = findauth(uhost);
       /* is it a cmd? */
 
@@ -569,7 +560,6 @@ static int gotmsg(char *from, char *msg)
         else
           putlog(LOG_MSGS, "*", "[%s] %c%s %s", from, cmdprefix, my_code, msg);
       } else if ((my_code[0] != cmdprefix || !my_code[1] || i == -1 || !(auth[i].authed))) {
-#endif /* S_AUTHCMDS */
         if (!ignoring) {
           int doit = 1;
 #ifdef S_MSGCMDS
@@ -595,9 +585,7 @@ static int gotmsg(char *from, char *msg)
           if (doit)
             check_bind_msg(my_code, nick, uhost, my_u, msg);
         }
-#ifdef S_AUTHCMDS
       }
-#endif /* S_AUTHCMDS */
     }
   }
   return 0;
@@ -972,7 +960,6 @@ static void disconnect_server(int idx, int dolost)
 static void eof_server(int idx)
 {
   putlog(LOG_SERV, "*", "Disconnected from %s", dcc[idx].host);
-#ifdef S_AUTHCMDS
   if (ischanhub() && auth_total > 0) {
     int i = 0;
 
@@ -980,7 +967,6 @@ static void eof_server(int idx)
     for (i = 0; i < auth_total; i++)
       removeauth(i);  
   }
-#endif /* S_AUTHCMDS */
   disconnect_server(idx, DO_LOST);
 }
 
