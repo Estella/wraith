@@ -208,8 +208,8 @@ static void got_nu(char *botnick, char *code, char *par)
 }
 
 static cmd_t update_bot[] = {
-  {"nu?",    "", (Function) got_nu, NULL}, 
-  {NULL, NULL, NULL, NULL}
+  {"nu?",    "", (Function) got_nu, NULL, 0}, 
+  {NULL, NULL, NULL, NULL, 0}
 };
 
 
@@ -449,8 +449,8 @@ static void cmd_bupdate(int idx, char *par)
 
 cmd_t update_cmds[] =
 {
-  {"bupdate",		"a",	(Function) cmd_bupdate,		NULL},
-  {NULL,		NULL,	NULL,				NULL}
+  {"bupdate",		"a",	(Function) cmd_bupdate,		NULL, HUB},
+  {NULL,		NULL,	NULL,				NULL, 0}
 };
 #endif /* HUB */
 
