@@ -915,7 +915,7 @@ int main(int argc, char **argv)
       socket_cleanup--;
 
     xx = sockgets(buf, &i); 
-
+//printf("BUF: %s\n", buf);
     if (xx >= 0) {		/* Non-error */
       int idx;
 

@@ -20,6 +20,7 @@
 # endif /* !S_AUTHCMDS */
 #endif /* S_AUTHHASH */
 
+#include "bits.h"
 #include "garble.h"
 #include "conf.h"
 #include "debug.h"
