@@ -5,7 +5,7 @@ if cvs commit "$@"; then
   if echo "#define CVSBUILD ${unixtime}			/* utc unixtime of cvs commit */" > src/build.h; then
 	echo "Updated build stamp to: ${unixtime}"
 	echo "Commiting new build.h"
-	cvs commit src/build.h -m "Build stamp"
+	cvs commit -m "Build stamp" src/build.h
    else
 	echo "Failed to update timestamp, bailing out."
 	exit
