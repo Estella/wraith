@@ -1,0 +1,12 @@
+#!/bin/sh
+# $Id$
+unixtime=`misc/utc`
+if echo "#define CVSBUILD ${unixtime}			/* utc unixtime of cvs commit */" > src/build.h; then
+	echo "Updated build stamp to: ${unixtime}"
+ else
+	echo "Failed to update timestamp, bailing out."
+	exit
+ fi
+
+cvs commit "$@"
+
