@@ -280,9 +280,7 @@ int config_expmem(struct user_entry *e)
 
 int config_set(struct userrec *u, struct user_entry *e, void *buf)
 {
-  struct xtra_key *curr,
-   *old = NULL,
-   *new = buf;
+  struct xtra_key *curr, *old = NULL, *new = buf;
 
   for (curr = e->u.extra; curr; curr = curr->next) {
     if (curr->key && !egg_strcasecmp(curr->key, new->key)) {
@@ -291,7 +289,7 @@ int config_set(struct userrec *u, struct user_entry *e, void *buf)
     }
   }
   if (!old && (!new->data || !new->data[0])) {
-    /* delete non-existant entry -- doh ++rtc */
+    /* delete non-existant entry */
     nfree(new->key);
     if (new->data)
       nfree(new->data);
@@ -301,11 +299,11 @@ int config_set(struct userrec *u, struct user_entry *e, void *buf)
 
   /* we will possibly free new below, so let's send the information
    * to the botnet now */
-  if (!noshare && !cfg_noshare) {
+  if (!noshare && !cfg_noshare)
     shareout(NULL, STR("c CONFIG %s %s %s\n"), u->handle, new->key, new->data ? new->data : "");
-  }
   if ((old && old != new) || !new->data || !new->data[0]) {
     list_delete((struct list_type **) (&e->u.extra), (struct list_type *) old);
+
     nfree(old->key);
     nfree(old->data);
     nfree(old);
@@ -314,7 +312,8 @@ int config_set(struct userrec *u, struct user_entry *e, void *buf)
     if (new->data[0]) {
       list_insert((&e->u.extra), new);
     } else {
-      nfree(new->data);
+      if (new->data)
+        nfree(new->data);
       nfree(new->key);
       nfree(new);
     }
@@ -407,7 +406,7 @@ int config_gotshare(struct userrec *u, struct user_entry *e, char *buf, int idx)
       if (!strcmp(arg, cfg[i]->name) && (cfg[i]->flags & CFGF_LOCAL))
 	cfgent = cfg[i];
     if (cfgent) {
-      set_cfg_str(botnetnick, cfgent->name, buf[0] ? buf : NULL);
+      set_cfg_str(botnetnick, cfgent->name, (buf && buf[0]) ? buf : NULL);
     }
     cfg_noshare = 0;
     return 1;
@@ -422,7 +421,7 @@ int config_gotshare(struct userrec *u, struct user_entry *e, char *buf, int idx)
   xk->key = user_malloc(l + 1);
   strncpyz(xk->key, arg, l + 1);
 
-  if (buf[0]) {
+  if (buf && buf[0]) {
     int k = strlen(buf);
 
     if (k > 1500 - l)
