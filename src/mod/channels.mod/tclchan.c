@@ -282,9 +282,7 @@ static int tcl_channel STDVAR
       Tcl_AppendResult(irp, "no such channel record", NULL);
       return TCL_ERROR;
     }
-Context;
     do_chanset(chan, argv[3], 0);
-Context;
     return tcl_channel_modify(irp, chan, argc - 3, &argv[3]);
   }
   if (!strcmp(argv[1], "get")) {
@@ -337,7 +335,6 @@ static int tcl_channel_modify(Tcl_Interp * irp, struct chanset_t *chan,
 #endif /* LEAF */
   struct udef_struct *ul = udef;
   char s[121];
-Context;
   for (i = 0; i < items; i++) {
     if (!strcmp(item[i], "chanmode")) {
       i++;
@@ -686,7 +683,6 @@ Context;
 					   chan->channel.key[0] ?
 					   chan->channel.key : chan->key_prot);
     }
-Context;
     if ((old_status ^ chan->status) & (CHAN_ENFORCEBANS |
 	CHAN_BITCH)) {
       if ((me = module_find("irc", 0, 0)))
@@ -696,7 +692,6 @@ Context;
     if ((me = module_find("irc", 0, 0)))
       (me->funcs[IRC_RECHECK_CHANNEL_MODES])(chan);
   }
-Context;
 #endif /* LEAF */
   if (x > 0)
     return TCL_ERROR;
