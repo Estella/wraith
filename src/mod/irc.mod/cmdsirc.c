@@ -555,7 +555,7 @@ Context;
     get_user_flagrec(dcc[idx].user, &user, chan->dname);
 
 Context;
-    if (channel_inactive(chan) || !channel_active(chan))  {
+    if (!shouldjoin(chan) || !channel_active(chan))  {
       dprintf(idx, "I'm not on %s\n", chan->dname);
       return;
     }

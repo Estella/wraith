@@ -285,7 +285,7 @@ Function global_table[] =
   (Function) & share_greet,	 /* int					*/
   /* 100 - 103 */
   (Function) & max_dcc,		 /* int					*/
-  (Function) 0, /* --UNUSED-- */
+  (Function) shouldjoin, 
   (Function) & ignore_time,	 /* int					*/
   (Function) & use_console_r,	 /* int					*/
   /* 104 - 107 */
@@ -324,7 +324,7 @@ Function global_table[] =
   (Function) findanyidx,
   (Function) findchan,
   /* 132 - 135 */
-  (Function) 0,
+  (Function) dolimit,
   (Function) days,
   (Function) daysago,
   (Function) daysdur,
