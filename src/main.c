@@ -365,6 +365,10 @@ static void dtx_arg(int argc, char *argv[])
 
         egg_strftime(date, sizeof date, "%c %Z", gmtime(&buildts));
 	printf("%s\nBuild Date: %s (%lu)\n", version, date, buildts);
+        if (settings.uname[0]) {
+          sdebug++;
+          bin_to_conf();
+        }
 	exit(0);
       }
 #ifdef LEAF
