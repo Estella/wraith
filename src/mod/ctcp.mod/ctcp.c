@@ -29,10 +29,8 @@
 int cloak_script = CLOAK_PLAIN;
 
 #ifdef LEAF
-#ifdef S_AUTOAWAY
 #define AVGAWAYTIME             60
 #define AVGHERETIME             5
-#endif /* S_AUTOAWAY */
 time_t cloak_awaytime = 0;
 time_t cloak_heretime = 0;
 time_t listen_time = 0;
@@ -316,7 +314,6 @@ void scriptchanged()
   }
 }
 
-#ifdef S_AUTOAWAY
 void sendaway()
 {
   char awtime[20] = "";
@@ -384,13 +381,11 @@ void sendaway()
     break;
   }
 }
-#endif /* S_AUTOAWAY */
 
 static void ctcp_minutely()
 {
   int i;
 
-#ifdef S_AUTOAWAY
   if (server_online) {
     if ((cloak_awaytime == 0) && (cloak_heretime == 0)) {
       cloak_heretime = now;
@@ -413,8 +408,6 @@ static void ctcp_minutely()
         sendaway();
     }
   }
-#endif /* S_AUTOAWAY */
-
 
   if (listen_time <= 0) {
     for (i = 0; i < dcc_total; i++) {
