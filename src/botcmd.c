@@ -9,6 +9,7 @@
 #include "eggmain.h"
 #include "botcmd.h"
 #include "net.h"
+#include "tclhash.h"
 #include "misc.h"
 #include "dcc.h"
 #include "userrec.h"

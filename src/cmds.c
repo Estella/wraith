@@ -14,6 +14,7 @@
 #include "userrec.h"
 #include "users.h"
 #include "userent.h"
+#include "tclhash.h"
 #include "match.h"
 #include "main.h"
 #include "dccutil.h"

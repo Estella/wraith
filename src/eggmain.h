@@ -36,7 +36,6 @@
 #endif /* HAVE_ZLIB_H */
 
 #include "tclegg.h"
-#include "tclhash.h"
 #include "chan.h"
 #include "compat/compat.h"
 

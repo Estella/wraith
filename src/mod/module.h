@@ -32,6 +32,7 @@
 #include "src/types.h"
 #include "src/cfg.h"
 #include "src/cmds.h"
+#include "src/tclhash.h"
 #include "modvals.h"
 #include "src/tandem.h"
 
