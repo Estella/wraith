@@ -17,8 +17,6 @@ static int console_autosave = 1;
 static int force_channel = 0;
 static int info_party = 1;
 
-static bind_table_t *BT_dcc, *BT_chon;
-
 struct console_info {
   char *channel;
   int conflags;
@@ -441,11 +439,9 @@ char *console_start(Function * global_funcs)
   global = global_funcs;
 
   module_register(MODULE_NAME, console_table, 1, 1);
-  BT_dcc = find_bind_table2("dcc");
-  BT_chon = find_bind_table2("chon");
 
-  if (BT_dcc) add_builtins2(BT_dcc, mydcc);
-  if (BT_chon) add_builtins2(BT_chon, mychon);
+  add_builtins("dcc", mydcc);
+  add_builtins("chon", mychon);
 
   add_tcl_ints(myints);
   USERENTRY_CONSOLE.get = def_get;
