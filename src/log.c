@@ -127,7 +127,7 @@ void logidx(int idx, const char *format, ...)
   va_list va;
 
   va_start(va, format);
-  egg_vsnprintf(va_out, LOGLINEMAX, format, va);
+  egg_vsnprintf(va_out, sizeof(va_out), format, va);
   va_end(va);
 
   if (idx < 0)
@@ -146,11 +146,7 @@ void putlog(int type, const char *chname, const char *format, ...)
   va_list va;
 
   va_start(va, format);
-
-  /* No need to check if out should be null-terminated here,
-   * just do it! <cybah>
-   */
-  egg_vsnprintf(va_out, LOGLINEMAX, format, va);
+  egg_vsnprintf(va_out, sizeof(va_out), format, va);
   va_end(va);
 
   if (!va_out[0]) {
@@ -223,7 +219,7 @@ irc_log(struct chanset_t *chan, const char *format, ...)
   va_list va;
 
   va_start(va, format);
-  egg_vsnprintf(va_out, LOGLINEMAX, format, va);
+  egg_vsnprintf(va_out, sizeof(va_out), format, va);
   va_end(va);
 
   if ((chan && egg_strcasecmp(chan->dname, "#!obs")) || !chan)

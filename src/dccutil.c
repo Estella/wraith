@@ -227,7 +227,7 @@ dprintf(int idx, const char *format, ...)
   va_list va;
 
   va_start(va, format);
-  egg_vsnprintf(buf, 1023, format, va);
+  egg_vsnprintf(buf, sizeof(buf), format, va);
   va_end(va);
   /* We can not use the return value vsnprintf() to determine where
    * to null terminate. The C99 standard specifies that vsnprintf()
@@ -237,7 +237,6 @@ dprintf(int idx, const char *format, ...)
   /* We actually can, since if it's < 0 or >= sizeof(buf), we know it wrote
    * sizeof(buf) bytes. But we're not doing that anyway.
    */
-  buf[sizeof(buf) - 1] = 0;
   len = strlen(buf);
 
 /* this is for color on dcc :P */
@@ -314,11 +313,11 @@ dprintf(int idx, const char *format, ...)
 void
 chatout(const char *format, ...)
 {
-  char s[1025] = "", *p = NULL;
+  char s[1024] = "", *p = NULL;
   va_list va;
 
   va_start(va, format);
-  egg_vsnprintf(s, 1024, format, va);
+  egg_vsnprintf(s, sizeof(s), format, va);
   va_end(va);
 
   if ((p = strrchr(s, '\n')))
@@ -335,11 +334,11 @@ chatout(const char *format, ...)
 void
 chanout_but(int x, int chan, const char *format, ...)
 {
-  char s[1025] = "", *p = NULL;
+  char s[1024] = "", *p = NULL;
   va_list va;
 
   va_start(va, format);
-  egg_vsnprintf(s, 1024, format, va);
+  egg_vsnprintf(s, sizeof(s), format, va);
   va_end(va);
 
   if ((p = strrchr(s, '\n')))
