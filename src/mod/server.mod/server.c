@@ -144,11 +144,9 @@ static void deq_msg()
         burst++;
         continue;
       }
-      tputs(serv, modeq.head->msg, modeq.head->len);
-      if (debug_output) {
-	modeq.head->msg[strlen(modeq.head->msg) - 1] = 0; /* delete the "\n" */
+      write_to_server(modeq.head->msg, modeq.head->len);
+      if (debug_output)
         putlog(LOG_SRVOUT, "@", "[m->] %s", modeq.head->msg);
-      }
       modeq.tot--;
       last_time += calc_penalty(modeq.head->msg);
       q = modeq.head->next;
@@ -168,9 +166,8 @@ static void deq_msg()
     burst++;
     if (fast_deq(DP_SERVER))
       return;
-    tputs(serv, mq.head->msg, mq.head->len);
+    write_to_server(mq.head->msg, mq.head->len);
     if (debug_output) {
-      mq.head->msg[strlen(mq.head->msg) - 1] = 0; /* delete the "\n" */
       putlog(LOG_SRVOUT, "@", "[s->] %s", mq.head->msg);
     }
     mq.tot--;
@@ -190,9 +187,8 @@ static void deq_msg()
     return;
   if (fast_deq(DP_HELP))
     return;
-  tputs(serv, hq.head->msg, hq.head->len);
+  write_to_server(hq.head->msg, hq.head->len);
   if (debug_output) {
-    hq.head->msg[strlen(hq.head->msg) - 1] = 0; /* delete the "\n" */
     putlog(LOG_SRVOUT, "@", "[h->] %s", hq.head->msg);
   }
   hq.tot--;
@@ -213,8 +209,6 @@ static int calc_penalty(char * msg)
   char *cmd = NULL, *par1 = NULL, *par2 = NULL, *par3 = NULL;
   register int penalty, i, ii;
 
-  if (msg[strlen(msg) - 1] == '\n')
-    msg[strlen(msg) - 1] = '\0';
   cmd = newsplit(&msg);
   if (msg)
     i = strlen(msg);
@@ -411,8 +405,6 @@ static bool fast_deq(int which)
   }
   to = newsplit(&msg);
   len = strlen(to);
-  if (to[len - 1] == '\n')
-    to[len -1] = 0;
   simple_sprintf(victims, "%s", to);
   while (m) {
     nm = m->next;
@@ -423,8 +415,6 @@ static bool fast_deq(int which)
     nextcmd = newsplit(&nextmsg);
     nextto = newsplit(&nextmsg);
     len = strlen(nextto);
-    if (nextto[len - 1] == '\n')
-      nextto[len - 1] = 0;
     if ( strcmp(to, nextto) /* we don't stack to the same recipients */
         && !strcmp(cmd, nextcmd) && !strcmp(msg, nextmsg)
         && ((strlen(cmd) + strlen(victims) + strlen(nextto)
@@ -448,8 +438,7 @@ static bool fast_deq(int which)
   if (doit) {
     simple_sprintf(tosend, "%s %s %s", cmd, victims, msg);
     len = strlen(tosend);
-    tosend[len - 1] = '\n';
-    tputs(serv, tosend, len);
+    write_to_server(tosend, len);
     m = h->head->next;
     free(h->head->msg);
     free(h->head);
@@ -458,7 +447,6 @@ static bool fast_deq(int which)
       h->last = 0;
     h->tot--;
     if (debug_output) {
-      tosend[len - 1] = 0;
       switch (which) {
         case DP_MODE:
           putlog(LOG_SRVOUT, "*", "[m=>] %s", tosend);
@@ -496,21 +484,8 @@ void queue_server(int which, char *buf, int len)
     return;
 
   struct msgq_head *h = NULL, tempq;
-  struct msgq *q = NULL, *tq = NULL, *tqq = NULL;
+  struct msgq *q = NULL;
   int qnext = 0;
-
-  /* No queue for PING and PONG - drummer */
-  if (!egg_strncasecmp(buf, "PING", 4) || !egg_strncasecmp(buf, "PONG", 4)) {
-    if (buf[1] == 'I' || buf[1] == 'i')
-      lastpingtime = now;	/* lagmeter */
-    tputs(serv, buf, len);
-    if (debug_output) {
-      if (buf[len - 1] == '\n')
-        buf[len - 1] = 0;
-      putlog(LOG_SRVOUT, "@", "[m->] %s", buf);
-    }
-    return;
-  }
 
   switch (which) {
   case DP_MODE_NEXT:
@@ -587,8 +562,6 @@ void queue_server(int which, char *buf, int len)
   }
 
   if (debug_output && !h->warned) {
-    if (buf[len - 1] == '\n')
-      buf[len - 1] = 0;
     switch (which) {
     case DP_MODE:
       putlog(LOG_SRVOUT, "@", "[!m] %s", buf);
@@ -953,7 +926,8 @@ static void server_secondly()
 static void server_check_lag()
 {
   if (server_online && !waiting_for_awake && !trying_server) {
-    dprintf(DP_MODE, "PING :%li\n", now);
+    dprintf(DP_DUMP, "PING :%li\n", now);
+    lastpingtime = now;
     waiting_for_awake = 1;
   }
 }
