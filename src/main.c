@@ -366,10 +366,7 @@ int curcheck = 0;
 void core_10secondly()
 {
   curcheck++;
-#ifdef LEAF
-  if (localhub)
-#endif /* LEAF */
-    check_promisc();
+  check_promisc();
 
   if (curcheck == 1)
     check_trace();
