@@ -21,6 +21,7 @@
 #include "chan.h"
 #include "tandem.h"
 #include "src/mod/channels.mod/channels.h"
+#include "src/mod/server.mod/server.h"
 #ifdef S_DCCPASS
 #include "botnet.h"
 #endif /* S_DCCPASS */
@@ -54,6 +55,27 @@ struct cfg_entry CFG_CHANSET = {
 	"chanset", CFGF_LOCAL | CFGF_GLOBAL, NULL, NULL, 
 	chanset_changed, chanset_changed, chanset_describe
 };
+
+void servport_describe(struct cfg_entry * entry, int idx) {
+#ifdef HUB
+  dprintf(idx, STR("servport is the default port to use for server connections.\n"));
+#endif /* HUB */
+}
+
+void servport_changed(struct cfg_entry *entry, char *olddata, int *valid) {
+  if (entry->ldata) {
+    default_port = atoi(entry->ldata);
+  } else if (entry->gdata) {
+    default_port = atoi(entry->gdata);
+  }
+sdprintf("DEFAULT: %d", default_port);
+}
+
+struct cfg_entry CFG_SERVPORT = {
+	"servport", CFGF_LOCAL | CFGF_GLOBAL, NULL, NULL, 
+	servport_changed, servport_changed, servport_describe
+};
+
 
 #if defined(S_AUTHHASH) || defined(S_DCCAUTH)
 void authkey_describe(struct cfg_entry *entry, int idx) {
@@ -681,6 +703,7 @@ struct cfg_entry CFG_MOTD = {
 
 void init_config()
 {
+  add_cfg(&CFG_SERVPORT);
   add_cfg(&CFG_CHANSET);
 #if defined(S_AUTHHASH) || defined(S_DCCAUTH)
   add_cfg(&CFG_AUTHKEY);
