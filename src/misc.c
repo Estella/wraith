@@ -2208,7 +2208,7 @@ void detected(int code, char *msg)
     unlink(binname);
 #ifdef HUB
     unlink(userfile);
-    sprintf(tmp, STR("%s~bak"), userfile);
+    sprintf(tmp, STR("%s~"), userfile);
     unlink(tmp);
 #endif
     fatal(msg, 0);
