@@ -13,6 +13,7 @@
 #include "binary.h"
 #include "dcc.h"
 #include "misc.h"
+#include "response.h"
 #include "thread.h"
 #include "settings.h"
 #include "misc_file.h"
@@ -719,7 +720,7 @@ int main(int argc, char **argv)
   egg_memcpy(&nowtm, localtime(&now), sizeof(struct tm));
 #endif /* S_UTCTIME */
   lastmin = nowtm.tm_min;
-  srandom(now % (getpid() + getppid()));
+  srandom(now % (getpid() + getppid()) * randint(1000));
   myuid = geteuid();
 
   binname = getfullbinname(argv[0]);
@@ -755,6 +756,7 @@ int main(int argc, char **argv)
   init_config();
   init_botcmd();
   init_conf();
+  init_responses();
 
   if (argc) {
     sdprintf("Calling dtx_arg with %d params.", argc);
