@@ -441,14 +441,16 @@ static void cmd_botconfig(struct userrec *u, int idx, char *par)
     egg_snprintf(tmp, sizeof tmp, "%s %s", cfgent->name, par);
     update_mod(u2->handle, dcc[idx].nick, "botconfig", tmp);
     dprintf(idx, STR("Now: "));
+#ifdef HUB
     write_userfile(idx);
+#endif /* HUB */
   } else {
     if (cfgent->describe)
       cfgent->describe(cfgent, idx);
   }
   k = get_user(&USERENTRY_CONFIG, u2);
   while (k && strcmp(k->key, cfgent->name))
-    k=k->next;
+    k = k->next;
   if (k)
     dprintf(idx, STR("  %s: %s\n"), k->key, k->data);
   else
@@ -533,7 +535,9 @@ static void cmd_cmdpass(struct userrec *u, int idx, char *par)
     set_cmd_pass(cmd, 1);
     dprintf(idx, STR("Removed command password for %s\n"), cmd);
   }
-    write_userfile(idx);
+#ifdef HUB
+  write_userfile(idx);
+#endif /* HUB */
 }
 #endif /* S_DCCPASS */
 
@@ -549,8 +553,8 @@ static void cmd_lagged(struct userrec *u, int idx, char *par)
     }
   }
 }
-
 #endif /* HUB */
+
 static void cmd_me(struct userrec *u, int idx, char *par)
 {
   int i;
@@ -586,6 +590,9 @@ static void cmd_motd(struct userrec *u, int idx, char *par)
     set_cfg_str(NULL, "motd", s);
     nfree(s);
     dprintf(idx, STR("Motd set\n"));
+#ifdef HUB
+  write_userfile(idx);
+#endif /* HUB */
   } else {
     show_motd(idx);
   }
@@ -662,6 +669,9 @@ static void cmd_newpass(struct userrec *u, int idx, char *par)
 
   set_user(&USERENTRY_PASS, u, pass);
   dprintf(idx, STR("Changed your password to: %s\n"), pass);
+#ifdef HUB
+  write_userfile(idx);
+#endif /* HUB */
 }
 
 static void cmd_secpass(struct userrec *u, int idx, char *par)
@@ -689,6 +699,9 @@ static void cmd_secpass(struct userrec *u, int idx, char *par)
     pass[16] = 0;
   set_user(&USERENTRY_SECPASS, u, pass);
   dprintf(idx, STR("Changed your secpass to: %s.\n"), pass);
+#ifdef HUB
+  write_userfile(idx);
+#endif /* HUB */
 }
 
 #ifdef HUB
@@ -1365,6 +1378,9 @@ static void cmd_chhandle(struct userrec *u, int idx, char *par)
       dprintf(idx, STR("Changed.\n"));
     } else
       dprintf(idx, STR("Failed.\n"));
+#ifdef HUB
+    write_userfile(idx);
+#endif /* HUB */
   }
 }
 #endif /* HUB */
@@ -1398,6 +1414,9 @@ static void cmd_handle(struct userrec *u, int idx, char *par)
       dprintf(idx, STR("Okay, changed.\n"));
     } else
       dprintf(idx, STR("Failed.\n"));
+#ifdef HUB
+    write_userfile(idx);
+#endif /* HUB */
   }
 }
 
@@ -1434,7 +1453,6 @@ static void cmd_chpass(struct userrec *u, int idx, char *par)
 	new[15] = 0;
       if (!strcmp(new, "rand")) {
         make_rand_str(pass, 15);
-        
         good = 1;
       } else {
         if (goodpass(new, idx, NULL)) {
@@ -1449,6 +1467,9 @@ static void cmd_chpass(struct userrec *u, int idx, char *par)
         set_user(&USERENTRY_PASS, u, pass);
         putlog(LOG_CMDS, "*", STR("#%s# chpass %s [something]"), dcc[idx].nick, handle);
         dprintf(idx, STR("Password for '%s' changed to: %s\n"), handle, pass);
+#ifdef HUB
+        write_userfile(idx);
+#endif /* HUB */
       }
     }
   }
@@ -1497,9 +1518,11 @@ static void cmd_chsecpass(struct userrec *u, int idx, char *par)
       if (strlen(pass) > 16)
         pass[16] = 0;
       set_user(&USERENTRY_SECPASS, u, pass);
-      putlog(LOG_CMDS, "*", STR("#%s# chsecpass %s [something]"), dcc[idx].nick,
-            handle);
+      putlog(LOG_CMDS, "*", STR("#%s# chsecpass %s [something]"), dcc[idx].nick, handle);
       dprintf(idx, STR("Secpass for '%s' changed to: %s\n"), handle, pass);
+#ifdef HUB
+      write_userfile(idx);
+#endif /* HUB */
     }
   }
 }
@@ -1566,7 +1589,9 @@ static void cmd_hublevel(struct userrec *u, int idx, char *par)
   bi->relay_port = obi->relay_port;
   bi->hublevel = atoi(level);
   set_user(&USERENTRY_BOTADDR, u1, bi);
+#ifdef HUB
   write_userfile(idx);
+#endif /* HUB */
 }
 
 static void cmd_uplink(struct userrec *u, int idx, char *par)
@@ -1601,6 +1626,9 @@ static void cmd_uplink(struct userrec *u, int idx, char *par)
   bi->relay_port = obi->relay_port;
   bi->hublevel = obi->hublevel;
   set_user(&USERENTRY_BOTADDR, u1, bi);
+#ifdef HUB
+  write_userfile(idx);
+#endif /* HUB */
 }
 
 
@@ -1679,7 +1707,7 @@ static void cmd_chaddr(struct userrec *u, int idx, char *par)
         bi->relay_port = atoi(q + 1);
       }
     }
-#else
+#else /* !USE_IPV6 */
     bi->address = user_malloc(q - addr + 1);
     strncpyz(bi->address, addr, q - addr + 1);
     p = q + 1;
@@ -1692,6 +1720,9 @@ static void cmd_chaddr(struct userrec *u, int idx, char *par)
 #endif /* USE_IPV6 */
   }
   set_user(&USERENTRY_BOTADDR, u1, bi);
+#ifdef HUB
+  write_userfile(idx);
+#endif /* HUB */
 }
 #endif /* HUB */
 
@@ -1724,6 +1755,9 @@ static void cmd_comment(struct userrec *u, int idx, char *par)
   dprintf(idx, STR("Changed comment.\n"));
   update_mod(handle, dcc[idx].nick, "comment", NULL);
   set_user(&USERENTRY_COMMENT, u1, par);
+#ifdef HUB
+  write_userfile(idx);
+#endif /* HUB */
 }
 
 static void cmd_randstring(struct userrec *u, int idx, char *par)
@@ -1731,8 +1765,10 @@ static void cmd_randstring(struct userrec *u, int idx, char *par)
   int len;
   char *rand;
 
-  if (!par[0])
+  if (!par[0]) {
+    dprintf(idx, "Usage: randstring <len>\n");
     return;
+  }
 
   putlog(LOG_CMDS, "*", STR("#%s# randstring %s"), dcc[idx].nick, par);
 
@@ -1900,6 +1936,9 @@ static void cmd_backup(struct userrec *u, int idx, char *par)
 {
   putlog(LOG_CMDS, "*", STR("#%s# backup"), dcc[idx].nick);
   dprintf(idx, STR("Backing up the channel & user files...\n"));
+#ifdef HUB
+  write_userfile(idx);
+#endif /* HUB */
   call_hook(HOOK_BACKUP);
 }
 
@@ -2324,6 +2363,9 @@ static void cmd_chattr(struct userrec *u, int idx, char *par)
   }
   if (tmpchg)
     nfree(tmpchg);
+#ifdef HUB
+  write_userfile(idx);
+#endif /* HUB */
 }
 
 static void cmd_chat(struct userrec *u, int idx, char *par)
@@ -2995,6 +3037,9 @@ static void cmd_newleaf(struct userrec *u, int idx, char *par)
       }
       /* set_user(&USERENTRY_PASS, u1, SALT2); */
       dprintf(idx, STR("Added new leaf: %s\n"), handle);
+#ifdef HUB
+      write_userfile(idx);
+#endif /* HUB */
     }
   }
 }
@@ -3101,6 +3146,9 @@ static void cmd_pls_ignore(struct userrec *u, int idx, char *par)
     dprintf(idx, STR("Now ignoring: %s (%s)\n"), s, par);
     addignore(s, dcc[idx].nick, par, expire_time ? now + expire_time : 0L);
     putlog(LOG_CMDS, "*", STR("#%s# +ignore %s %s"), dcc[idx].nick, s, par);
+#ifdef HUB
+    write_userfile(idx);
+#endif /* HUB */
   }
 }
 
@@ -3116,6 +3164,9 @@ static void cmd_mns_ignore(struct userrec *u, int idx, char *par)
   if (delignore(buf)) {
     putlog(LOG_CMDS, "*", STR("#%s# -ignore %s"), dcc[idx].nick, buf);
     dprintf(idx, STR("No longer ignoring: %s\n"), buf);
+#ifdef HUB
+    write_userfile(idx);
+#endif /* HUB */
   } else
     dprintf(idx, STR("That ignore cannot be found.\n"));
 }
@@ -3311,6 +3362,9 @@ static void cmd_pls_host(struct userrec *u, int idx, char *par)
 
    (func[IRC_CHECK_THIS_USER]) (handle, 0, NULL);
   }
+#ifdef HUB
+  write_userfile(idx);
+#endif /* HUB */
 }
 
 static void cmd_mns_host(struct userrec *u, int idx, char *par)
@@ -3383,6 +3437,9 @@ static void cmd_mns_host(struct userrec *u, int idx, char *par)
 
      (func[IRC_CHECK_THIS_USER]) (handle, 2, host);
     }
+#ifdef HUB
+    write_userfile(idx);
+#endif /* HUB */
   } else
     dprintf(idx, STR("Failed.\n"));
 }
