@@ -8,6 +8,12 @@
  * $Id$
  */
 
+/* Define if you want to enable IPv6 support. */
+#undef HAVE_IPV6
+
+/* Define if you have support for socklen_t. */
+#undef HAVE_SOCKLEN_T
+
 /* Define if modules will work on your system  */
 #undef MODULES_OK
 
@@ -19,6 +25,9 @@
 
 /* Define if running on OSF/1 platform.  */
 #undef OSF1_HACKS
+
+/* Define to use Eggdrop's snprintf functions without regard to HAVE_SNPRINTF. */
+#undef BROKEN_SNPRINTF
 
 /* Define if running on OSF/1 platform.  */
 #undef STOP_UAC

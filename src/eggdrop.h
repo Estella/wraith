@@ -12,6 +12,16 @@
 
 #define SDEBUG 1
 
+/*
+ * Enable IPv6 support?
+ */
+#define USE_IPV6
+
+/*
+ * Enable IPv6 debugging?
+ */
+#define DEBUG_IPV6
+
 // If you undefine this, be ready for a good novel of errors. (Not Finished)
 #ifndef S_IRCNET
 #define S_IRCNET
@@ -106,6 +116,19 @@
 #  include "error_you_need_vsprintf_to_compile_eggdrop"
 #endif
 
+/* IPv6 sanity checks. */
+#ifdef USE_IPV6
+#  ifndef HAVE_IPV6
+#    undef USE_IPV6
+#  endif
+#  ifndef HAVE_GETHOSTBYNAME2
+#    ifndef HAVE_GETIPNODEBYNAME
+#      undef USE_IPV6
+#    endif
+#  endif
+#endif
+
+
 #if HAVE_UNISTD_H
 #  include <unistd.h>
 #endif
@@ -170,6 +193,11 @@
 /* and they probably won't have sigemptyset, dammit */
 #  define sigemptyset(x) ((*(int *)(x))=0)
 #endif
+
+#if !HAVE_SOCKLEN_T
+typedef int socklen_t;
+#endif
+
 
 /*
  *    Handy aliases for memory tracking and core dumps
@@ -272,6 +300,10 @@ struct dcc_t {
   long sock;			/* This should be a long to keep 64-bit
 				   machines sane			 */
   IP addr;			/* IP address in host byte order	 */
+#ifdef USE_IPV6
+  char addr6[121];              /* easier.. ipv6 address in regular notation (3ffe:80c0:225::) */
+  int af_type;                  /* AF_INET or AF_INET6 */
+#endif /* USE_IPV6 */
   unsigned int port;
   struct userrec *user;
   char hash[33];                /* used for dcc authing */
@@ -640,11 +672,11 @@ typedef struct {
   int gz; /* gzip compression */
   char okey[17];
   char ikey[17];
-//  char okey[33];
-//  char ikey[33];
 
   unsigned long	 inbuflen;	/* Inbuf could be binary data	*/
+#ifdef USE_IPV6
   unsigned int af;
+#endif /* USE_IPV6 */
 } sock_list;
 #ifdef S_DCCPASS
 typedef struct cmd_pass {
