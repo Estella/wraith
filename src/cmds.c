@@ -1172,7 +1172,6 @@ static void cmd_boot(struct userrec *u, int idx, char *par)
       cmd_boot(u, idx, whonick);
       return;
     }
-    if (remote_boots > 0) {
       i = nextbot(who);
       if (i < 0) {
         dprintf(idx, "No such bot connected.\n");
@@ -1182,8 +1181,6 @@ static void cmd_boot(struct userrec *u, int idx, char *par)
 			 who, par[0] ? par : dcc[idx].nick);
       putlog(LOG_BOTS, "*", "#%s# boot %s@%s (%s)", dcc[idx].nick, whonick,
 	     who, par[0] ? par : dcc[idx].nick);
-    } else
-      dprintf(idx, "Remote boots are disabled here.\n");
     return;
   }
   for (i = 0; i < dcc_total; i++)
