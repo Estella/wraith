@@ -323,8 +323,6 @@ void eof_dcc_fork_send(int idx)
   lostdcc(idx);
 }
 
-long tlen = 0;
-
 static void eof_dcc_send(int idx)
 {
   int ok, j;
@@ -340,7 +338,6 @@ static void eof_dcc_send(int idx)
 
     /* Success */
     ok = 0;
-    putlog(LOG_DEBUG, "*", "tlen: %li length: %li status: %li", tlen, dcc[idx].u.xfer->length, dcc[idx].status);
     if (!strcmp(dcc[idx].nick, "*users")) {
       finish_share(idx);
       killsock(dcc[idx].sock);
@@ -742,8 +739,6 @@ void dcc_send(int idx, char *buf, int len)
   fflush(dcc[idx].u.xfer->f);
   fsync(fileno(dcc[idx].u.xfer->f));
 
-  tlen += len;
-
   dcc[idx].status += len;
   /* Put in network byte order */
   sent = dcc[idx].status;
@@ -992,7 +987,6 @@ void dcc_fork_send(int idx, char *x, int y)
   egg_snprintf(s1, sizeof s1, "%s!%s", dcc[idx].nick, dcc[idx].host);
   if (strcmp(dcc[idx].nick, "*users") && strcmp(dcc[idx].nick, "*binary"))
     putlog(LOG_MISC, "*", TRANSFER_DCC_CONN, dcc[idx].u.xfer->origname, s1);
-  tlen = 0;
 }
 
 #ifdef HUB

@@ -1075,6 +1075,7 @@ void autolink_cycle(char *start)
 {
   char bestval[HANDLEN + 4] = "", curval[HANDLEN + 4] = "", myval[HANDLEN + 4] = "";
   struct userrec *u = NULL;
+  tand_t *bot = NULL;
   int i;
 
   link_pref_val(conf.bot->u, myval);
@@ -1088,7 +1089,7 @@ void autolink_cycle(char *start)
       if (dcc[i].status & (STAT_OFFEREDU | STAT_GETTINGU | STAT_SENDINGU))
         continue; /* lets let the binary have it's peace. */
 
-      if (dcc[i].u.bot->bts != buildts)
+      if ((bot = findbot(dcc[i].nick)) && bot->buildts != buildts)
         continue; /* same thing. */
 
       if (dcc[i].status & (STAT_SHARE | STAT_OFFERED | STAT_SENDING | STAT_GETTING)) {
