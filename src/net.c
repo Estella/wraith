@@ -1579,7 +1579,7 @@ int findanysnum(register int sock)
   return -1;
 }
 
-int findanyidx(register int sock)
+static int findanyidx(register int sock)
 {
   register int j;
 
