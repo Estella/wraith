@@ -292,14 +292,7 @@ static void got_down(char *botnick, char *code, char *par)
 
 static void got_role(char *botnick, char *code, char *par)
 {
-  char *tmp = NULL;
-
-  tmp = newsplit(&par);
-  role = atoi(tmp);
-  if (par[0]) {
-    tmp = newsplit(&par);
-    timesync = atoi(tmp) - now;
-  }
+  role = atoi(newsplit(&par));
   putlog(LOG_DEBUG, "@", "Got role index %d", role);
 }
 
@@ -351,7 +344,7 @@ static void rebalance_roles()
         ba = get_user(&USERENTRY_BOTADDR, dcc[i].user);
         if (ba && (ba->roleid == (hNdx + 1))) {
           ba->roleid = lNdx + 1;
-          sprintf(tmp, "rl %d %li", lNdx + 1, timesync + now);
+          sprintf(tmp, "rl %d", lNdx + 1);
           putbot(dcc[i].nick, tmp);
         }
       }
