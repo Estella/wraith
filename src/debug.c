@@ -40,6 +40,7 @@ int     cx_ptr = 0;
 
 void setlimits()
 {
+#ifndef CYGWIN_HACKS
 #ifndef DEBUG_MEM
   struct rlimit plim, fdlim, corelim;
 /*  struct rsslim, stacklim;
@@ -66,6 +67,7 @@ void setlimits()
   cdlim.rlim_max = RLIM_INFINITY;
   setrlimit(RLIMIT_CORE, &cdlim);
 #endif /* !DEBUG_MEM */
+#endif /* !CYGWIN_HACKS */
 }
 
 void init_debug()
