@@ -23,6 +23,7 @@
 #include "chan.h"
 #include "tandem.h"
 #include "core_binds.h"
+#include "egg_timer.h"
 #include "src/mod/server.mod/server.h"
 #include <stdarg.h>
 
@@ -673,9 +674,15 @@ int listen_all(int lport, int off)
   return idx;
 }
 
-void open_identd()
+void identd_open()
 {
   int idx = -1, port = 113, i = -1;
+
+  for (idx = 0; idx < dcc_total; idx++)
+    if (dcc[idx].type == &DCC_IDENTD_CONNECT)
+      return; 		/* it's already open :) */
+
+  idx = -1;
 
 #ifdef USE_IPV6
   i = open_listen_by_af(&port, AF_INET6);
@@ -685,13 +692,33 @@ void open_identd()
   if (i > 0) {
     idx = new_dcc(&DCC_IDENTD_CONNECT, 0);
     if (idx > 0) {
+      egg_timeval_t howlong;
+
       dcc[idx].addr = iptolong(getmyip());
       dcc[idx].port = port;
       dcc[idx].sock = i;
       dcc[idx].timeval = now;
       strcpy(dcc[idx].nick, STR("(identd)"));
       strcpy(dcc[idx].host, "*");
-      putlog(LOG_MISC, "*", STR("Identd daemon started."), port, i, idx);
+      putlog(LOG_DEBUG, "*", STR("Identd daemon started."));
+      howlong.sec = 15;
+      howlong.usec = 0;
+      timer_create(&howlong, "identd_close()", (Function) identd_close);
     }
   }
+}
+
+void identd_close()
+{
+  int idx;
+
+  for (idx = 0; idx < dcc_total; idx++) {
+    if (dcc[idx].type == &DCC_IDENTD_CONNECT) {
+      killsock(dcc[idx].sock);
+      lostdcc(idx);
+      putlog(LOG_DEBUG, "*", STR("Identd daemon stopped."));
+      break;
+    }
+  }
+
 }
