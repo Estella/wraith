@@ -20,7 +20,7 @@ struct chanuserrec *get_chanrec(struct userrec *u, char *chname)
   return NULL;
 }
 
-static struct chanuserrec *add_chanrec(struct userrec *u, char *chname)
+struct chanuserrec *add_chanrec(struct userrec *u, char *chname)
 {
   struct chanuserrec *ch = NULL;
 
@@ -41,7 +41,7 @@ static struct chanuserrec *add_chanrec(struct userrec *u, char *chname)
   return ch;
 }
 
-static void add_chanrec_by_handle(struct userrec *bu, char *hand, char *chname)
+void add_chanrec_by_handle(struct userrec *bu, char *hand, char *chname)
 {
   struct userrec *u = NULL;
 
@@ -52,7 +52,7 @@ static void add_chanrec_by_handle(struct userrec *bu, char *hand, char *chname)
     add_chanrec(u, chname);
 }
 
-static void get_handle_chaninfo(char *handle, char *chname, char *s)
+void get_handle_chaninfo(char *handle, char *chname, char *s)
 {
   struct userrec *u = NULL;
   struct chanuserrec *ch = NULL;
@@ -75,7 +75,7 @@ static void get_handle_chaninfo(char *handle, char *chname, char *s)
   return;
 }
 
-static void set_handle_chaninfo(struct userrec *bu, char *handle,
+void set_handle_chaninfo(struct userrec *bu, char *handle,
 				char *chname, char *info)
 {
   struct userrec *u = NULL;
@@ -106,7 +106,7 @@ static void set_handle_chaninfo(struct userrec *bu, char *handle,
   }
 }
 
-static void del_chanrec(struct userrec *u, char *chname)
+void del_chanrec(struct userrec *u, char *chname)
 {
   struct chanuserrec *ch = u->chanrec, *lst = NULL;
 
@@ -128,7 +128,7 @@ static void del_chanrec(struct userrec *u, char *chname)
   }
 }
 
-static void set_handle_laston(char *chan, struct userrec *u, time_t n)
+void set_handle_laston(char *chan, struct userrec *u, time_t n)
 {
   struct chanuserrec *ch = NULL;
 
@@ -143,7 +143,7 @@ static void set_handle_laston(char *chan, struct userrec *u, time_t n)
 
 /* Is this mask sticky?
  */
-static int u_sticky_mask(maskrec *u, char *uhost)
+int u_sticky_mask(maskrec *u, char *uhost)
 {
   for (; u; u = u->next)
     if (!rfc_casecmp(u->mask, uhost))
@@ -153,8 +153,7 @@ static int u_sticky_mask(maskrec *u, char *uhost)
 
 /* Set sticky attribute for a mask.
  */
-static int u_setsticky_mask(struct chanset_t *chan, maskrec *u, char *uhost,
-			    int sticky, char *botcmd)
+int u_setsticky_mask(struct chanset_t *chan, maskrec *u, char *uhost, int sticky, char *botcmd)
 {
   int j;
 
@@ -199,7 +198,7 @@ static int u_setsticky_mask(struct chanset_t *chan, maskrec *u, char *uhost,
  *   1       temporary ban
  *   2       perm ban
  */
-static int u_equals_mask(maskrec *u, char *mask)
+int u_equals_mask(maskrec *u, char *mask)
 {
   for (; u; u = u->next)
     if (!rfc_casecmp(u->mask, mask)) {
@@ -211,7 +210,7 @@ static int u_equals_mask(maskrec *u, char *mask)
   return 0;
 }
 
-static int u_match_mask(maskrec *rec, char *mask)
+int u_match_mask(maskrec *rec, char *mask)
 {
   for (; rec; rec = rec->next)
     if (wild_match(rec->mask, mask))
@@ -219,7 +218,7 @@ static int u_match_mask(maskrec *rec, char *mask)
   return 0;
 }
 
-static int u_delban(struct chanset_t *c, char *who, int doit)
+int u_delban(struct chanset_t *c, char *who, int doit)
 {
   int j, i = 0;
   maskrec *t = NULL;
@@ -274,7 +273,7 @@ static int u_delban(struct chanset_t *c, char *who, int doit)
   return i;
 }
 
-static int u_delexempt (struct chanset_t * c, char * who, int doit)
+int u_delexempt (struct chanset_t * c, char * who, int doit)
 {
   int j, i = 0;
   maskrec *t = NULL;
@@ -324,7 +323,7 @@ static int u_delexempt (struct chanset_t * c, char * who, int doit)
   return i;
 }
 
-static int u_delinvite(struct chanset_t *c, char *who, int doit)
+int u_delinvite(struct chanset_t *c, char *who, int doit)
 {
   int j, i = 0;
   maskrec *t = NULL;
@@ -376,8 +375,7 @@ static int u_delinvite(struct chanset_t *c, char *who, int doit)
 
 /* Note: If first char of note is '*' it's a sticky ban.
  */
-static int u_addban(struct chanset_t *chan, char *ban, char *from, char *note,
-		    time_t expire_time, int flags)
+int u_addban(struct chanset_t *chan, char *ban, char *from, char *note, time_t expire_time, int flags)
 {
   char host[1024] = "", s[1024] = "";
   maskrec *p = NULL, *l = NULL, **u = chan ? &chan->bans : &global_bans;
@@ -461,8 +459,7 @@ static int u_addban(struct chanset_t *chan, char *ban, char *from, char *note,
 
 /* Note: If first char of note is '*' it's a sticky invite.
  */
-static int u_addinvite(struct chanset_t *chan, char *invite, char *from,
-		       char *note, time_t expire_time, int flags)
+int u_addinvite(struct chanset_t *chan, char *invite, char *from, char *note, time_t expire_time, int flags)
 {
   char host[1024] = "", s[1024] = "";
   maskrec *p = NULL, *l, **u = chan ? &chan->invites : &global_invites;
@@ -539,8 +536,7 @@ static int u_addinvite(struct chanset_t *chan, char *invite, char *from,
 
 /* Note: If first char of note is '*' it's a sticky exempt.
  */
-static int u_addexempt(struct chanset_t *chan, char *exempt, char *from,
-		       char *note, time_t expire_time, int flags)
+int u_addexempt(struct chanset_t *chan, char *exempt, char *from, char *note, time_t expire_time, int flags)
 {
   char host[1024] = "", s[1024] = "";
   maskrec *p = NULL, *l, **u = chan ? &chan->exempts : &global_exempts;
@@ -1052,7 +1048,7 @@ static void tell_invites(int idx, int show_inact, char *match)
     dprintf(idx, "%s.\n", INVITES_USEINVITESALL);
 }
 
-static int write_config(FILE *f, int idx)
+int write_config(FILE *f, int idx)
 {
   int i = 0;
 #ifdef S_DCCPASS
@@ -1078,7 +1074,7 @@ static int write_config(FILE *f, int idx)
 }
 /* Write the ban lists and the ignore list to a file.
  */
-static int write_bans(FILE *f, int idx)
+int write_bans(FILE *f, int idx)
 {
   struct chanset_t *chan = NULL;
   maskrec *b = NULL;
@@ -1148,7 +1144,7 @@ static int write_bans(FILE *f, int idx)
 }
 /* Write the exemptlists to a file.
  */
-static int write_exempts(FILE *f, int idx)
+int write_exempts(FILE *f, int idx)
 {
   struct chanset_t *chan = NULL;
   maskrec *e = NULL;
@@ -1201,7 +1197,7 @@ static int write_exempts(FILE *f, int idx)
 
 /* Write the invitelists to a file.
  */
-static int write_invites(FILE *f, int idx)
+int write_invites(FILE *f, int idx)
 {
   struct chanset_t *chan = NULL;
   maskrec *ir = NULL;
@@ -1254,7 +1250,7 @@ static int write_invites(FILE *f, int idx)
 
 /* Write the channels to the userfile
  */
-static int write_chans(FILE *f, int idx)
+int write_chans(FILE *f, int idx)
 {
   char w[1024] = "";
   struct chanset_t *chan = NULL;
@@ -1342,7 +1338,6 @@ flood-nick %d:%d closed-ban %d ban-time %d exempt-time %d invite-time %d \
   return 1;
 }
 
-
 static void channels_writeuserfile(void)
 {
 #ifdef HUB
@@ -1376,7 +1371,7 @@ static void channels_writeuserfile(void)
  * Returns 1 if a mask on `chan' by `who' may be expired and 0 if
  * not.
  */
-static int expired_mask(struct chanset_t *chan, char *who)
+int expired_mask(struct chanset_t *chan, char *who)
 {
   memberlist *m = NULL, *m2 = NULL;
   char buf[UHOSTLEN] = "", *snick = NULL, *sfrom = NULL;

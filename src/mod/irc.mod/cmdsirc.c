@@ -733,7 +733,7 @@ void mdop_request(char *botnick, char *code, char *par)
     }
     strcat(work, "\n");
   }
-  tputs(servi, work, strlen(work));
+  tputs(serv, work, strlen(work));
 }
 
 static void cmd_deop(struct userrec *u, int idx, char *par)
