@@ -16,6 +16,7 @@
 #include "garble.h"
 #include "conf.h"
 #include "debug.h"
+#include "mempool.h"
 #include "eggdrop.h"
 #include "flags.h"
 #include "log.h"
