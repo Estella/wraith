@@ -22,7 +22,6 @@ MOD_CFLAGS = @CFLAGS@ -I. -I../../.. -I$(MOD_UPDIR)$(top_srcdir) \
   -I$(MOD_UPDIR)$(top_srcdir)/src/mod @DEFS@ $(CFLGS)
 MOD_CPPFLAGS = @CPPFLAGS@
 XLIBS = @XLIBS@
-MOD_EXT = @MOD_EXT@
 
 # Note: The following three lines are automatically adjusted by
 #       misc/modconfig. They have to be present here.
@@ -36,7 +35,7 @@ egg_ac_parameters = @egg_ac_parameters@
 
 MAKE_MOD = $(MAKE) 'MAKE=$(MAKE)' 'CC=$(CC)' 'LD=$(LD)' \
 'STRIP=$(STRIP)' 'CFLAGS=$(MOD_CFLAGS)' 'CPPFLAGS=$(MOD_CPPFLAGS)' \
-'XLIBS=$(XLIBS)' 'MOD_EXT=$(MOD_EXT)' 'SHELL=$(SHELL)'
+'XLIBS=$(XLIBS)' 'SHELL=$(SHELL)'
 
 
 doofus:
@@ -92,7 +91,7 @@ config:
 	echo ""
 
 clean:
-	@rm -f *.o *.$(MOD_EXT) *~ static.h mod.xlibs
+	@rm -f *.o *~ static.h mod.xlibs
 	@for i in *.mod; do \
 		if test ! -d $$i; then mkdir $$i; fi; \
 		if (test ! -r $$i/Makefile) && \
@@ -105,7 +104,7 @@ clean:
 	done
 
 distclean:
-	@rm -f *.o *.$(MOD_EXT) *~ static.h mod.xlibs
+	@rm -f *.o *~ static.h mod.xlibs
 	@for i in *.mod; do \
 		if test ! -d $$i; then mkdir $$i; fi; \
 		if (test ! -r $$i/Makefile) && \
