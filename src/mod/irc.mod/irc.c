@@ -154,7 +154,7 @@ void getin_request(char *botnick, char *code, char *par)
   struct maskrec **mr = NULL,
    *tmr = NULL;
   struct maskstruct *b = NULL;
-  struct flag_record fr = { FR_GLOBAL | FR_CHAN | FR_ANYWH, 0, 0, 0 };
+  struct flag_record fr = { FR_GLOBAL | FR_CHAN , 0, 0, 0 };
 
   if (!server_online) 
     return;
@@ -245,7 +245,7 @@ void getin_request(char *botnick, char *code, char *par)
     }
     get_user_flagrec(u, &fr, chan->dname);
 
-    if ((!chan_op(fr) && !glob_op(fr)) || (glob_deop(fr) && !chan_op(fr))) {
+    if (!chk_op(fr, chan)) {
       putlog(LOG_GETIN, "*", "opreq from %s/%s on %s - %s doesnt have +o for chan.", botnick, nick, chan->dname, botnick);
       return;
     }
@@ -301,7 +301,7 @@ void getin_request(char *botnick, char *code, char *par)
       return;
     }
     get_user_flagrec(u, &fr, chan->dname);
-    if ((!chan_op(fr) && !glob_op(fr)) || (glob_deop(fr) && !chan_op(fr))) {
+    if (!chk_op(fr, chan)) {
       putlog(LOG_GETIN, "*", "inreq from %s/%s for %s - %s doesn't have acces for chan.", botnick, nick, chan->dname, botnick);
       return;
     }
