@@ -1199,7 +1199,7 @@ int main(int argc, char **argv)
     } /* localhub */
 #endif /* LEAF */
   }
-  module_load("dns");
+  dns_init();
   module_load("channels");
 #ifdef LEAF
   module_load("server");
