@@ -1044,7 +1044,7 @@ static void botlink_resolve_success(int i)
   dcc[i].u.bot->numver = idx;
   dcc[i].u.bot->port = dcc[i].port;		/* Remember where i started */
 #ifdef USE_IPV6
-  dcc[i].sock = getsock(SOCK_STRONGCONN, getprotocol(dcc[i].host));
+  dcc[i].sock = getsock(SOCK_STRONGCONN, hostprotocol(dcc[i].host));
 #else
   dcc[i].sock = getsock(SOCK_STRONGCONN);
 #endif /* USE_IPV6 */
@@ -1084,7 +1084,7 @@ static void failed_tandem_relay(int idx)
   }
   killsock(dcc[idx].sock);
 #ifdef USE_IPV6
-  dcc[idx].sock = getsock(SOCK_STRONGCONN, getprotocol(dcc[idx].host));
+  dcc[idx].sock = getsock(SOCK_STRONGCONN, hostprotocol(dcc[idx].host));
 #else
   dcc[idx].sock = getsock(SOCK_STRONGCONN);
 #endif /* USE_IPV6 */
@@ -1135,7 +1135,7 @@ void tandem_relay(int idx, char *nick, register int i)
   }
 
 #ifdef USE_IPV6
-  dcc[i].sock = getsock(SOCK_STRONGCONN | SOCK_VIRTUAL, getprotocol(bi->address));
+  dcc[i].sock = getsock(SOCK_STRONGCONN | SOCK_VIRTUAL, hostprotocol(bi->address));
 #else
   dcc[i].sock = getsock(SOCK_STRONGCONN | SOCK_VIRTUAL);
 #endif /* USE_IPV6 */

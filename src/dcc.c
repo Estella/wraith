@@ -378,7 +378,7 @@ static void cont_link(int idx, char *buf, int ii)
     i = sizeof(sa);
     /* myip myport hubnick mynick */
     getsockname(socklist[snum].sock, (struct sockaddr *) &sa, &i);
-    sprintf(tmp,"%8x@%4x@%s@%s", getmyip(0), sa.sin_port, dcc[idx].nick, botnetnick);
+    sprintf(tmp,"%8x@%4x@%s@%s", getmyip(), sa.sin_port, dcc[idx].nick, botnetnick);
     MD5_Init(&ctx);
     MD5_Update(&ctx, tmp, strlen(tmp));
     MD5_Final(socklist[snum].ikey, &ctx);
@@ -557,6 +557,10 @@ static void display_dcc_bot(int idx, char *buf)
   buf[i++] = b_status(idx) & STAT_OFFEREDU ? 'B' : 'b';
   buf[i++] = b_status(idx) & STAT_SENDINGU ? 'D' : 'd';
   buf[i++] = b_status(idx) & STAT_GETTINGU ? 'E' : 'e';
+#ifdef USE_IPV6
+  if (sockprotocol(dcc[idx].sock) == AF_INET6 && dcc[idx].addr6[0])
+    buf[i++] = '6';
+#endif /* USE_IPV6 */
   buf[i++] = 0;
 }
 
@@ -1162,6 +1166,10 @@ static void display_dcc_chat(int idx, char *buf)
   buf[i++] = dcc[idx].status & STAT_PAGE ? 'P' : 'p';
   buf[i++] = dcc[idx].status & STAT_COLORM ? 'M' : 'm';
   buf[i++] = dcc[idx].status & STAT_COLORA ? 'A' : 'a';
+#ifdef USE_IPV6
+  if (sockprotocol(dcc[idx].sock) == AF_INET6 && dcc[idx].addr6[0])
+    buf[i++] = '6';
+#endif /* USE_IPV6 */
   simple_sprintf(buf + i, "/%d", dcc[idx].u.chat->channel);
 }
 
@@ -1254,6 +1262,9 @@ static void dcc_telnet(int idx, char *buf, int i)
   i = new_dcc(&DCC_DNSWAIT, sizeof(struct dns_info));
   dcc[i].sock = sock;
   dcc[i].addr = ip;
+#ifdef USE_IPV6
+  strcpy(dcc[i].addr6, s);
+#endif /* USE_IPV6 */
   dcc[i].port = port;
   dcc[i].timeval = now;
   strcpy(dcc[i].nick, "*");
@@ -1263,7 +1274,11 @@ static void dcc_telnet(int idx, char *buf, int i)
   dcc[i].u.dns->dns_type = RES_HOSTBYIP;
   dcc[i].u.dns->ibuf = dcc[idx].sock;
   dcc[i].u.dns->type = &DCC_IDENTWAIT;
+#ifdef USE_IPV6
+  dcc_telnet_hostresolved(i);
+#else
   dcc_dnshostbyip(ip);
+#endif /* USE_IPV6 */
 }
 
 static void dcc_telnet_hostresolved(int i)
@@ -1272,6 +1287,11 @@ static void dcc_telnet_hostresolved(int i)
   int j = 0, sock;
   char s[UHOSTLEN], s2[UHOSTLEN + 20];
 
+#ifdef USE_IPV6
+  if (sockprotocol(dcc[i].sock) == AF_INET6 && dcc[i].addr6[0])
+    strncpyz(dcc[i].host, dcc[i].addr6, UHOSTLEN);
+  else
+#endif /* USE_IPV6 */
   strncpyz(dcc[i].host, dcc[i].u.dns->host, UHOSTLEN);
 
   for (idx = 0; idx < dcc_total; idx++)
