@@ -42,7 +42,6 @@ struct user_entry_type {
 		  int, char **);
   int (*tcl_set) (Tcl_Interp *, struct userrec *, struct user_entry *,
 		  int, char **);
-  int (*expmem) (struct user_entry *);
   void (*display) (int idx, struct user_entry *, struct userrec *);
   char *name;
 };
@@ -188,7 +187,6 @@ int def_tcl_get(Tcl_Interp *interp, struct userrec *u,
 		struct user_entry *e, int argc, char **argv);
 int def_tcl_set(Tcl_Interp *irp, struct userrec *u,
 		struct user_entry *e, int argc, char **argv);
-int def_expmem(struct user_entry *e);
 void def_display(int idx, struct user_entry *e, struct userrec *u);
 int def_dupuser(struct userrec *new, struct userrec *old,
 		struct user_entry *e);

@@ -10,7 +10,6 @@
 
 typedef struct {
   char *name;
-  int  (*expmem)(void *);
   void (*event)(IP, char *, int, void *);
 } devent_type;
 

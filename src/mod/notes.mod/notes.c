@@ -38,7 +38,6 @@ static struct user_entry_type USERENTRY_FWD =
   NULL,
   NULL,
   NULL,
-  NULL,
   fwd_display,
   "FWD"
 };
@@ -941,11 +940,6 @@ static cmd_t notes_load[] =
   {NULL,	NULL,	NULL,				NULL}
 };
 
-static int notes_expmem()
-{
-  return 0;
-}
-
 static void notes_report(int idx, int details)
 {
   if (details) {
@@ -962,7 +956,7 @@ static Function notes_table[] =
 {
   (Function) notes_start,
   (Function) NULL,
-  (Function) notes_expmem,
+  (Function) 0,
   (Function) notes_report,
   (Function) cmd_note,
 };

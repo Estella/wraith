@@ -437,19 +437,11 @@ static void check_updates()
 }
 #endif /* HUB */
 
-static int update_expmem()
-{
-  int tot = 0;
-  return tot;
-}
-
 static void update_report(int idx, int details)
 {
   int i, j;
 
   if (details) {
-    dprintf(idx, "    update module, using %d bytes.\n", update_expmem());
-
     for (i = 0; i < dcc_total; i++)
       if (dcc[i].type == &DCC_BOT) {
 	if (dcc[i].status & STAT_GETTINGU) {
@@ -497,7 +489,7 @@ static Function update_table[] =
   /* 0 - 3 */
   (Function) update_start,
   (Function) NULL,
-  (Function) update_expmem,
+  (Function) 0,
   (Function) update_report,
   /* 4 - 7 */
   (Function) finish_update,
