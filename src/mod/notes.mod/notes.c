@@ -14,6 +14,7 @@
 #include <sys/stat.h> /* chmod(..) */
 #include "src/mod/module.h"
 #include "src/tandem.h"
+#include "src/botmsg.h" /* NOTE DEFINES */
 #undef global
 #include "notes.h"
 

@@ -8,6 +8,7 @@
 #include "eggmain.h"
 #include "auth.h"
 #include "misc.h"
+#include "types.h"
 #include "users.h"
 #include "crypt.h"
 #include <sys/stat.h>

@@ -13,6 +13,7 @@
 /* Module related structures
  */
 #include "mod/modvals.h"
+#include "types.h"
 
 #ifndef MAKING_NUMMODS
 
