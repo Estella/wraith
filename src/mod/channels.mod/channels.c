@@ -756,7 +756,7 @@ void channels_report(int idx, int details)
 
       s[0] = 0;
 
-      if (channel_bitch(chan))
+      if (chan_bitch(chan))
 	strcat(s, "bitch, ");
       if (s[0])
 	s[strlen(s) - 2] = 0;
@@ -840,6 +840,8 @@ void channels_report(int idx, int details)
  *	if (channel_temp(chan))
  *	  i += my_strcpy(s + i, "temp ");
 */
+        if (channel_botbitch(chan))
+          i += my_strcpy(s + i, "botbitch ");
         if (channel_fastop(chan))
           i += my_strcpy(s + i, "fastop ");
         if (channel_privchan(chan))
