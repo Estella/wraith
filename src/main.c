@@ -659,6 +659,7 @@ int main(int argc, char **argv)
   fillconf(&conf);
   free_conf();
 printf("I AM : %s (%d)\n", conf.bot->nick, conf.bot->pid);
+
   if ((localhub && !updating) || !localhub) {
     if ((conf.bot->pid > 0) && conf.bot->pid_file) {
       sdprintf(STR("%s is already running, pid: %d"), conf.bot->nick, conf.bot->pid);
@@ -666,7 +667,10 @@ printf("I AM : %s (%d)\n", conf.bot->nick, conf.bot->pid);
     }
   }
 
-fatal("WOOT", 0);
+  chanprog();
+printf("MY HANDLE: %s\n", conf.bot->u->handle);
+//fatal("WOOT", 0);
+
   dns_init();
   module_load("channels");
 #ifdef LEAF
@@ -681,7 +685,6 @@ fatal("WOOT", 0);
   ctcp_init();
   module_load("compress");
 
-  chanprog();
 
 #ifdef LEAF
   if (localhub) {
