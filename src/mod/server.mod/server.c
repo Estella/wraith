@@ -1059,7 +1059,7 @@ void nick_changed(struct cfg_entry * entry, char * olddata, int * valid) {
   if (p && p[0])
     strncpyz(origbotname, p, NICKLEN + 1);
   else
-    strncpyz(origbotname, botnetnick, NICKLEN + 1);
+    strncpyz(origbotname, conf.bot->nick, NICKLEN + 1);
   if (server_online)
     dprintf(DP_SERVER, "NICK %s\n", origbotname);
 #endif /* LEAF */

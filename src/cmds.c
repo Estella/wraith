@@ -46,7 +46,7 @@ extern int		 dcc_total, remote_boots, backgrd,
 
 extern egg_traffic_t traffic;
 extern Tcl_Interp 	 *interp;
-extern char		 botnetnick[], origbotname[], ver[], network[],
+extern char		 origbotname[], ver[], network[],
 			 owner[], quit_msg[], dcc_prefix[], 
                          botname[], *binname, version[], egg_version[];
 extern time_t		 now, online_since, buildts;
@@ -244,14 +244,14 @@ static void cmd_botinfo(struct userrec *u, int idx, char *par)
   now2 -= (hr * 3600);
   min = (time_t) ((int) now2 / 60);
   sprintf(&s2[strlen(s2)], "%02d:%02d", (int) hr, (int) min);
-  simple_sprintf(s, "%d:%s@%s", dcc[idx].sock, dcc[idx].nick, botnetnick);
+  simple_sprintf(s, "%d:%s@%s", dcc[idx].sock, dcc[idx].nick, conf.bot->nick);
   botnet_send_infoq(-1, s);
   s[0] = 0;
   if (module_find("server", 0, 0)) {
     for (chan = chanset; chan; chan = chan->next) { 
       if (!channel_secret(chan)) {
 	if ((strlen(s) + strlen(chan->dname) + strlen(network)
-                   + strlen(botnetnick) + strlen(ver) + 1) >= 490) {
+                   + strlen(conf.bot->nick) + strlen(ver) + 1) >= 490) {
           strcat(s,"++  ");
           break; /* yeesh! */
 	}
@@ -262,13 +262,13 @@ static void cmd_botinfo(struct userrec *u, int idx, char *par)
 
     if (s[0]) {
       s[strlen(s) - 2] = 0;
-      dprintf(idx, "*** [%s] %s <%s> (%s) [UP %s]\n", botnetnick,
+      dprintf(idx, "*** [%s] %s <%s> (%s) [UP %s]\n", conf.bot->nick,
 	      ver, network, s, s2);
     } else
-      dprintf(idx, "*** [%s] %s <%s> (%s) [UP %s]\n", botnetnick,
+      dprintf(idx, "*** [%s] %s <%s> (%s) [UP %s]\n", conf.bot->nick,
 	      ver, network, BOT_NOCHANNELS, s2);
   } else
-    dprintf(idx, STR("*** [%s] %s <NO_IRC> [UP %s]\n"), botnetnick, ver, s2);
+    dprintf(idx, STR("*** [%s] %s <NO_IRC> [UP %s]\n"), conf.bot->nick, ver, s2);
 }
 #endif /* HUB */
 
@@ -582,7 +582,7 @@ static void cmd_me(struct userrec *u, int idx, char *par)
 	(dcc[i].u.chat->channel == dcc[idx].u.chat->channel) &&
 	((i != idx) || (dcc[i].status & STAT_ECHO)))
       dprintf(i, "* %s %s\n", dcc[idx].nick, par);
-  botnet_send_act(idx, botnetnick, dcc[idx].nick,
+  botnet_send_act(idx, conf.bot->nick, dcc[idx].nick,
 		  dcc[idx].u.chat->channel, par);
   check_bind_act(dcc[idx].nick, dcc[idx].u.chat->channel, par);
 }
@@ -731,7 +731,7 @@ static void cmd_downbots(struct userrec *u, int idx, char *par)
   putlog(LOG_CMDS, "*", STR("#%s# downbots"), dcc[idx].nick);
   for (u2 = userlist; u2; u2 = u2->next) {
     if (u2->flags & USER_BOT) {
-      if (egg_strcasecmp(u2->handle, botnetnick)) {
+      if (egg_strcasecmp(u2->handle, conf.bot->nick)) {
         if (nextbot(u2->handle) == -1) {
           strcat(work, u2->handle);
           cnt++;
@@ -905,7 +905,7 @@ static void cmd_who(struct userrec *u, int idx, char *par)
       return;
     }
     putlog(LOG_CMDS, "*", STR("#%s# who %s"), dcc[idx].nick, par);
-    if (!egg_strcasecmp(par, botnetnick))
+    if (!egg_strcasecmp(par, conf.bot->nick))
       tell_who(u, idx, dcc[idx].u.chat->channel);
     else {
       i = nextbot(par);
@@ -917,7 +917,7 @@ static void cmd_who(struct userrec *u, int idx, char *par)
 	char s[40];
 
 	simple_sprintf(s, "%d:%s@%s", dcc[idx].sock,
-		       dcc[idx].nick, botnetnick);
+		       dcc[idx].nick, conf.bot->nick);
 	botnet_send_who(i, s, par, dcc[idx].u.chat->channel);
       }
     }
@@ -1180,7 +1180,7 @@ static void cmd_boot(struct userrec *u, int idx, char *par)
     char whonick[HANDLEN + 1];
 
     splitcn(whonick, who, '@', HANDLEN + 1);
-    if (!egg_strcasecmp(who, botnetnick)) {
+    if (!egg_strcasecmp(who, conf.bot->nick)) {
       cmd_boot(u, idx, whonick);
       return;
     }
@@ -1190,7 +1190,7 @@ static void cmd_boot(struct userrec *u, int idx, char *par)
         dprintf(idx, STR("No such bot connected.\n"));
         return;
       }
-      botnet_send_reject(i, dcc[idx].nick, botnetnick, whonick,
+      botnet_send_reject(i, dcc[idx].nick, conf.bot->nick, whonick,
 			 who, par[0] ? par : dcc[idx].nick);
       putlog(LOG_BOTS, "*", STR("#%s# boot %s@%s (%s)"), dcc[idx].nick, whonick,
 	     who, par[0] ? par : dcc[idx].nick);
@@ -1387,7 +1387,7 @@ static void cmd_chhandle(struct userrec *u, int idx, char *par)
       dprintf(idx, STR("You can't change a bot owner's handle.\n"));
     else if (isowner(hand) && egg_strcasecmp(dcc[idx].nick, hand))
       dprintf(idx, STR("You can't change a permanent bot owner's handle.\n"));
-    else if (!egg_strcasecmp(newhand, botnetnick) && (!(atr2 & USER_BOT) ||
+    else if (!egg_strcasecmp(newhand, conf.bot->nick) && (!(atr2 & USER_BOT) ||
              nextbot(hand) != -1))
       dprintf(idx, STR("Hey! That's MY name!\n"));
     else if (change_handle(u2, newhand)) {
@@ -1423,7 +1423,7 @@ static void cmd_handle(struct userrec *u, int idx, char *par)
   } else if (get_user_by_handle(userlist, newhandle) &&
 	     egg_strcasecmp(dcc[idx].nick, newhandle)) {
     dprintf(idx, STR("Somebody is already using %s.\n"), newhandle);
-  } else if (!egg_strcasecmp(newhandle, botnetnick)) {
+  } else if (!egg_strcasecmp(newhandle, conf.bot->nick)) {
     dprintf(idx, STR("Hey!  That's MY name!\n"));
   } else {
     strncpyz(oldhandle, dcc[idx].nick, sizeof oldhandle);
@@ -1821,7 +1821,7 @@ static void cmd_restart(struct userrec *u, int idx, char *par)
   }
 }
 #endif /* LEAF */
-  botnet_send_chat(-1, botnetnick, "Restarting...");
+  botnet_send_chat(-1, conf.bot->nick, "Restarting...");
   botnet_send_bye();
 
   fatal("Restarting...", 1);
@@ -1902,7 +1902,7 @@ static void cmd_link(struct userrec *u, int idx, char *par)
   }
   putlog(LOG_CMDS, "*", STR("#%s# link %s"), dcc[idx].nick, par);
   s = newsplit(&par);
-  if (!par[0] || !egg_strcasecmp(par, botnetnick))
+  if (!par[0] || !egg_strcasecmp(par, conf.bot->nick))
     botlink(dcc[idx].nick, idx, s);
   else {
     char x[40];
@@ -1912,7 +1912,7 @@ static void cmd_link(struct userrec *u, int idx, char *par)
       dprintf(idx, STR("No such bot online.\n"));
       return;
     }
-    simple_sprintf(x, "%d:%s@%s", dcc[idx].sock, dcc[idx].nick, botnetnick);
+    simple_sprintf(x, "%d:%s@%s", dcc[idx].sock, dcc[idx].nick, conf.bot->nick);
     botnet_send_link(i, x, s, par);
   }
 }
@@ -1942,7 +1942,7 @@ static void cmd_unlink(struct userrec *u, int idx, char *par)
   else {
     char x[40];
 
-    simple_sprintf(x, "%d:%s@%s", dcc[idx].sock, dcc[idx].nick, botnetnick);
+    simple_sprintf(x, "%d:%s@%s", dcc[idx].sock, dcc[idx].nick, conf.bot->nick);
     botnet_send_unlink(i, x, lastbot(bot), bot, par);
   }
 }
@@ -1998,7 +1998,7 @@ static void cmd_trace(struct userrec *u, int idx, char *par)
     dprintf(idx, STR("Usage: trace <bot>\n"));
     return;
   }
-  if (!egg_strcasecmp(par, botnetnick)) {
+  if (!egg_strcasecmp(par, conf.bot->nick)) {
     dprintf(idx, STR("That's me!  Hiya! :)\n"));
     return;
   }
@@ -2008,7 +2008,7 @@ static void cmd_trace(struct userrec *u, int idx, char *par)
     return;
   }
   putlog(LOG_CMDS, "*", STR("#%s# trace %s"), dcc[idx].nick, par);
-  simple_sprintf(x, "%d:%s@%s", dcc[idx].sock, dcc[idx].nick, botnetnick);
+  simple_sprintf(x, "%d:%s@%s", dcc[idx].sock, dcc[idx].nick, conf.bot->nick);
   simple_sprintf(y, ":%d", now);
   botnet_send_trace(i, x, par, y);
 }
@@ -2110,14 +2110,14 @@ int check_dcc_attrs(struct userrec *u, int oatr)
         /* no hub access, drop them. */
         dprintf(i, STR("-+- POOF! -+-\n"));
         dprintf(i, STR("You no longer have hub access.\n\n"));
-        do_boot(i, botnetnick, STR("No hub access.\n\n"));
+        do_boot(i, conf.bot->nick, STR("No hub access.\n\n"));
       }     
 #else /* !HUB */
       if (ischanhub() && !(u->flags & (USER_CHUBA))) {
         /* no chanhub access, drop them. */
         dprintf(i, STR("-+- POOF! -+-\n"));
         dprintf(i, STR("You no longer have chathub access.\n\n"));
-        do_boot(i, botnetnick, STR("No chathub access.\n\n"));
+        do_boot(i, conf.bot->nick, STR("No chathub access.\n\n"));
       }
 #endif /* HUB */
     }
@@ -2427,7 +2427,7 @@ static void cmd_chat(struct userrec *u, int idx, char *par)
       return;
     } else {
       dprintf(idx, STR("Leaving chat mode...\n"));
-      check_bind_chpt(botnetnick, dcc[idx].nick, dcc[idx].sock,
+      check_bind_chpt(conf.bot->nick, dcc[idx].nick, dcc[idx].sock,
 		     dcc[idx].u.chat->channel);
       chanout_but(-1, dcc[idx].u.chat->channel,
 		  "*** %s left the party line.\n",
@@ -2499,7 +2499,7 @@ static void cmd_chat(struct userrec *u, int idx, char *par)
     } else {
       oldchan = dcc[idx].u.chat->channel;
       if (oldchan >= 0)
-	check_bind_chpt(botnetnick, dcc[idx].nick, dcc[idx].sock, oldchan);
+	check_bind_chpt(conf.bot->nick, dcc[idx].nick, dcc[idx].sock, oldchan);
       if (!oldchan) {
 	chanout_but(-1, 0, "*** %s left the party line.\n", dcc[idx].nick);
       } else if (oldchan > 0) {
@@ -2513,7 +2513,7 @@ static void cmd_chat(struct userrec *u, int idx, char *par)
 	dprintf(idx, STR("Joining channel '%s'...\n"), arg);
 	chanout_but(-1, newchan, "*** %s joined the channel.\n", dcc[idx].nick);
       }
-      check_bind_chjn(botnetnick, dcc[idx].nick, newchan, geticon(idx),
+      check_bind_chjn(conf.bot->nick, dcc[idx].nick, newchan, geticon(idx),
 		     dcc[idx].sock, dcc[idx].host);
       if (newchan < GLOBAL_CHANS)
 	botnet_send_join_idx(idx, oldchan);
@@ -3019,8 +3019,8 @@ static void cmd_newleaf(struct userrec *u, int idx, char *par)
       u1 = get_user_by_handle(userlist, handle);
       bi = malloc(sizeof(struct bot_addr));
 
-      bi->uplink = malloc(strlen(botnetnick) + 1); 
-/*      strcpy(bi->uplink, botnetnick); */
+      bi->uplink = malloc(strlen(conf.bot->nick) + 1); 
+/*      strcpy(bi->uplink, conf.bot->nick); */
       strcpy(bi->uplink, "");
 
       bi->address = malloc(1);
@@ -3189,7 +3189,7 @@ static void cmd_pls_user(struct userrec *u, int idx, char *par)
     dprintf(idx, STR("Someone already exists by that name.\n"));
   else if (strchr(BADNICKCHARS, handle[0]) != NULL)
     dprintf(idx, STR("You can't start a nick with '%c'.\n"), handle[0]);
-  else if (!egg_strcasecmp(handle, botnetnick))
+  else if (!egg_strcasecmp(handle, conf.bot->nick))
     dprintf(idx, STR("Hey! That's MY name!\n"));
   else {
     struct userrec *u2;
@@ -3443,7 +3443,7 @@ static void cmd_mns_host(struct userrec *u, int idx, char *par)
 /* netserver */
 static void cmd_netserver(struct userrec * u, int idx, char * par) {
   putlog(LOG_CMDS, "*", STR("#%s# netserver"), dcc[idx].nick);
-  botnet_send_cmd_broad(-1, botnetnick, u->handle, idx, STR("cursrv"));
+  botnet_send_cmd_broad(-1, conf.bot->nick, u->handle, idx, STR("cursrv"));
 }
 
 static void cmd_botserver(struct userrec * u, int idx, char * par) {
@@ -3455,7 +3455,7 @@ static void cmd_botserver(struct userrec * u, int idx, char * par) {
   if (nextbot(par)<0) {
     dprintf(idx, STR("%s isn't a linked bot\n"), par);
   }
-  botnet_send_cmd(botnetnick, par, u->handle, idx, STR("cursrv"));
+  botnet_send_cmd(conf.bot->nick, par, u->handle, idx, STR("cursrv"));
 }
 
 
@@ -3474,7 +3474,7 @@ void rcmd_cursrv(char * fbot, char * fhand, char * fidx) {
     sprintf(tmp, "Currently: %-40s Lag: %d", cursrvname, server_lag);
   else
     sprintf(tmp, "Currently: none");
-  botnet_send_cmdreply(botnetnick, fbot, fhand, fidx, tmp);
+  botnet_send_cmdreply(conf.bot->nick, fbot, fhand, fidx, tmp);
 #endif /* LEAF */
 }
 
@@ -3482,7 +3482,7 @@ void rcmd_cursrv(char * fbot, char * fhand, char * fidx) {
 /* netversion */
 static void cmd_netversion(struct userrec * u, int idx, char * par) {
   putlog(LOG_CMDS, "*", STR("#%s# netversion"), dcc[idx].nick);
-  botnet_send_cmd_broad(-1, botnetnick, u->handle, idx, STR("ver"));
+  botnet_send_cmd_broad(-1, conf.bot->nick, u->handle, idx, STR("ver"));
 }
 
 static void cmd_botversion(struct userrec * u, int idx, char * par) {
@@ -3494,7 +3494,7 @@ static void cmd_botversion(struct userrec * u, int idx, char * par) {
   if (nextbot(par)<0) {
     dprintf(idx, STR("%s isn't a linked bot\n"), par);
   }
-  botnet_send_cmd(botnetnick, par, u->handle, idx, STR("ver"));
+  botnet_send_cmd(conf.bot->nick, par, u->handle, idx, STR("ver"));
 }
 #endif /* HUB */
 
@@ -3507,14 +3507,14 @@ void rcmd_ver(char * fbot, char * fhand, char * fidx) {
   } else {
     sprintf(tmp + strlen(tmp), STR("%s %s (%s)"), un.sysname, un.release, un.machine);
   }
-  botnet_send_cmdreply(botnetnick, fbot, fhand, fidx, tmp);
+  botnet_send_cmdreply(conf.bot->nick, fbot, fhand, fidx, tmp);
 }
 
 
 /* netnick, botnick */
 static void cmd_netnick (struct userrec *u, int idx, char *par) {
   putlog(LOG_CMDS, "*", STR("#%s# netnick"), dcc[idx].nick);
-  botnet_send_cmd_broad(-1, botnetnick, u->handle, idx, STR("curnick"));
+  botnet_send_cmd_broad(-1, conf.bot->nick, u->handle, idx, STR("curnick"));
 }
 
 static void cmd_botnick(struct userrec * u, int idx, char * par) {
@@ -3526,7 +3526,7 @@ static void cmd_botnick(struct userrec * u, int idx, char * par) {
   if (nextbot(par)<0) {
     dprintf(idx, STR("%s isn't a linked bot\n"), par);
   }
-  botnet_send_cmd(botnetnick, par, u->handle, idx, STR("curnick"));
+  botnet_send_cmd(conf.bot->nick, par, u->handle, idx, STR("curnick"));
 }
 
 void rcmd_curnick(char * fbot, char * fhand, char * fidx) {
@@ -3545,7 +3545,7 @@ void rcmd_curnick(char * fbot, char * fhand, char * fidx) {
     sprintf(tmp, STR("%sWant: %s"), tmp, origbotname);
   if (!server_online)
     sprintf(tmp, STR("%s(not online)"), tmp);
-  botnet_send_cmdreply(botnetnick, fbot, fhand, fidx, tmp);
+  botnet_send_cmdreply(conf.bot->nick, fbot, fhand, fidx, tmp);
 #endif /* LEAF */
 }
 
@@ -3565,7 +3565,7 @@ static void cmd_botmsg(struct userrec * u, int idx, char * par) {
     return;
   }
   sprintf(tmp, STR("msg %s %s"), tnick, par);
-  botnet_send_cmd(botnetnick, tbot, u->handle, idx, tmp);
+  botnet_send_cmd(conf.bot->nick, tbot, u->handle, idx, tmp);
 }
 
 static void cmd_netmsg(struct userrec * u, int idx, char * par) {
@@ -3578,7 +3578,7 @@ static void cmd_netmsg(struct userrec * u, int idx, char * par) {
     return;
   }
   sprintf(tmp, STR("msg %s %s"), tnick, par);
-  botnet_send_cmd_broad(-1, botnetnick, u->handle, idx, tmp);
+  botnet_send_cmd_broad(-1, conf.bot->nick, u->handle, idx, tmp);
 }
 
 void rcmd_msg(char * tobot, char * frombot, char * fromhand, char * fromidx, char * par) {
@@ -3586,9 +3586,9 @@ void rcmd_msg(char * tobot, char * frombot, char * fromhand, char * fromidx, cha
   char buf[1024], *nick;
   nick=newsplit(&par);
   dprintf(DP_SERVER, STR("PRIVMSG %s :%s\n"), nick, par);
-  if (!strcmp(tobot, botnetnick)) {
+  if (!strcmp(tobot, conf.bot->nick)) {
     sprintf(buf, STR("Sent message to %s"), nick);
-    botnet_send_cmdreply(botnetnick, frombot, fromhand, fromidx, buf);
+    botnet_send_cmdreply(conf.bot->nick, frombot, fromhand, fromidx, buf);
   }
 #endif /* LEAF */
 }
@@ -3604,14 +3604,14 @@ static void cmd_netlag(struct userrec * u, int idx, char * par) {
   tm = (tv.tv_sec % 10000) * 100 + (tv.tv_usec * 100) / (1000000);
   sprintf(tmp, STR("ping %lu"), tm);
   dprintf(idx, STR("Sent ping to all linked bots\n"));
-  botnet_send_cmd_broad(-1, botnetnick, u->handle, idx, tmp);
+  botnet_send_cmd_broad(-1, conf.bot->nick, u->handle, idx, tmp);
 }
 #endif /* HUB */
 
 void rcmd_ping(char * frombot, char *fromhand, char * fromidx, char * par) {
   char tmp[64];
   sprintf(tmp, STR("pong %s"), par);
-  botnet_send_cmd(botnetnick, frombot, fromhand, atoi(fromidx), tmp);
+  botnet_send_cmd(conf.bot->nick, frombot, fromhand, atoi(fromidx), tmp);
 }
 
 void rcmd_pong(char *frombot, char *fromhand, char *fromidx, char *par) {
@@ -3631,7 +3631,7 @@ static void cmd_netw(struct userrec * u, int idx, char * par) {
   char tmp[128];
   putlog(LOG_CMDS, "*", STR("#%s# netw"), dcc[idx].nick);
   strcpy(tmp, STR("exec w"));
-  botnet_send_cmd_broad(-1, botnetnick, dcc[idx].nick, idx, tmp);
+  botnet_send_cmd_broad(-1, conf.bot->nick, dcc[idx].nick, idx, tmp);
 }
 
 static void cmd_netps(struct userrec * u, int idx, char * par) {
@@ -3643,7 +3643,7 @@ static void cmd_netps(struct userrec * u, int idx, char * par) {
     return;
   }
   sprintf(buf, STR("exec ps %s"), par);
-  botnet_send_cmd_broad(-1, botnetnick, dcc[idx].nick, idx, buf);
+  botnet_send_cmd_broad(-1, conf.bot->nick, dcc[idx].nick, idx, buf);
 }
 
 static void cmd_netlast(struct userrec * u, int idx, char * par) {
@@ -3655,7 +3655,7 @@ static void cmd_netlast(struct userrec * u, int idx, char * par) {
     return;
   }
   sprintf(buf, STR("exec last %s"), par);
-  botnet_send_cmd_broad(-1, botnetnick, dcc[idx].nick, idx, buf);
+  botnet_send_cmd_broad(-1, conf.bot->nick, dcc[idx].nick, idx, buf);
 }
 #endif /* HUB */
 
@@ -3720,7 +3720,7 @@ static void cmd_netcrontab(struct userrec * u, int idx, char * par) {
     return;
   }
   egg_snprintf(buf, sizeof buf, STR("exec crontab %s %s"), cmd, par);
-  botnet_send_cmd_broad(-1, botnetnick, dcc[idx].nick, idx, buf);
+  botnet_send_cmd_broad(-1, conf.bot->nick, dcc[idx].nick, idx, buf);
 }
 #endif /* HUB */
 
@@ -3739,7 +3739,7 @@ void rcmd_exec(char * frombot, char * fromhand, char * fromidx, char * par) {
       strncpyz(user, conf.username, sizeof(user));
     }
     if (!user[0]) {
-      botnet_send_cmdreply(botnetnick, frombot, fromhand, fromidx, STR("Can't determine user id for process"));
+      botnet_send_cmdreply(conf.bot->nick, frombot, fromhand, fromidx, STR("Can't determine user id for process"));
       return;
     }
     sprintf(scmd, STR("last %s"), user);
@@ -3772,7 +3772,7 @@ void rcmd_exec(char * frombot, char * fromhand, char * fromidx, char * par) {
         sprintf(s, STR("Crontabbed"));
       else
         sprintf(s, STR("Error checking crontab status"));
-      botnet_send_cmdreply(botnetnick, frombot, fromhand, fromidx, s);
+      botnet_send_cmdreply(conf.bot->nick, frombot, fromhand, fromidx, s);
     }
   }
   if (!scmd[0])
@@ -3780,32 +3780,32 @@ void rcmd_exec(char * frombot, char * fromhand, char * fromidx, char * par) {
   if (shell_exec(scmd, NULL, &out, &err)) {
     if (out) {
       char *p = NULL, *np = NULL;
-      botnet_send_cmdreply(botnetnick, frombot, fromhand, fromidx, STR("Result:"));
+      botnet_send_cmdreply(conf.bot->nick, frombot, fromhand, fromidx, STR("Result:"));
       p = out;
       while (p && p[0]) {
         np=strchr(p, '\n');
         if (np)
           *np++ = 0;
-        botnet_send_cmdreply(botnetnick, frombot, fromhand, fromidx, p);
+        botnet_send_cmdreply(conf.bot->nick, frombot, fromhand, fromidx, p);
         p = np;
       }
       free(out);
     }
     if (err) {
       char *p = NULL, *np = NULL;
-      botnet_send_cmdreply(botnetnick, frombot, fromhand, fromidx, STR("Errors:"));
+      botnet_send_cmdreply(conf.bot->nick, frombot, fromhand, fromidx, STR("Errors:"));
       p = err;
       while (p && p[0]) {
         np=strchr(p, '\n');
         if (np)
           *np++ = 0;
-        botnet_send_cmdreply(botnetnick, frombot, fromhand, fromidx, p);
+        botnet_send_cmdreply(conf.bot->nick, frombot, fromhand, fromidx, p);
         p = np;
       }
       free(err);
     }
   } else {
-    botnet_send_cmdreply(botnetnick, frombot, fromhand, fromidx, STR("exec failed"));
+    botnet_send_cmdreply(conf.bot->nick, frombot, fromhand, fromidx, STR("exec failed"));
   }
 
 }
@@ -3824,7 +3824,7 @@ static void cmd_botjump(struct userrec * u, int idx, char * par) {
     return;
   }
   sprintf(buf, STR("jump %s"), par);
-  botnet_send_cmd(botnetnick, tbot, dcc[idx].nick, idx, buf);
+  botnet_send_cmd(conf.bot->nick, tbot, dcc[idx].nick, idx, buf);
 }
 
 void rcmd_jump(char * frombot, char * fromhand, char * fromidx, char * par) {
@@ -3849,7 +3849,7 @@ void rcmd_jump(char * frombot, char * fromhand, char * fromidx, char * par) {
     (*(int *)(func[21])) = port; //newserverport
     strncpyz(((char *)(func[22])), par, 120); //newserverpass
   }
-  botnet_send_cmdreply(botnetnick, frombot, fromhand, fromidx, STR("Jumping..."));
+  botnet_send_cmdreply(conf.bot->nick, frombot, fromhand, fromidx, STR("Jumping..."));
 
   (*(int *)(func[23])) = 0; //cycle_time
   (func[SERVER_NUKESERVER]) ("jumping...");
@@ -3880,7 +3880,7 @@ void gotremotecmd (char * forbot, char * frombot, char * fromhand, char * fromid
   } else if (!strcmp(cmd, STR("die"))) {
     exit(0);
   } else {
-    botnet_send_cmdreply(botnetnick, frombot, fromhand, fromidx, STR("Unrecognized remote command"));
+    botnet_send_cmdreply(conf.bot->nick, frombot, fromhand, fromidx, STR("Unrecognized remote command"));
   }
 }
     
@@ -3994,13 +3994,13 @@ static char *btos(unsigned long  bytes)
 static void cmd_whoami(struct userrec *u, int idx, char *par)
 {
   putlog(LOG_CMDS, "*", STR("#%s# whoami"), dcc[idx].nick);
-  dprintf(idx, "You are %s@%s.\n", dcc[idx].nick, botnetnick);
+  dprintf(idx, "You are %s@%s.\n", dcc[idx].nick, conf.bot->nick);
 }
 
 static void cmd_quit(struct userrec *u, int idx, char *text)
 {
 	if (dcc[idx].u.chat->channel >= 0 && dcc[idx].u.chat->channel < GLOBAL_CHANS) {
-		check_bind_chpt(botnetnick, dcc[idx].nick, dcc[idx].sock, dcc[idx].u.chat->channel);
+		check_bind_chpt(conf.bot->nick, dcc[idx].nick, dcc[idx].sock, dcc[idx].u.chat->channel);
 	}
 	check_bind_chof(dcc[idx].nick, idx);
 	dprintf(idx, "*** See you later cowboy!\n\n");

@@ -1096,7 +1096,7 @@ static int write_bans(FILE *f, int idx)
     if (!mask ||
 	lfprintf(f, "- %s:%s%lu:%s:%lu:%s\n", mask,
 		(i->flags & IGREC_PERM) ? "+" : "", i->expire,
-		i->user ? i->user : botnetnick, i->added,
+		i->user ? i->user : conf.bot->nick, i->added,
 		i->msg ? i->msg : "") == EOF) {
       if (mask)
 	free(mask);
@@ -1113,7 +1113,7 @@ static int write_bans(FILE *f, int idx)
 	lfprintf(f, "- %s:%s%lu%s:+%lu:%lu:%s:%s\n", mask,
 		(b->flags & MASKREC_PERM) ? "+" : "", b->expire,
 		(b->flags & MASKREC_STICKY) ? "*" : "", b->added,
-		b->lastactive, b->user ? b->user : botnetnick,
+		b->lastactive, b->user ? b->user : conf.bot->nick,
 		b->desc ? b->desc : "requested") == EOF) {
       if (mask)
 	free(mask);
@@ -1138,7 +1138,7 @@ static int write_bans(FILE *f, int idx)
 	      lfprintf(f, "- %s:%s%lu%s:+%lu:%lu:%s:%s\n", mask,
 		      (b->flags & MASKREC_PERM) ? "+" : "", b->expire,
 		      (b->flags & MASKREC_STICKY) ? "*" : "", b->added,
-		      b->lastactive, b->user ? b->user : botnetnick,
+		      b->lastactive, b->user ? b->user : conf.bot->nick,
 		      b->desc ? b->desc : "requested") == EOF) {
 	    if (mask)
 	      free(mask);
@@ -1166,7 +1166,7 @@ static int write_exempts(FILE *f, int idx)
         lfprintf(f, "%s %s:%s%lu%s:+%lu:%lu:%s:%s\n", "%", mask,
 		(e->flags & MASKREC_PERM) ? "+" : "", e->expire,
 		(e->flags & MASKREC_STICKY) ? "*" : "", e->added,
-		e->lastactive, e->user ? e->user : botnetnick,
+		e->lastactive, e->user ? e->user : conf.bot->nick,
 		e->desc ? e->desc : "requested") == EOF) {
       if (mask)
 	free(mask);
@@ -1190,7 +1190,7 @@ static int write_exempts(FILE *f, int idx)
 	      lfprintf(f,"%s %s:%s%lu%s:+%lu:%lu:%s:%s\n","%", mask,
 		      (e->flags & MASKREC_PERM) ? "+" : "", e->expire,
 		      (e->flags & MASKREC_STICKY) ? "*" : "", e->added,
-		      e->lastactive, e->user ? e->user : botnetnick,
+		      e->lastactive, e->user ? e->user : conf.bot->nick,
 		      e->desc ? e->desc : "requested") == EOF) {
 	    if (mask)
 	      free(mask);
@@ -1219,7 +1219,7 @@ static int write_invites(FILE *f, int idx)
 	lfprintf(f,"@ %s:%s%lu%s:+%lu:%lu:%s:%s\n", mask,
 		(ir->flags & MASKREC_PERM) ? "+" : "", ir->expire,
 		(ir->flags & MASKREC_STICKY) ? "*" : "", ir->added,
-		ir->lastactive, ir->user ? ir->user : botnetnick,
+		ir->lastactive, ir->user ? ir->user : conf.bot->nick,
 		ir->desc ? ir->desc : "requested") == EOF) {
       if (mask)
 	free(mask);
@@ -1243,7 +1243,7 @@ static int write_invites(FILE *f, int idx)
 	      lfprintf(f,"@ %s:%s%lu%s:+%lu:%lu:%s:%s\n", mask,
 		      (ir->flags & MASKREC_PERM) ? "+" : "", ir->expire,
 		      (ir->flags & MASKREC_STICKY) ? "*" : "", ir->added,
-		      ir->lastactive, ir->user ? ir->user : botnetnick,
+		      ir->lastactive, ir->user ? ir->user : conf.bot->nick,
 		      ir->desc ? ir->desc : "requested") == EOF) {
 	    if (mask)
 	      free(mask);
