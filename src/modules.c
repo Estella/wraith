@@ -46,7 +46,9 @@ extern tand_t *tandbot;
 extern party_t *party;
 extern int parties;
 extern sock_list        *socklist;
-
+#ifdef S_MSGCMDS
+extern struct cfg_entry CFG_MSGOP, CFG_MSGPASS, CFG_MSGINVITE;
+#endif /* S_MSGCMDS */
 int xtra_kill();
 int xtra_unpack();
 static int module_rename(char *name, char *newname);
@@ -590,7 +592,16 @@ Function global_table[] =
   (Function) ssl_link,
   (Function) dropssl,
   (Function) myipstr,
-  (Function) checkchans
+  (Function) checkchans,
+#ifdef S_MSGCMDS
+  (Function) & CFG_MSGOP,
+  (Function) & CFG_MSGPASS,
+  (Function) & CFG_MSGINVITE
+#else /* !S_MSGCMDS */
+  (Function) 0,
+  (Function) 0,
+  (Function) 0
+#endif /* S_MSGCMDS */
 
 
 };
