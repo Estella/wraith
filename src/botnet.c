@@ -547,6 +547,7 @@ tell_bots(int idx, int up)
     strcat(work, conf.bot->nick);
     strcat(work, " ");
     cnt++;
+    tot++;
   }
 
   for (u = userlist; u; u = u->next) {
