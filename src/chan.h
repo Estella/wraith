@@ -94,7 +94,7 @@ struct chan_t {
 #ifdef S_IRCNET
   masklist *exempt;
   masklist *invite;
-#endif
+#endif 
   char *topic;
   char *key;
   unsigned short int mode;
@@ -105,7 +105,7 @@ struct chan_t {
   int parttime;
 #ifdef S_AUTOLOCK
   int fighting;
-#endif
+#endif /* S_AUTOLOCK */
 #ifdef G_BACKUP
   int backup_time;              /* If non-0, set +backup when now>backup_time */
 #endif

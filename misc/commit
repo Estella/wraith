@@ -1,6 +1,7 @@
 #!/bin/sh
 # $Id$
-unixtime=`which utctime`
+utctime=`which utctime`
+unixtime=`${utctime}`
 if cvs commit "$@"; then
   if echo "#define CVSBUILD ${unixtime}			/* utc unixtime of cvs commit */" > src/build.h; then
 	echo "Updated build stamp to: ${unixtime}"

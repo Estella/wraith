@@ -14,23 +14,23 @@
 #include "tandem.h"
 #include "modules.h"
 #include <net/if.h>
-/* not needed?
-#include <sys/ioctl.h> 
-#include <signal.h>
-*/
 
 #include "stat.h"
 #include "bg.h"
 
 extern char			botnetnick[];
-extern struct userrec *userlist;
-extern time_t		 now;
+extern struct userrec 		*userlist;
+extern time_t		 	now;
+
+int 				cfg_count = 0, cfg_noshare = 0;
+struct cfg_entry 		**cfg = NULL;
+
 
 #ifdef S_AUTH
-char authkey[121];		/* This is one of the keys used in the auth hash */
+char 				authkey[121];		/* This is one of the keys used in the auth hash */
 #endif /* S_AUTH */
 
-char cmdprefix[1] = "+";	/* This is the prefix for msg/channel cmds */
+char 				cmdprefix[1] = "+";	/* This is the prefix for msg/channel cmds */
 
 struct cfg_entry CFG_MOTD = {
   "motd", CFGF_GLOBAL, NULL, NULL,
@@ -513,9 +513,6 @@ struct cfg_entry CFG_OPTIMESLACK = {
 };
 #endif /* HUB */
 
-int cfg_count=0;
-struct cfg_entry ** cfg = NULL;
-int cfg_noshare=0;
 
 /* Expected memory usage
  */
@@ -524,7 +521,6 @@ int expmem_config()
 #ifdef S_DCCPASS
   struct cmd_pass *cp = NULL;
 #endif /* S_DCCPASS */
-
   int tot = 0;
 
 #ifdef S_DCCPASS
@@ -713,4 +709,3 @@ void trigger_cfg_changed()
     }
   }
 }
-
