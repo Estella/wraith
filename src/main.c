@@ -9,6 +9,7 @@
 
 #include "common.h"
 #include "main.h"
+#include "adns.h"
 #include "color.h"
 #include "dcc.h"
 #include "misc.h"
@@ -785,6 +786,8 @@ printf("out: %s\n", out);
   }
 
   dns_init();
+  egg_dns_init();
+
   channels_init();
 #ifdef LEAF
   server_init();

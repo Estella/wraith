@@ -15,6 +15,7 @@
 #include "crypt.h"
 #include "egg_timer.h"
 #include "traffic.h"
+#include "adns.h"
 #include <limits.h>
 #include <string.h>
 #include <netdb.h>
