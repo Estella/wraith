@@ -159,7 +159,6 @@ struct chanset_t {
   int closed_private;
   int closed_invite;
   int bad_cookie;
-  time_t cookie_time_slack;
   int manop;
   int mdop;
   int mop;
