@@ -12,6 +12,7 @@ static const char rcsid[] = "$Id$";
 
 #include "common.h"
 #include "dccutil.h"
+#include "auth.h"
 #include "core_binds.h"
 #include "userrec.h"
 #include "main.h"
@@ -43,10 +44,10 @@ void core_binds_init()
 
 void check_bind_dcc(const char *cmd, int idx, const char *text)
 {
-  real_check_bind_dcc(cmd, idx, text, -1);
+  real_check_bind_dcc(cmd, idx, text, NULL);
 }
 
-void real_check_bind_dcc(const char *cmd, int idx, const char *text, int authi)
+void real_check_bind_dcc(const char *cmd, int idx, const char *text, Auth *auth)
 {
   struct flag_record fr = {FR_GLOBAL | FR_CHAN, 0, 0, 0 };
   bind_entry_t *entry = NULL;
@@ -93,7 +94,7 @@ void real_check_bind_dcc(const char *cmd, int idx, const char *text, int authi)
     }
   }
 
-  if (entry && authi != -1) {
+  if (entry && auth) {
     if (!(entry->cflags & AUTH))
       return;
   }

@@ -596,6 +596,7 @@ void reload()
   checkchans(0);
   if (!readuserfile(userfile, &userlist))
     fatal(MISC_MISSINGUSERF, 0);
+  Auth::FillUsers();
   checkchans(1);
   loading = 0;
   reaffirm_owners();
