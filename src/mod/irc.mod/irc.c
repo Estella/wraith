@@ -13,7 +13,6 @@
 #include "server.mod/server.h"
 #undef serv
 #include "channels.mod/channels.h"
-#include "blowfish.mod/blowfish.h"
 #ifdef HAVE_UNAME
 #include <sys/utsname.h>
 #endif
@@ -130,7 +129,7 @@ void makeopline(struct chanset_t *chan, char *nick, char *buf)
     strcpy(nck, nick);
   makeplaincookie(chan->dname, nck, plaincookie);
   strcpy(key, botname);
-  strcat(key, netpass);
+  strcat(key, SALT2);
 //  putlog(LOG_DEBUG, "*", "Encrypting opline for %s with cookie %s and key %s", nck, plaincookie, key);
   p = encrypt_string(key, plaincookie);
   strcpy(enccookie, p);

@@ -38,9 +38,9 @@ extern unsigned long	 otraffic_irc, otraffic_irc_today,
 			 itraffic_unknown, itraffic_unknown_today;
 extern Tcl_Interp	*interp;
 extern char		 botnetnick[], origbotname[], ver[], network[],
-			 owner[], quit_msg[], dcc_prefix[], *netpass,
+			 owner[], quit_msg[], dcc_prefix[], 
                          botname[], *binname, egg_version[];
-extern time_t		 now, online_since;
+extern time_t		 now, online_since, buildts;
 extern module_entry	*module_list;
 extern struct cfg_entry CFG_MOTD;
 extern struct cfg_entry **cfg;
@@ -589,7 +589,8 @@ static void cmd_motd(struct userrec *u, int idx, char *par)
 static void cmd_about(struct userrec *u, int idx, char *par)
 {
   putlog(LOG_CMDS, "*", STR("#%s# about"), dcc[idx].nick);
-  dprintf(idx, STR("Wraith (%s) botpack by lordares, with credits and thanks to the following:\n"), egg_version);
+  dprintf(idx, STR("Wraith (%s) botpack by lordares, CVS date %lu"), buildts);
+  dprintf(idx, STR("..with credits and thanks to the following:\n"), egg_version);
   dprintf(idx, STR("(written from a base of Eggdrop 1.6.12)\n\n"));
   dprintf(idx, STR("Eggdrop team for developing such a great bot to code off of.\n"));
   dprintf(idx, STR("Einride and ievil for taking eggdrop1.4.3 and making their very effecient botpack Ghost.\n"));
@@ -2954,7 +2955,7 @@ static void cmd_newleaf(struct userrec *u, int idx, char *par)
         addhost_by_handle(handle, host);
         host = newsplit(&par);
       }
-      set_user(&USERENTRY_PASS, u1, netpass);
+      /* set_user(&USERENTRY_PASS, u1, SALT2); */
       dprintf(idx, STR("Added new leaf: %s\n"), handle);
     }
   }
