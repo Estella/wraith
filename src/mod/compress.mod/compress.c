@@ -27,7 +27,10 @@
  */
 
 #define MODULE_NAME "compress"
-#define MAKING_COMPRESS
+
+#include "src/common.h"
+#include "src/misc_file.h"
+#include "src/misc.h"
 
 #define free_func zlib_free_func
 #include <zlib.h>
@@ -35,7 +38,6 @@
 #include <string.h>
 #include <errno.h>
 
-#include "src/mod/module.h"
 #include "src/mod/share.mod/share.h"
 
 #ifdef HAVE_MMAP
@@ -47,8 +49,6 @@
 
 #define BUFLEN	512
 
-static Function *global = NULL, *share_funcs = NULL;
-
 static unsigned int compressed_files;	/* Number of files compressed.      */
 static unsigned int uncompressed_files;	/* Number of files uncompressed.    */
 static unsigned int share_compressed;	/* Compress userfiles when sharing? */
@@ -57,8 +57,8 @@ static unsigned int compress_level;	/* Default compression used.	    */
 
 static int uncompress_to_file(char *f_src, char *f_target);
 static int compress_to_file(char *f_src, char *f_target, int mode_num);
-static int compress_file(char *filename, int mode_num);
-static int uncompress_file(char *filename);
+int compress_file(char *filename, int mode_num);
+int uncompress_file(char *filename);
 static int is_compressedfile(char *filename);
 
 
@@ -280,7 +280,7 @@ static int compress_to_file(char *f_src, char *f_target, int mode_num)
 
 /* Compresses a file `filename' and saves it as `filename'.
  */
-static int compress_file(char *filename, int mode_num)
+int compress_file(char *filename, int mode_num)
 {
   char *temp_fn = NULL, randstr[5] = "";
   int ret;
@@ -306,7 +306,7 @@ static int compress_file(char *filename, int mode_num)
 
 /* Uncompresses a file `filename' and saves it as `filename'.
  */
-static int uncompress_file(char *filename)
+int uncompress_file(char *filename)
 {
   char *temp_fn = NULL, randstr[5] = "";
   int ret;
@@ -364,7 +364,7 @@ static uff_table_t compress_uff_table[] = {
  *    Compress module related code
  */
 
-static int compress_report(int idx, int details)
+int compress_report(int idx, int details)
 {
   if (details) {
 
@@ -377,39 +377,12 @@ static int compress_report(int idx, int details)
   return 0;
 }
 
-EXPORT_SCOPE char *compress_start();
-
-static Function compress_table[] =
+void compress_init()
 {
-  /* 0 - 3 */
-  (Function) compress_start,
-  (Function) NULL,
-  (Function) 0,
-  (Function) compress_report,
-  /* 4 - 7 */
-  (Function) compress_to_file,
-  (Function) compress_file,
-  (Function) uncompress_to_file,
-  (Function) uncompress_file,
-  /* 8 - 11 */
-  (Function) is_compressedfile,
-};
-
-char *compress_start(Function *global_funcs)
-{
-  global = global_funcs;
   compressed_files	= 0;
   uncompressed_files	= 0;
   share_compressed	= 0;
   compress_level	= 9;
 
-  module_register(MODULE_NAME, compress_table, 1, 1);
-  share_funcs = module_depend(MODULE_NAME, "share", 2, 3);
-  if (!share_funcs) {
-    module_undepend(MODULE_NAME);
-    return "This module requires share module 2.3 or later.";
-  }
-
   uff_addtable(compress_uff_table);
-  return NULL;
 }

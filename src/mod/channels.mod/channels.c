@@ -5,10 +5,9 @@
  * $Id$
  */
 
-#undef MAKING_MODS
 #define MAKING_CHANNELS
 #include "src/common.h"
-#include "src/modules.h"
+#include "src/hooks.h"
 #include "src/mod/share.mod/share.h"
 #ifdef LEAF
 #include "src/mod/irc.mod/irc.h"

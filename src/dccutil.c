@@ -21,7 +21,6 @@
 #include "botcmd.h"
 #include <errno.h>
 #include "chan.h"
-#include "modules.h"
 #include "tandem.h"
 #include "core_binds.h"
 #include "src/mod/server.mod/server.h"
@@ -70,8 +69,6 @@ char *add_cr(char *buf)
   *q = *p;
   return WBUF;
 }
-
-extern void (*qserver) (int, char *, int);
 
 void dprintf (int idx, ...)
 {
@@ -134,7 +131,7 @@ void dprintf (int idx, ...)
 #ifdef HUB
      return;
 #endif /* HUB */
-      qserver(idx, buf, len);
+      queue_server(idx, buf, len);
       break;
     }
     return;

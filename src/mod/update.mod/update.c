@@ -4,11 +4,8 @@
  * $Id$
  */
 
-#undef MAKING_MODS
-
 #include "src/common.h"
 #include "src/users.h"
-#include "src/modules.h"
 #include "src/dcc.h"
 #include "src/botnet.h"
 #include "src/main.h"
