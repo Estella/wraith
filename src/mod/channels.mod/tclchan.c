@@ -411,7 +411,7 @@ int channel_modify(char *result, struct chanset_t *chan, int items, char **item)
       strncpyz(chan->temp, item[i], sizeof(chan->temp));
       check_temp(chan);
  */
-    } else if (!strcmp(item[i], "topic")) { //this is here for compatability
+    } else if (!strcmp(item[i], "topic")) { /* this is here for compatability */
       i++;
       if (i >= items) {
         if (result)
@@ -419,6 +419,8 @@ int channel_modify(char *result, struct chanset_t *chan, int items, char **item)
         return ERROR;
       }
     }
+
+
     else if (!strcmp(item[i], "+enforcebans"))
       chan->status |= CHAN_ENFORCEBANS;
     else if (!strcmp(item[i], "-enforcebans"))
