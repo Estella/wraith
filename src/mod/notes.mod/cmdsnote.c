@@ -5,6 +5,10 @@
  * $Id$
  */
 
+#ifndef lint
+static const char rcsid1[] = "$Id$";
+#endif
+
 static void cmd_fwd(int idx, char *par)
 {
   if (!par[0]) {

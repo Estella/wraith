@@ -7,6 +7,10 @@
  * $Id$
  */
 
+#ifndef lint
+static const char rcsid[] = "$Id$";
+#endif
+
 #include "common.h"
 #include "dcc.h"
 #include "settings.h"

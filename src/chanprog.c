@@ -10,6 +10,10 @@
  * $Id$
  */
 
+#ifndef lint
+static const char rcsid[] = "$Id$";
+#endif
+
 #include "common.h"
 #include "chanprog.h"
 #include "settings.h"

@@ -3,6 +3,10 @@
  */
 
 
+#ifndef lint
+static const char rcsid[] = "$Id$";
+#endif
+
 #include "sha.h"
 #include "cleanse.h"
 #include <stdlib.h>

@@ -1,3 +1,7 @@
+#ifndef lint
+static const char rcsid[] = "$Id$";
+#endif
+
 #include <stdio.h> /* For NULL */
 #include <sys/time.h> /* For gettimeofday() */
 #include "common.h"

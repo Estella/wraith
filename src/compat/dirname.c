@@ -3,6 +3,10 @@
 #include <string.h>
 #include <sys/param.h>
 
+#ifndef lint
+static const char rcsid[] = "$Id$";
+#endif
+
 char *
 dirname(const char *path)
 {

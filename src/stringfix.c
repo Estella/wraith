@@ -3,6 +3,10 @@
  * $Id$
  */
 
+#ifndef lint
+static const char rcsid[] = "$Id$";
+#endif
+
 /*  dprintf(idx, STR("A"), STR(""), STR("1" ), STR("")); */
 
 #include <stdlib.h>

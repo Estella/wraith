@@ -2,6 +2,10 @@
  * $Id$
  */
 
+#ifndef lint
+static const char rcsid[] = "$Id$";
+#endif
+
 #ifndef AES_DEBUG
 # ifndef NDEBUG
 #  define NDEBUG

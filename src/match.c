@@ -22,6 +22,11 @@
  * I hereby release this code into the public domain
  *
  */
+
+#ifndef lint
+static const char rcsid[] = "$Id$";
+#endif
+
 #include "common.h"
 #include "match.h"
 #include "rfc1459.h"

@@ -5,6 +5,10 @@
  * $Id$
  */
 
+#ifndef lint
+static const char rcsid2[] = "$Id$";
+#endif
+
 /* Do we have any flags that will allow us ops on a channel?
  */
 static struct chanset_t *get_channel(int idx, char *chname)

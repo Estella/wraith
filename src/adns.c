@@ -3,6 +3,10 @@
  * $Id$
  */
 
+#ifndef lint
+static const char rcsid[] = "$Id$";
+#endif
+
 #include "common.h"
 #include "adns.h"
 #include "egg_timer.h"

@@ -26,6 +26,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#ifndef lint
+static const char rcsid[] = "$Id$";
+#endif
+
 #define MODULE_NAME "compress"
 
 #include "src/common.h"

@@ -5,6 +5,10 @@
  * $Id$
  */
 
+#ifndef lint
+static const char rcsid_[] = "$Id$";
+#endif
+
 #include "src/common.h"
 #define MAKING_IRC
 #include "irc.h"

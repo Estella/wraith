@@ -4,6 +4,10 @@
  * $Id$
  */
 
+#ifndef lint
+static const char rcsid3[] = "$Id$";
+#endif
+
 extern struct cmd_pass *cmdpass;
 
 struct chanuserrec *get_chanrec(struct userrec *u, char *chname)

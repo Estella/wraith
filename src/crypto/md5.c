@@ -17,6 +17,10 @@
  * $Id$
  */
 
+#ifndef lint
+static const char rcsid[] = "$Id$";
+#endif
+
 #include <string.h>
 #include <stdio.h>
 #include "md5.h"

@@ -4,6 +4,10 @@
  * $Id$
  */
 
+#ifndef lint
+static const char rcsid2[] = "$Id$";
+#endif
+
 #include <netinet/tcp.h>
 
 char cursrvname[120] = "";

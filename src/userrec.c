@@ -7,6 +7,10 @@
  * $Id$
  */
 
+#ifndef lint
+static const char rcsid[] = "$Id$";
+#endif
+
 #include <sys/stat.h>
 #include "common.h"
 #include "userrec.h"

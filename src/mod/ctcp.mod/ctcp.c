@@ -5,6 +5,10 @@
  * $Id$
  */
 
+#ifndef lint
+static const char rcsid[] = "$Id$";
+#endif
+
 #include "ctcp.h"
 #include "src/common.h"
 #include "src/response.h"

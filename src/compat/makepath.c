@@ -19,6 +19,10 @@
 
 /* Written by David MacKenzie <djm@gnu.ai.mit.edu> and Jim Meyering.  */
 
+#ifndef lint
+static const char rcsid[] = "$Id$";
+#endif
+
 #include "src/common.h"
 #include "makepath.h"
 #include "dirname.h"

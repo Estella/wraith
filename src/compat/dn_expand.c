@@ -3,6 +3,10 @@
  * $Id$
  */
 
+#ifndef lint
+static const char rcsid[] = "$Id$";
+#endif
+
 #include "common.h"
 #include <netinet/in.h>
 #include <sys/socket.h>

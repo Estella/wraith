@@ -1,3 +1,7 @@
+#ifndef lint
+static const char rcsid[] = "$Id$";
+#endif
+
 #include <string.h>
 
 unsigned char cleanse_ctr = 0;

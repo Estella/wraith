@@ -4,6 +4,11 @@
  *
  * $Id$
  */
+
+#ifndef lint
+static const char rcsid1[] = "$Id$";
+#endif
+
 static void cmd_servers(int idx, char *par)
 {
   struct server_list *x = serverlist;

@@ -3,6 +3,9 @@
 #include "src/main.h"
 #include <stdlib.h>
 
+#ifndef lint
+static const char rcsid[] = "$Id$";
+#endif
 
 void 
 str_redup(char **str, const char *newstr)

@@ -4,6 +4,11 @@
  * threads
  * $Id$
  */
+
+#ifndef lint
+static const char rcsid[] = "$Id$";
+#endif
+
 #include "common.h"
 #include <pthread.h>
 #include <stdio.h>

@@ -6,6 +6,10 @@
  * $Id$
  */
 
+#ifndef lint
+static const char rcsid[] = "$Id$";
+#endif
+
 #include "console.h"
 #include "src/common.h"
 #include "src/mod/share.mod/share.h"

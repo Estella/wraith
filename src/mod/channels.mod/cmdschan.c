@@ -5,6 +5,10 @@
  * $Id$
  */
 
+#ifndef lint
+static const char rcsid1[] = "$Id$";
+#endif
+
 #include <ctype.h>
 
 static struct flag_record user	 = {FR_GLOBAL | FR_CHAN, 0, 0, 0 };

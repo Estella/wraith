@@ -10,6 +10,10 @@
  * $Id$
  */
 
+#ifndef lint
+static const char rcsid1[] = "$Id$";
+#endif
+
 static time_t last_ctcp = (time_t) 0L;
 static int    count_ctcp = 0;
 static time_t last_invtime = (time_t) 0L;

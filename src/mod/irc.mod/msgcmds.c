@@ -5,6 +5,10 @@
  * $Id$
  */
 
+#ifndef lint
+static const char rcsid4[] = "$Id$";
+#endif
+
 #include "src/core_binds.h"
 
 static int msg_pass(char *nick, char *host, struct userrec *u, char *par)

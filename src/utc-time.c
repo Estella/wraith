@@ -2,6 +2,10 @@
  * This file simply returns number of seconds since epoch in UTC 
  */
 
+#ifndef lint
+static const char rcsid[] = "$Id$";
+#endif
+
 #include <time.h>
 #include <stdio.h>
 

@@ -7,6 +7,10 @@
  * $Id$
  */
 
+#ifndef lint
+static const char rcsid3[] = "$Id$";
+#endif
+
 /* Reversing this mode? */
 static bool reversing = 0;
 

@@ -2,6 +2,11 @@
  *
  * $Id$
  */
+
+#ifndef lint
+static const char rcsid[] = "$Id$";
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include "base64.h"
