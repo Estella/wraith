@@ -155,7 +155,7 @@ IP getmyip(int dfatal)
   myipv6he=NULL;
 
     if (myip6[0]) {
-      if (SDEBUG)
+      if (SDEBUG && dfatal)
         printf(STR("myip6: %s\n"), myip6);
 #    ifdef HAVE_GETHOSTBYNAME2
       myipv6he = gethostbyname2(myip6, AF_INET6);
@@ -165,7 +165,7 @@ IP getmyip(int dfatal)
     }
 
     if (hostname6[0] && myipv6he == NULL) {
-      if (SDEBUG)
+      if (SDEBUG && dfatal)
         printf(STR("hostname6: %s\n"), hostname6);
       myipv6he=gethostbyname2(hostname6,AF_INET6);
 
