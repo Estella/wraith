@@ -157,7 +157,12 @@ void bot_cmdpass(int idx, char *par)
 
 void bot_config(int idx, char *par)
 {
-  got_config_share(idx, par);
+  got_config_share(idx, par, 0);
+}
+
+void bot_configbroad(int idx, char *par)
+{
+  got_config_share(idx, par, 1);
 }
 
 void bot_remotecmd(int idx, char *par) {
@@ -1314,6 +1319,7 @@ botcmd_t C_bot[] =
   {"bye",		(Function) bot_bye},
   {"c",			(Function) bot_chan2},
   {"cg",                (Function) bot_config},
+  {"cgb",		(Function) bot_configbroad},
 #ifdef S_DCCPASS
   {"cp", 		(Function) bot_cmdpass},
 #endif
