@@ -37,8 +37,6 @@ struct console_info {
   int whom;
 };
 
-static struct user_entry_type USERENTRY_CONSOLE;
-
 static int
 console_unpack(struct userrec *u, struct user_entry *e)
 {
@@ -79,7 +77,7 @@ console_unpack(struct userrec *u, struct user_entry *e)
 static int
 console_kill(struct user_entry *e)
 {
-  struct console_info *i = e->u.extra;
+  struct console_info *i = (struct console_info *) e->u.extra;
 
   free(i->channel);
   free(i);
@@ -115,7 +113,7 @@ console_set(struct userrec *u, struct user_entry *e, void *buf)
       free(ci->channel);
       free(ci);
     }
-    ci = e->u.extra = buf;
+    ci = (struct console_info *) e->u.extra = (struct console_info *) buf;
   }
 
   if (!noshare && !u->bot) {
@@ -211,7 +209,7 @@ console_gotshare(struct userrec *u, struct user_entry *e, char *par, int idx)
 static void
 console_display(int idx, struct user_entry *e, struct userrec *u)
 {
-  struct console_info *i = e->u.extra;
+  struct console_info *i = (struct console_info *) e->u.extra;
 
   if (dcc[idx].user && (dcc[idx].user->flags & USER_MASTER)) {
     dprintf(idx, "  %s\n", CONSOLE_SAVED_SETTINGS);
@@ -247,7 +245,7 @@ static struct user_entry_type USERENTRY_CONSOLE = {
 static int
 console_chon(char *handle, int idx)
 {
-  struct console_info *i = get_user(&USERENTRY_CONSOLE, dcc[idx].user);
+  struct console_info *i = (struct console_info *) get_user(&USERENTRY_CONSOLE, dcc[idx].user);
 
   if (dcc[idx].type == &DCC_CHAT) {
     if (i) {
@@ -293,7 +291,7 @@ console_chon(char *handle, int idx)
       botnet_send_join_idx(idx);
     }
     if (info_party) {
-      char *p = get_user(&USERENTRY_INFO, dcc[idx].user);
+      char *p = (char *) get_user(&USERENTRY_INFO, dcc[idx].user);
 
       if (p) {
         if (dcc[idx].u.chat->channel >= 0) {
@@ -310,9 +308,9 @@ console_chon(char *handle, int idx)
 }
 
 static int
-console_store(struct userrec *u, int idx, char *par)
+console_store(int idx, char *par)
 {
-  struct console_info *i = get_user(&USERENTRY_CONSOLE, u);
+  struct console_info *i = (struct console_info *) get_user(&USERENTRY_CONSOLE, dcc[idx].user);
 
   if (!i) {
     i = (struct console_info *) calloc(1, sizeof(struct console_info));
@@ -363,7 +361,7 @@ console_store(struct userrec *u, int idx, char *par)
     dprintf(idx, "     Bots: %s\n", i->bots ? "on" : "off");
     dprintf(idx, "     Whom: %s\n", i->whom ? "on" : "off");
   }
-  set_user(&USERENTRY_CONSOLE, u, i);
+  set_user(&USERENTRY_CONSOLE, dcc[idx].user, i);
   dprintf(idx, "Console setting stored.\n");
 #ifdef HUB
   write_userfile(idx);
@@ -376,7 +374,7 @@ int
 console_dostore(int idx)
 {
   if (console_autosave)
-    console_store(dcc[idx].user, idx, NULL);
+    console_store(idx, NULL);
   return 0;
 }
 
