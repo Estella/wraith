@@ -18,6 +18,7 @@
 #include "memutil.h"
 #include "strcasecmp.h"
 #include "strftime.h"
+#include "makepath.h"
 
 
 /* These apparently are unsafe without recasting. */
