@@ -31,16 +31,6 @@ void init_flags()
                FLAG[i] = (flag_t) 1 << (i - 'a');
        for (; i < 128; i++)
                FLAG[i] = 0;
-struct flag_record pls = { FR_GLOBAL, 0, 0, 0 }, mns = { FR_GLOBAL, 0, 0, 0 };
-char string[501] = "";
-pls.global = FLAG['a'] | FLAG['A'];
-mns.global = FLAG['a'];
-
-break_down_flags(string, &pls, NULL);
-printf("break_down_flags:  %s\n", string);
-
-//printf("a: %llX A: %llX\n",  FLAG['a'],  FLAG['Z']);
-//printf("0: %llX 26: %llX\n",  BIT0, BIT31);
 }
 
 /* Some flags are mutually exclusive -- this roots them out
@@ -109,7 +99,7 @@ int chan_sanity_check(int chatr, int atr)
  */
 char geticon(int idx)
 {
-  struct flag_record fr = {FR_GLOBAL | FR_CHAN | FR_ANYWH, 0, 0, 0};
+  struct flag_record fr = {FR_GLOBAL | FR_CHAN | FR_ANYWH, 0, 0};
 
   if (!dcc[idx].user)
     return '-';
@@ -161,13 +151,6 @@ void break_down_flags(const char *string, struct flag_record *plus, struct flag_
       }
       which = plus;
       chan++;
-/* FIXME: blah */
-/*
-      if ((chan == 2) && !(flags & (FR_CHAN | FR_BOT)) )
-	string = "";
-      else if (chan == 3)
-	chan = 1;
-*/
       if (chan == 2)
         string = "";
       else if (chan == 3)
@@ -232,8 +215,13 @@ int build_flags(char *string, struct flag_record *plus, struct flag_record *minu
     }
   }
   if (plus->match & FR_CHAN) {
-    if (plus->match & (FR_GLOBAL | FR_BOT))
+/* FIXME: BLAH */
+/*    if (plus->match & (FR_GLOBAL | FR_BOT))
       *string++ = (plus->match & FR_AND) ? '&' : '|';
+*/
+    if (plus->match & FR_GLOBAL)
+      *string++ = (plus->match & FR_AND) ? '&' : '|';
+    
     if (minus && plus->chan)
       *string++ = '+';
     string += flag2str(string, plus->chan);
@@ -462,7 +450,7 @@ int ischanhub()
 
 int dovoice(struct chanset_t *chan)
 {
-  struct flag_record fr = { FR_GLOBAL | FR_CHAN, 0, 0, 0};
+  struct flag_record fr = { FR_GLOBAL | FR_CHAN, 0, 0};
 
   if (!chan) return 0;
 
@@ -474,7 +462,7 @@ int dovoice(struct chanset_t *chan)
 
 int dolimit(struct chanset_t *chan)
 {
-  struct flag_record fr = { FR_GLOBAL | FR_CHAN, 0, 0, 0};
+  struct flag_record fr = { FR_GLOBAL | FR_CHAN, 0, 0};
 
   if (!chan) return 0;
 
@@ -486,7 +474,7 @@ int dolimit(struct chanset_t *chan)
 
 int whois_access(struct userrec *user, struct userrec *whois_user)
 {
-  struct flag_record fr = {FR_GLOBAL | FR_CHAN, 0, 0, 0}, whois = {FR_GLOBAL | FR_CHAN, 0, 0, 0};
+  struct flag_record fr = {FR_GLOBAL | FR_CHAN, 0, 0}, whois = {FR_GLOBAL | FR_CHAN, 0, 0};
 
   get_user_flagrec(user, &fr, NULL);
   get_user_flagrec(whois_user, &whois, NULL);
