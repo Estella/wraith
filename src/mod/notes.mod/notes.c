@@ -19,6 +19,7 @@
 #include "src/modules.h"
 #include "src/misc.h"
 #include "src/users.h"
+#include "src/egg_timer.h"
 
 #include "src/tandem.h"
 #include "src/tclhash.h"
@@ -773,7 +774,7 @@ void notes_report(int idx, int details)
 
 void notes_init()
 {
-  add_hook(HOOK_HOURLY, (Function) notes_hourly);
+  timer_create_secs(3600, "notes_hourly", (Function) notes_hourly);
 
   add_builtins("dcc", notes_cmds);
   add_builtins("load", notes_load);
