@@ -1890,7 +1890,8 @@ static void cmd_debug(struct userrec *u, int idx, char *par)
 {
   char *cmd = NULL;
 
-  putlog(LOG_CMDS, "*", STR("#%s# debug"), dcc[idx].nick);
+  if (!par[0])
+    putlog(LOG_CMDS, "*", STR("#%s# debug"), dcc[idx].nick);
 
   if (par[0])
     cmd = newsplit(&par);
