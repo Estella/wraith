@@ -551,7 +551,7 @@ static char *quickban(struct chanset_t *chan, char *uhost)
 /* Kick any user (except friends/masters) with certain mask from channel
  * with a specified comment.  Ernst 18/3/1998
  */
-static void kick_all(struct chanset_t *chan, char *hostmask, char *comment, int bantype)
+static void kick_all(struct chanset_t *chan, char *hostmask, const char *comment, int bantype)
 {
   memberlist *m = NULL;
   int flushed;
@@ -616,7 +616,7 @@ static void refresh_ban_kick(struct chanset_t *chan, char *user, char *nick)
 	else
 	  c[0] = 0;
         if (role == 2)
-  	  kick_all(chan, b->mask, c[0] ? c : IRC_YOUREBANNED, 0);
+  	  kick_all(chan, b->mask, c[0] ? (const char *) c : IRC_YOUREBANNED, 0);
         return;					/* Drop out on 1st ban.	*/
       } 
     }
