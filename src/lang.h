@@ -280,7 +280,7 @@
 /* Messages referring to ignores
  */
 #define IGN_NONE		STR("No ignores")
-#define IGN_CURRENT		STR("Currently ignorin")
+#define IGN_CURRENT		STR("Currently ignoring")
 #define IGN_NOLONGER		STR("No longer ignoring")
 
 /* Messages referring to bots
