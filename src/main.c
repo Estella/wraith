@@ -1121,9 +1121,9 @@ static void gotspawn(char *filename)
   if (!(fp = fopen(filename, "r")))
     fatal(STR("Cannot read from local config (2)"), 0);
 
-  while(fscanf(fp,"%[^\n]\n",templine) != EOF) 
-  {
-    temps = (char *) decrypt_string(netpass, decryptit(templine));
+  while(fscanf(fp,"%[^\n]\n",templine) != EOF) {
+    void *my_ptr;
+    temps = my_ptr = (char *) decrypt_string(netpass, decryptit(templine));
 
 #ifdef S_PSCLOAK
     sdprintf(STR("GOTSPAWN: %s"), temps);
@@ -1164,7 +1164,8 @@ static void gotspawn(char *filename)
     if (ipsix && ipsix[1]) {
       snprintf(myip6, 120, "%s", ipsix);
     }
-    nfree(temps);
+    if (my_ptr)
+      nfree(my_ptr);
   }
 
   fclose(fp);
