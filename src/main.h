@@ -13,7 +13,7 @@
 #  include "config.h"
 #endif
 
-#include "conf.h"
+#include "pack/conf.h"
 
 #include "lush.h" /* We seem to need this everywhere... */
 
