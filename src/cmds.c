@@ -3595,8 +3595,9 @@ static void cmd_botversion(int idx, char * par) {
     dprintf(idx, "Usage: botversion <bot>\n");
     return;
   }
-  if (!egg_strcasecmp(par, conf.bot->nick) && nextbot(par)<0) {
+  if (egg_strcasecmp(par, conf.bot->nick) && nextbot(par)<0) {
     dprintf(idx, "%s isn't a linked bot\n", par);
+    return;
   }
   botnet_send_cmd(conf.bot->nick, par, dcc[idx].nick, idx, "ver");
 }
@@ -3614,6 +3615,11 @@ static void rcmd_ver(char * fbot, char * fhand, char * fidx) {
   botnet_send_cmdreply(conf.bot->nick, fbot, fhand, fidx, tmp);
 }
 
+static void cmd_version(int idx, char *par)
+{ 
+  putlog(LOG_CMDS, "*", "#%s# version", dcc[idx].nick);
+  botnet_send_cmd(conf.bot->nick, conf.bot->nick, dcc[idx].nick, idx, "ver");
+}
 
 /* netnick, botnick */
 static void cmd_netnick (int idx, char *par) {
@@ -4288,6 +4294,7 @@ cmd_t C_dcc[] =
   {"netserver", 	"m", 	(Function) cmd_netserver, 	NULL, 0},
   {"timesync",		"a",	(Function) cmd_timesync,	NULL, 0},
   {"botversion", 	"o", 	(Function) cmd_botversion, 	NULL, HUB},
+  {"version", 		"o", 	(Function) cmd_version, 	NULL, 0},
   {"netversion", 	"o", 	(Function) cmd_netversion, 	NULL, HUB},
   {"userlist", 		"m", 	(Function) cmd_userlist, 	NULL, 0},
   {"ps", 		"n", 	(Function) cmd_ps, 		NULL, 0},
