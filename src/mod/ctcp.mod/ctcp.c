@@ -734,5 +734,4 @@ void ctcp_init()
 
   timer_create_secs(60, "ctcp_minutely", (Function) ctcp_minutely);
 #endif /* LEAF */
-  add_cfg(&CFG_CLOAK_SCRIPT);
 }

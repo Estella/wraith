@@ -35,7 +35,7 @@
 #define CLOAK_MIRC              9
 
 void ctcp_init();
-
+extern struct cfg_entry 	CFG_CLOAK_SCRIPT;
 #ifdef LEAF
 extern char		kickprefix[], bankickprefix[];
 #endif /* LEAF */
