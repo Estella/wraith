@@ -1012,8 +1012,8 @@ struct dcc_table DCC_GET_PENDING =
 
 static void dcc_get_pending(int idx, char *buf, int len)
 {
-  unsigned long ip;
-  unsigned short port;
+  IP ip;
+  port_t port;
   int i;
   char s[UHOSTLEN] = "";
 
@@ -1086,7 +1086,8 @@ static void dcc_get_pending(int idx, char *buf, int len)
 
 static int raw_dcc_resend_send(char *filename, char *nick, char *from, char *dir, int resend)
 {
-  int zz, port, i;
+  int zz, i;
+  port_t port;
   char *nfn = NULL, *buf = NULL;
   long dccfilesize;
   FILE *f = NULL, *dccfile = NULL;

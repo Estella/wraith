@@ -622,8 +622,8 @@ struct dcc_table DCC_IDENTD =
 
 static void dcc_identd_connect(int idx, char *buf, int atr)
 {
-  unsigned long ip;
-  unsigned short port;
+  IP ip;
+  port_t port;
   int j = 0, sock;
   char s[UHOSTLEN + 1] = "";
 
@@ -1235,8 +1235,8 @@ static int detect_telnet_flood(char *floodhost)
 
 static void dcc_telnet(int idx, char *buf, int i)
 {
-  unsigned long ip;
-  unsigned short port;
+  IP ip;
+  port_t port;
   int j = 0, sock;
   char s[UHOSTLEN + 1] = "";
 
