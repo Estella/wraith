@@ -1924,7 +1924,8 @@ Context;
 
     /* Free unused structures. */
     garbage_collect();
-
+    
+    buf[0] = 0;
     xx = sockgets(buf, &i); 
     if (xx >= 0) {		/* Non-error */
       int idx;
