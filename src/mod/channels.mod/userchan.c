@@ -381,7 +381,6 @@ static int u_addban(struct chanset_t *chan, char *ban, char *from, char *note,
 {
   char host[1024] = "", s[1024] = "";
   maskrec *p = NULL, *l = NULL, **u = chan ? &chan->bans : &global_bans;
-  module_entry *me = NULL;
 
   strcpy(host, ban);
   /* Choke check: fix broken bans (must have '!' and '@') */
@@ -397,11 +396,11 @@ static int u_addban(struct chanset_t *chan, char *ban, char *from, char *note,
     strcat(host, "!*");
     strcat(host, s);
   }
-  if ((me = module_find("server", 0, 0)) && me->funcs)
-    simple_sprintf(s, "%s!%s", me->funcs[SERVER_BOTNAME],
-		   me->funcs[SERVER_BOTUSERHOST]);
-  else
+#ifdef LEAF
+    simple_sprintf(s, "%s!%s", botname, botuserhost);
+#else
     simple_sprintf(s, "%s!%s@%s", origbotname, botuser, conf.bot->host);
+#endif /* LEAF */
   if (wild_match(host, s)) {
     putlog(LOG_MISC, "*", IRC_IBANNEDME);
     return 0;
@@ -467,7 +466,6 @@ static int u_addinvite(struct chanset_t *chan, char *invite, char *from,
 {
   char host[1024] = "", s[1024] = "";
   maskrec *p = NULL, *l, **u = chan ? &chan->invites : &global_invites;
-  module_entry *me = NULL;
 
   strcpy(host, invite);
   /* Choke check: fix broken invites (must have '!' and '@') */
@@ -482,11 +480,11 @@ static int u_addinvite(struct chanset_t *chan, char *invite, char *from,
     strcat(host, "!*");
     strcat(host, s);
   }
-  if ((me = module_find("server",0,0)) && me->funcs)
-    simple_sprintf(s, "%s!%s", me->funcs[SERVER_BOTNAME],
-		   me->funcs[SERVER_BOTUSERHOST]);
-  else
+#ifdef LEAF
+    simple_sprintf(s, "%s!%s", botname, botuserhost);
+#else
     simple_sprintf(s, "%s!%s@%s", origbotname, botuser, conf.bot->host);
+#endif /* LEAF */
 
   for (l = *u; l; l = l->next)
     if (!rfc_casecmp(l->mask, host)) {
@@ -546,7 +544,6 @@ static int u_addexempt(struct chanset_t *chan, char *exempt, char *from,
 {
   char host[1024] = "", s[1024] = "";
   maskrec *p = NULL, *l, **u = chan ? &chan->exempts : &global_exempts;
-  module_entry *me = NULL;
 
   strcpy(host, exempt);
   /* Choke check: fix broken exempts (must have '!' and '@') */
@@ -561,11 +558,11 @@ static int u_addexempt(struct chanset_t *chan, char *exempt, char *from,
     strcat(host, "!*");
     strcat(host, s);
   }
-  if ((me = module_find("server",0,0)) && me->funcs)
-    simple_sprintf(s, "%s!%s", me->funcs[SERVER_BOTNAME],
-		   me->funcs[SERVER_BOTUSERHOST]);
-  else
+#ifdef LEAF
+    simple_sprintf(s, "%s!%s", botname, botuserhost);
+#else
     simple_sprintf(s, "%s!%s@%s", origbotname, botuser, conf.bot->host);
+#endif /* LEAF */
 
   for (l = *u; l; l = l->next)
     if (!rfc_casecmp(l->mask, host)) {
