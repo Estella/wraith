@@ -1052,6 +1052,11 @@ static void server_activity(int idx, char *msg, int len)
     strcpy(dcc[idx].nick, "(server)");
     putlog(LOG_SERV, "*", "Connected to %s", dcc[idx].host);
 
+    if (serverpass[0])
+      dprintf(DP_MODE, "PASS %s\n", serverpass);
+    dprintf(DP_MODE, "NICK %s\n", botname);
+    dprintf(DP_MODE, "USER %s localhost %s :%s\n", botuser, dcc[idx].host, botrealname);
+
     trying_server = 0;
     /*
     servidx = idx;
@@ -1442,11 +1447,9 @@ static void server_resolve_failure(int idx)
 
 static void server_resolve_success(int idx)
 {
-  char pass[121] = "";
-
   resolvserv = 0;
   dcc[idx].addr = dcc[idx].u.dns->ip;
-  strcpy(pass, dcc[idx].u.dns->cbuf);
+  strcpy(serverpass, dcc[idx].u.dns->cbuf);
   changeover_dcc(idx, &SERVER_SOCKET, 0);
   identd_open();
 #ifdef USE_IPV6
@@ -1473,10 +1476,6 @@ static void server_resolve_success(int idx)
     /* Start alternate nicks from the beginning */
     altnick_char = 0;
 
-    if (pass[0]) 
-      dprintf(DP_MODE, "PASS %s\n", pass);
-    dprintf(DP_MODE, "NICK %s\n", botname);
-    dprintf(DP_MODE, "USER %s localhost %s :%s\n", botuser, dcc[idx].host, botrealname);
     /* Wait for async result now */
   }
 }
