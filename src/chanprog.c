@@ -17,9 +17,7 @@
 #include <sys/rusage.h>
 #endif
 #endif
-#ifdef HAVE_UNAME
 #include <sys/utsname.h>
-#endif
 #include "modules.h"
 
 extern struct userrec	*userlist;
@@ -301,19 +299,15 @@ void tell_verbose_status(int idx)
   clock_t cl;
 # endif
 #endif /* HAVE_GETRUSAGE */
-#ifdef HAVE_UNAME
   struct utsname un;
 
   if (!uname(&un) < 0) {
-#endif /* HAVE_UNAME */
     vers_t = " ";
     uni_t = "*unknown*";
-#ifdef HAVE_UNAME
   } else {
     vers_t = un.release;
     uni_t = un.sysname;
   }
-#endif /* HAVE_UNAME */
 
 #ifdef HUB
   i = count_users(userlist);
