@@ -35,6 +35,7 @@ static void cmd_servers(struct userrec *u, int idx, char *par)
 
 static void cmd_dump(struct userrec *u, int idx, char *par)
 {
+  putlog(LOG_CMDS, "*", "#%s# dump %s", dcc[idx].nick, par);
   if (!(isowner(dcc[idx].nick)) && (must_be_owner == 2)) {
     dprintf(idx, "What?  You need '%shelp'\n", dcc_prefix);
     return;
@@ -43,7 +44,6 @@ static void cmd_dump(struct userrec *u, int idx, char *par)
     dprintf(idx, "Usage: dump <server stuff>\n");
     return;
   }
-  putlog(LOG_CMDS, "*", "#%s# dump %s", dcc[idx].nick, par);
   dprintf(DP_SERVER, "%s\n", par);
 }
 
@@ -57,8 +57,7 @@ static void cmd_jump(struct userrec *u, int idx, char *par)
     port = atoi(newsplit(&par));
     if (!port)
       port = default_port;
-    putlog(LOG_CMDS, "*", "#%s# jump %s %d %s", dcc[idx].nick, other,
-	   port, par);
+    putlog(LOG_CMDS, "*", "#%s# jump %s %d %s", dcc[idx].nick, other, port, par);
     strncpyz(newserver, other, sizeof newserver);
     newserverport = port;
     strncpyz(newserverpass, par, sizeof newserverpass);
@@ -73,6 +72,7 @@ static void cmd_clearqueue(struct userrec *u, int idx, char *par)
 {
   int	msgs;
 
+  putlog(LOG_CMDS, "*", "#%s# clearqueue %s", dcc[idx].nick, par);
   if (!par[0]) {
     dprintf(idx, "Usage: clearqueue <mode|server|help|all>\n");
     return;
@@ -111,7 +111,6 @@ static void cmd_clearqueue(struct userrec *u, int idx, char *par)
     dprintf(idx, "Usage: clearqueue <mode|server|help|all>\n");
     return;
   }
-  putlog(LOG_CMDS, "*", "#%s# clearqueue %s", dcc[idx].nick, par);
 }
 /* Function call should be:
  *   int cmd_whatever(idx,"parameters");

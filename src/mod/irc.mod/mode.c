@@ -183,11 +183,11 @@ void dequeue_op_deop(struct chanset_t * chan) {
   char lines[4096];
   char modechars[10];
   char nicks[128];
-  int i=0, cnt=0;
-  lines[0]=0;
-  modechars[0]=0;
-  nicks[0]=0;
-  while ((i<20) && (chan->opqueue[i].target)) {
+  int i = 0, cnt = 0;
+  lines[0] = 0;
+  modechars[0] = 0;
+  nicks[0] = 0;
+  while ((i < 20) && (chan->opqueue[i].target)) {
     strcat(nicks, " ");
     strcat(nicks, chan->opqueue[i].target);
     if (!modechars[0])
@@ -200,8 +200,8 @@ void dequeue_op_deop(struct chanset_t * chan) {
       strcat(lines, modechars);
       strcat(lines, nicks);
       strcat(lines, "\n");
-      modechars[0]=0;
-      nicks[0]=0;
+      modechars[0] = 0;
+      nicks[0] = 0;
     }
     nfree(chan->opqueue[i].target);
     chan->opqueue[i].target = NULL;
@@ -209,8 +209,8 @@ void dequeue_op_deop(struct chanset_t * chan) {
   }
   if (modechars[0] && chan->deopqueue[0].target)
     strcat(modechars, "-");
-  i=0;
-  while ((i<20) && (chan->deopqueue[i].target)) {
+  i = 0;
+  while ((i < 20) && (chan->deopqueue[i].target)) {
     strcat(nicks, " ");
     strcat(nicks, chan->deopqueue[i].target);
     if (!modechars[0])
@@ -223,10 +223,10 @@ void dequeue_op_deop(struct chanset_t * chan) {
       strcat(lines, modechars);
       strcat(lines, nicks);
       strcat(lines, "\n");
-      modechars[0]=0;
-      nicks[0]=0;
-      if (cnt>=24) {
-        dprintf(DP_MODE, lines);
+      modechars[0] = 0;
+      nicks[0] = 0;
+      if (cnt >= 24) {
+        dprintf(DP_SERVER, lines);
         lines[0]=0;
       }
     }
@@ -242,36 +242,36 @@ void dequeue_op_deop(struct chanset_t * chan) {
     strcat(lines, "\n");
   }
   if (lines[0])
-    dprintf(DP_MODE, lines);
+    dprintf(DP_SERVER, lines);
 }
-void queue_op(struct chanset_t * chan, char * op) {
+void queue_op(struct chanset_t *chan, char *op) {
   int n;
-  memberlist * m;
-  for (n=0;n<20;n++) {
+  memberlist *m;
+  for (n = 0; n < 20; n++) {
     if (!chan->opqueue[n].target) {
-      chan->opqueue[n].target = nmalloc(strlen(op)+1);
+      chan->opqueue[n].target = nmalloc(strlen(op) + 1);
       strcpy(chan->opqueue[n].target, op);
       m = ismember(chan, op);
       if (m)
         m->flags |= SENTOP;
-      if (n==19)
+      if (n == 19)
         dequeue_op_deop(chan);
       return;
     }
   }
 }
 
-void queue_deop(struct chanset_t * chan, char * op) {
+void queue_deop(struct chanset_t *chan, char *op) {
   int n;
-  memberlist * m;
-  for (n=0;n<20;n++) {
+  memberlist *m;
+  for (n = 0; n<20; n++) {
     if (!chan->deopqueue[n].target) {
       chan->deopqueue[n].target = nmalloc(strlen(op)+1);
       strcpy(chan->deopqueue[n].target, op);
       m = ismember(chan, op);
       if (m)
         m->flags |= SENTDEOP;
-      if (n==19)
+      if (n == 19)
         dequeue_op_deop(chan);
       return;
     }
@@ -290,8 +290,6 @@ static void real_add_mode(struct chanset_t *chan,
 
   if (!me_op(chan))
     return;			/* No point in queueing the mode */
-
-putlog(LOG_DEBUG, "@", "add_mode for %s, %c%c %s", chan->dname, plus, mode, op);
 
   if (mode == 'o') {
     if (plus=='+')
@@ -457,7 +455,6 @@ static void flush_mode(struct chanset_t *chan, int pri)
   char *p, out[512], post[512];
   size_t postsize = sizeof(post);
   int i, plus = 2;              /* 0 = '-', 1 = '+', 2 = none */
-putlog(LOG_DEBUG, "@", "DEBUG: flushing modes for %s", chan->dname);
   p = out;
   post[0] = 0, postsize--;
 
@@ -596,7 +593,6 @@ static void real_add_mode(struct chanset_t *chan,
    * are not allowed to set can be changed in chan.h. */
   if (!me_op(chan))
     return;
-putlog(LOG_DEBUG, "@", "add_mode for %s, %c%c %s", chan->dname, plus, mode, op);
 
   if (mode == 'o' || mode == 'h' || mode == 'v') {
     mx = ismember(chan, op);
@@ -1355,7 +1351,7 @@ static int gotmode(char *from, char *msg)
             optime = atol(ltmp);
             off = (now + timesync - optime);
 
-            if (abs(off) > op_time_slack) {
+            if (abs(off) > OP_TIME_SLACK) {
 /*            isbadop = 4; */
               putlog(LOG_ERRORS, "*", "%s opped with bad ts (not punishing.): %li was off by %li", nfrom, optime, off);
             }
