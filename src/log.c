@@ -17,6 +17,8 @@
 #include "misc.h"
 #include "main.h"
 
+#include <stdarg.h>
+
 extern struct userrec   *userlist;
 extern tand_t           *tandbot;
 extern struct dcc_t     *dcc;
