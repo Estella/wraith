@@ -21,7 +21,6 @@ typedef struct memstruct {
   unsigned short flags;
   char nick[NICKLEN];
   char userhost[UHOSTLEN];
-  char server[SERVLEN];
 } memberlist;
 
 #define CHANMETA "#&!+"
