@@ -373,7 +373,7 @@ static void remote_tell_who(int idx, char *nick, int chan)
 		       MISC_OWNER, MISC_MASTER, MISC_OP);
   }
   for (i = 0; i < dcc_total; i++) {
-    if (dcc[i].type->flags & DCT_REMOTEWHO)
+    if (dcc[i].type && dcc[i].type->flags & DCT_REMOTEWHO) {
       if (dcc[i].u.chat->channel == chan) {
 	k = sprintf(s, "  %c%-15s %s", (geticon(i) == '-' ? ' ' : geticon(i)),
 		    dcc[i].nick, dcc[i].host);
@@ -394,9 +394,10 @@ static void remote_tell_who(int idx, char *nick, int chan)
 	if (dcc[i].u.chat->away != NULL)
 	  botnet_send_priv(idx, conf.bot->nick, nick, NULL, "      %s: %s", MISC_AWAY, dcc[i].u.chat->away);
       }
+    }
   }
   for (i = 0; i < dcc_total; i++) {
-    if (dcc[i].type == &DCC_BOT) {
+    if (dcc[i].type && dcc[i].type == &DCC_BOT) {
       if (!ok) {
 	ok = 1;
 	botnet_send_priv(idx, conf.bot->nick, nick, NULL, "%s:", BOT_BOTSCONNECTED);
@@ -410,7 +411,7 @@ static void remote_tell_who(int idx, char *nick, int chan)
   }
   ok = 0;
   for (i = 0; i < dcc_total; i++) {
-    if (dcc[i].type->flags & DCT_REMOTEWHO) {
+    if (dcc[i].type && dcc[i].type->flags & DCT_REMOTEWHO) {
       if (dcc[i].u.chat->channel != chan) {
 	if (!ok) {
 	  ok = 1;
@@ -740,10 +741,9 @@ static void bot_traced(int idx, char *par)
       else
 	p2 = par + 1;
     }
-    for (i = 0; i < dcc_total; i++)
-      if ((dcc[i].type->flags & DCT_CHAT) &&
-	  (!egg_strcasecmp(dcc[i].nick, to)) &&
-	  ((sock == (-1)) || (sock == dcc[i].sock))) {
+    for (i = 0; i < dcc_total; i++) {
+      if (dcc[i].type && (dcc[i].type->flags & DCT_CHAT) && (!egg_strcasecmp(dcc[i].nick, to)) && 
+          ((sock == (-1)) || (sock == dcc[i].sock))) {
 	if (t) {
           int j=0;
           {
@@ -755,6 +755,7 @@ static void bot_traced(int idx, char *par)
 	} else
 	  dprintf(i, "%s -> %s\n", BOT_TRACERESULT, p);
       }
+    }
   } else {
     i = nextbot(p);
     if (p != to)
@@ -823,8 +824,8 @@ static void bot_reject(int idx, char *par)
       /* Kick someone here! */
       int ok = 0;
 
-      for (i = 0; (i < dcc_total) && (!ok); i++)
-	if ((!egg_strcasecmp(who, dcc[i].nick)) && (dcc[i].type->flags & DCT_CHAT)) {
+      for (i = 0; (i < dcc_total) && (!ok); i++) {
+	if (dcc[i].type && (!egg_strcasecmp(who, dcc[i].nick)) && (dcc[i].type->flags & DCT_CHAT)) {
 	  u = get_user_by_handle(userlist, dcc[i].nick);
 	  if (u && ((u->flags & USER_OWNER) && !(dcc[idx].user->flags & USER_ADMIN))) {
 	    add_note(from, conf.bot->nick, BOT_NOOWNERBOOT, -1, 0);
@@ -834,6 +835,7 @@ static void bot_reject(int idx, char *par)
 	  ok = 1;
 	  putlog(LOG_CMDS, "*", "#%s# boot %s (%s)", from, who, par[0] ? par : "No reason");
 	}
+     }
     } else {
       i = nextbot(destbot);
       *--destbot = '@';
@@ -1228,7 +1230,7 @@ static void bot_rsim(char *botnick, char *code, char *msg)
   }
 
   for (i = 0; i < dcc_total; i++) {
-   if (dcc[i].simul == ridx) {
+   if (dcc[i].type && dcc[i].simul == ridx) {
      putlog(LOG_DEBUG, "*", "Simul found old idx for %s: %d (ridx: %d)", nick, i, ridx);
      dcc[i].simultime = now;
      idx = i;

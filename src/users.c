@@ -960,7 +960,7 @@ int readuserfile(const char *file, struct userrec **ret)
 
 	      u = get_user_by_handle(bu, code);
 	      for (i = 0; i < dcc_total; i++)
-		if (!egg_strcasecmp(code, dcc[i].nick))
+		if (dcc[i].type && !egg_strcasecmp(code, dcc[i].nick))
 		  dcc[i].user = u;
         
               if (!egg_strcasecmp(code, conf.bot->nick))
@@ -1081,6 +1081,7 @@ void autolink_cycle(char *start)
   link_pref_val(conf.bot->u, myval);
   strcpy(bestval, myval);
   for (int i = 0; i < dcc_total; i++) {
+   if (dcc[i].type) {
     if (dcc[i].type == &DCC_BOT_NEW)
       return;
     if (dcc[i].type == &DCC_FORK_BOT)
@@ -1118,6 +1119,7 @@ void autolink_cycle(char *start)
   	  botunlink(-2, dcc[i].nick, "Linked but not sharing?");
       }
     }
+   }
   }
 
   struct userrec *u = NULL;
@@ -1169,12 +1171,14 @@ void autolink_cycle(char *start)
   } 
 
   for (int i = 0; i < dcc_total; i++) {
+   if (dcc[i].type) {
     if ((dcc[i].type == &DCC_BOT_NEW) || (dcc[i].type == &DCC_FORK_BOT))
       return;
     if (dcc[i].type == &DCC_BOT) {
       strcpy(curhub, dcc[i].nick);
       break;
     }
+   }
   }
 
   if (curhub[0]) {
