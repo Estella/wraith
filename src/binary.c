@@ -14,8 +14,8 @@
 #include "salt.h"
 #include "misc_file.h"
 
-encdata_t encdata = { 
-  "AAAAAAAAAAAAAAAA", 
+encdata_t encdata = {
+  "AAAAAAAAAAAAAAAA",
   ""
 };
 
@@ -42,15 +42,15 @@ bin_md5(const char *fname, int todo)
   fseek(f, 0, SEEK_END);
   size = ftell(f);
   fseek(f, 0, SEEK_SET);
- 
+
   buf = calloc(1, size + 1);
-  
+
   if (fread(buf, 1, size, f) != size)
     fatal("Can't read binary", 0);
 
   p = buf;
   while (p < (buf + size - 4)) {
-    if (!strncmp(p, STR("AAAAAAAA"), 8))		/* this STR() is *REQUIRED* */
+    if (!strncmp(p, STR("AAAAAAAA"), 8))        /* this STR() is *REQUIRED* */
       break;
     p += 4;
     size_p += 4;
@@ -96,4 +96,3 @@ bin_md5(const char *fname, int todo)
   free(buf);
   return hash;
 }
-
