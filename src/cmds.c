@@ -1901,8 +1901,6 @@ int check_dcc_attrs(struct userrec *u, int oatr)
        if (!(u->flags & USER_HUBA))        
          stat &= ~STAT_CHAT;
 #endif
-       if (issechub() && !(u->flags & USER_HUBA))
-         stat &= ~STAT_CHAT;
        if (ischanhub() && !(u->flags & USER_CHUBA))
          stat &= ~STAT_CHAT;
       }
@@ -1923,13 +1921,7 @@ Context;
       }     
 #endif
 #ifdef LEAF
-      if (issechub() && !(u->flags & (USER_HUBA))) {
-        /* no hub access, drop them. */
-Context;
-        dprintf(i, "-+- POOF! -+-\n");
-        dprintf(i, "You no longer have hub/sechub access.\n\n");
-        do_boot(i, botnetnick, "No hub/sechub access.\n\n");
-      } else if (ischanhub() && !(u->flags & (USER_CHUBA))) {
+      if (ischanhub() && !(u->flags & (USER_CHUBA))) {
 Context;
         /* no chanhub access, drop them. */
         dprintf(i, "-+- POOF! -+-\n");
@@ -2697,8 +2689,6 @@ static void cmd_su(struct userrec *u, int idx, char *par)
       ok = 0;
 #endif
 #ifdef LEAF
-    if (issechub() && !glob_huba(fr))
-      ok = 0;
     if (ischanhub() && !glob_chuba(fr))
       ok = 0;
 #endif

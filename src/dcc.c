@@ -1497,11 +1497,7 @@ static void dcc_telnet_id(int idx, char *buf, int atr)
   /* if I am a chanhub and they dont have +c then drop */
    if (ischanhub() && !glob_chuba(fr))
     ok = 0;
-  /* if I am a sechub and they dont have hub access then drop */
-   if (issechub() && !glob_huba(fr))
-    ok = 0;
-  /* if i am not a sechub and not a chanhub, DROP! */
-   if (!ischanhub() && !issechub())
+   if (!ischanhub())
     ok = 0;
 #endif
   if (!ok && glob_bot(fr))
@@ -1565,8 +1561,6 @@ static void dcc_telnet_pass(int idx, int atr)
    ok2 = 0;
 #endif
 #ifdef LEAF
-  if (issechub() && !glob_huba(fr))
-   ok2 = 0;
   if (ischanhub() && !glob_chuba(fr))
    ok2 = 0;
 #endif
@@ -2004,9 +1998,6 @@ void dcc_telnet_got_ident(int i, char *host)
 #ifdef LEAF
   /* if I am a chanhub and they dont have +c then drop */
     if (ok && (ischanhub() && !(u->flags & USER_CHUBA)))
-      ok = 0;
-  /* if I am a sechub and they dont have hub access then drop */
-    if (ok && (issechub() && !(u->flags & USER_HUBA)))
       ok = 0;
 #endif
 /*    else if (!(u->flags & USER_PARTY))
