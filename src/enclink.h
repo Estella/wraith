@@ -8,8 +8,9 @@
 
 #include <sys/types.h>
 
+/* must leave old ones in here */
 enum {
-        LINK_GHOST = 0,
+        LINK_GHOST = 0,	/* attic */
 	LINK_GHOSTNAT,
         LINK_GHOSTSHA1,
         LINK_GHOSTMD5,
