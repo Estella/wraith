@@ -1385,7 +1385,7 @@ Context;
         sdprintf(STR("exiting due to problem with restarting new binary."));
         exit(1);
       } else {
-	sprintf(STR("exiting to let new binary run.\n"));
+	sdprintf(STR("exiting to let new binary run.\n"));
         exit(0);  //This is to spawn the new binary in the correct place.
       }
     }
