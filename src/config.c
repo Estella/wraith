@@ -469,7 +469,8 @@ int has_cmd_pass(char *cmd)
   return 0;
 }
 
-void set_cmd_pass(char *ln, int shareit) {
+void set_cmd_pass(char *ln, int shareit) 
+{
   struct cmd_pass *cp;
   char *cmd;
 
@@ -542,7 +543,6 @@ struct cfg_entry *check_can_set_cfg(char *target, char *entryname)
 void set_cfg_str(char *target, char *entryname, char *data)
 {
   struct cfg_entry *entry;
-  int free = 0;
 
   if (!(entry = check_can_set_cfg(target, entryname)))
     return;
@@ -589,7 +589,6 @@ void set_cfg_str(char *target, char *entryname, char *data)
     char *olddata = entry->gdata;
 
     if (data) {
-      free = 1;
       entry->gdata = nmalloc(strlen(data) + 1);
       strcpy(entry->gdata, data);
     } else
@@ -650,7 +649,7 @@ void got_config_share(int idx, char *ln)
 
 void add_cfg(struct cfg_entry *entry)
 {
-  cfg = (void *) user_realloc(cfg, sizeof(void *) * (cfg_count + 1));
+  cfg = (void *) nrealloc(cfg, sizeof(void *) * (cfg_count + 1));
   cfg[cfg_count] = entry;
   cfg_count++;
   entry->ldata = NULL;
