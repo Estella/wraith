@@ -4,8 +4,8 @@ utctime="./utctime"
 if ! test -f "$utctime"; then
   gcc -Wall -O2 -o utctime src/utc-time.c
 fi
-unixtime=`${utctime}`
 if cvs commit "$@"; then
+  unixtime=`${utctime}`
   if echo "#define CVSBUILD ${unixtime}			/* utc unixtime of cvs commit */" > src/build.h; then
 	echo "Updated build stamp to: ${unixtime}"
 	echo "Commiting new build.h"
