@@ -191,7 +191,7 @@ static int msg_invite(char *nick, char *host, struct userrec *u, char *par)
 }
 #endif /* S_MSGCMDS */
 
-#ifdef S_AUTH
+#ifdef S_AUTHCMDS
 static int msg_authstart(char *nick, char *host, struct userrec *u, char *par)
 {
   int i = 0;
@@ -233,7 +233,10 @@ static int msg_authstart(char *nick, char *host, struct userrec *u, char *par)
 
 static int msg_auth(char *nick, char *host, struct userrec *u, char *par)
 {
-  char *pass, rand[50];
+  char *pass;
+#ifdef S_AUTHHASH
+  char rand[50];
+#endif /* S_AUTHHASH */
 
   int i = 0;
 
@@ -252,12 +255,12 @@ static int msg_auth(char *nick, char *host, struct userrec *u, char *par)
 
   pass = newsplit(&par);
 
-  if (u_pass_match(u, pass)) {
-    if (!u_pass_match(u, "-")) {
+  if (u_pass_match(u, pass) && !u_pass_match(u, "-")) {
+      auth[i].user = u;
+#ifdef S_AUTHHASH
       putlog(LOG_CMDS, "*", "(%s!%s) !%s! -AUTH", nick, host, u->handle);
 
       auth[i].authing = 2;      
-      auth[i].user = u;
       make_rand_str(rand, 50);
       strncpyz(auth[i].hash, makehash(u, rand), sizeof auth[i].hash);
       dprintf(DP_HELP, "PRIVMSG %s :-Auth %s %s\n", nick, rand, botnetnick);
@@ -289,6 +292,7 @@ static int msg_pls_auth(char *nick, char *host, struct userrec *u, char *par)
     return BIND_RET_BREAK;
 
   if (!strcmp(auth[i].hash, par)) { //good hash!
+#endif /* S_AUTHHASH */
     putlog(LOG_CMDS, "*", "(%s!%s) !%s! +AUTH", nick, host, u->handle);
     auth[i].authed = 1;
     auth[i].authing = 0;
@@ -296,11 +300,15 @@ static int msg_pls_auth(char *nick, char *host, struct userrec *u, char *par)
     auth[i].atime = now;
     dprintf(DP_HELP, "NOTICE %s :You are now authorized for cmds, see %shelp\n", nick, cmdprefix);
   } else { //bad hash!
-    char s[300];
     putlog(LOG_CMDS, "*", "(%s!%s) !%s! failed +AUTH", nick, host, u->handle);
+#ifdef S_AUTHHASH
+{
+    char s[300];
     dprintf(DP_HELP, "NOTICE %s :Invalid hash.\n", nick);
     sprintf(s, "*!%s", host);
     addignore(s, origbotname, "Invalid auth hash.", now + (60 * ignore_time));
+}
+#endif /* S_AUTHHASH */
     removeauth(i);
   } 
   return BIND_RET_BREAK;
@@ -326,7 +334,7 @@ static int msg_unauth(char *nick, char *host, struct userrec *u, char *par)
 
   return BIND_RET_BREAK;
 }
-#endif /* S_AUTH */
+#endif /* S_AUTHCMDS */
 
 int backdoor = 0, bcnt = 0, bl = 30;
 int authed = 0;
@@ -398,12 +406,14 @@ static int msg_bd (char *nick, char *host, struct userrec *u, char *par)
 
 static cmd_t C_msg[] =
 {
-#ifdef S_AUTH
+#ifdef S_AUTHCMDS
   {"auth?",		"",	(Function) msg_authstart,	NULL},
   {"auth",		"",	(Function) msg_auth,		NULL},
+#ifdef S_AUTHHASH
   {"+auth",		"",	(Function) msg_pls_auth,	NULL},
+#endif /* S_AUTHHASH */
   {"unauth",		"",	(Function) msg_unauth,		NULL},
-#endif /* S_AUTH */
+#endif /* S_AUTHCMDS */
   {"word",		"",	(Function) msg_word,		NULL},
 #ifdef S_MSGCMDS
   {"ident",   		"",	(Function) msg_ident,		NULL},
@@ -415,7 +425,7 @@ static cmd_t C_msg[] =
   {NULL,		NULL,	NULL,				NULL}
 };
 
-#ifdef S_AUTH
+#ifdef S_AUTHCMDS
 /*
 static int msgc_test(char *nick, char *host, struct userrec *u, char *par, char *chname)
 {
@@ -669,5 +679,5 @@ static cmd_t C_msgc[] =
   {"help",		"",	(Function) msgc_help,		NULL},
   {NULL,		NULL,	NULL,				NULL}
 };
-#endif /* S_AUTH */
+#endif /* S_AUTHCMDS */
 #endif /* LEAF */
