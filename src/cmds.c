@@ -1538,7 +1538,7 @@ static void cmd_chaddr(struct userrec *u, int idx, char *par)
 #else
   char *handle, *addr, *p, *q;
 #endif /* USE_IPV6 */
-  struct bot_addr *bi;
+  struct bot_addr *bi, *obi;
   struct userrec *u1;
 
   handle = newsplit(&par);
@@ -1562,6 +1562,7 @@ static void cmd_chaddr(struct userrec *u, int idx, char *par)
   putlog(LOG_CMDS, "*", "#%s# chaddr %s %s", dcc[idx].nick, handle, addr);
   dprintf(idx, "Changed bot's address.\n");
 
+  obi = (struct bot_addr *) get_user(&USERENTRY_BOTADDR, u1);
   bi = (struct bot_addr *) get_user(&USERENTRY_BOTADDR, u1);
   if (bi) {
     telnet_port = bi->telnet_port;
@@ -1569,6 +1570,10 @@ static void cmd_chaddr(struct userrec *u, int idx, char *par)
   }
 
   bi = user_malloc(sizeof(struct bot_addr));
+
+  bi->uplink = user_malloc(strlen(obi->uplink) + 1);
+  strcpy(bi->uplink, obi->uplink);
+  bi->hublevel = obi->hublevel;
 
   q = strchr(addr, ':');
   if (!q) {
