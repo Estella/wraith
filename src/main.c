@@ -46,6 +46,7 @@
 #endif /* STOP_UAC */
 #include <sys/file.h>
 #include <sys/stat.h>
+#include <signal.h>
 
 #include "chan.h"
 #include "tandem.h"
