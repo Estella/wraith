@@ -465,6 +465,7 @@ int config_kill(struct user_entry *e)
   return 1;
 }
 
+/* FIXME: possible expmem leak here */
 int config_expmem(struct user_entry *e)
 {
   struct xtra_key *x;
@@ -780,6 +781,7 @@ static int laston_tcl_set(Tcl_Interp * irp, struct userrec *u,
   return TCL_OK;
 }
 
+/* FIXME: possible expmem leak here */
 static int laston_expmem(struct user_entry *e)
 {
   return sizeof(struct laston_info) +
@@ -987,6 +989,7 @@ static int botaddr_tcl_set(Tcl_Interp *irp, struct userrec *u,
   return TCL_OK;
 }
 
+/* FIXME: possible expmem leak here */
 static int botaddr_expmem(struct user_entry *e)
 {
   register struct bot_addr *bi = (struct bot_addr *) e->u.extra;
@@ -1322,6 +1325,9 @@ static int xtra_tcl_get(Tcl_Interp *irp, struct userrec *u,
   return TCL_OK;
 }
 
+/* FIXME: possible expmem leak here 
+ * also, ghost does not have xtra_ it was changed to config
+ */
 static int xtra_expmem(struct user_entry *e)
 {
   struct xtra_key *x;
