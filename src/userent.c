@@ -279,7 +279,7 @@ void config_display(int idx, struct user_entry *e, struct userrec *u)
 {
 #ifdef HUB
   struct xtra_key *xk = NULL;
-  struct flag_record fr = {FR_GLOBAL, 0, 0};
+  struct flag_record fr = {FR_GLOBAL, 0, 0, 0 };
 
   get_user_flagrec(dcc[idx].user, &fr, NULL);
   /* scan thru xtra field, searching for matches */
@@ -378,7 +378,7 @@ struct user_entry_type USERENTRY_CONFIG = {
 #ifdef HUB
 static void botmisc_display(int idx, struct user_entry *e, struct userrec *u)
 {
-  struct flag_record fr = {FR_GLOBAL, 0, 0};
+  struct flag_record fr = {FR_GLOBAL, 0, 0, 0 };
 
   get_user_flagrec(dcc[idx].user, &fr, NULL);
   if (glob_admin(fr))
@@ -588,7 +588,7 @@ struct user_entry_type USERENTRY_PASS =
 
 void secpass_display(int idx, struct user_entry *e, struct userrec *u)
 {
-  struct flag_record fr = {FR_GLOBAL, 0, 0};
+  struct flag_record fr = {FR_GLOBAL, 0, 0, 0 };
 
   get_user_flagrec(dcc[idx].user, &fr, NULL);
 
@@ -789,7 +789,7 @@ static int botaddr_set(struct userrec *u, struct user_entry *e, void *buf)
 #ifdef HUB
 static void botaddr_display(int idx, struct user_entry *e, struct userrec *u)
 {
-  struct flag_record fr = {FR_GLOBAL, 0, 0};
+  struct flag_record fr = {FR_GLOBAL, 0, 0, 0 };
 
   get_user_flagrec(dcc[idx].user, &fr, NULL);
   if (glob_admin(fr)) {

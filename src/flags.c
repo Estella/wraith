@@ -100,7 +100,7 @@ flag_t chan_sanity_check(flag_t chatr, flag_t atr)
  */
 char geticon(int idx)
 {
-  struct flag_record fr = {FR_GLOBAL | FR_CHAN | FR_ANYWH, 0, 0};
+  struct flag_record fr = {FR_GLOBAL | FR_CHAN | FR_ANYWH, 0, 0, 0 };
 
   if (!dcc[idx].user)
     return '-';
@@ -470,7 +470,7 @@ int ischanhub()
 
 int dovoice(struct chanset_t *chan)
 {
-  struct flag_record fr = { FR_GLOBAL | FR_CHAN, 0, 0};
+  struct flag_record fr = { FR_GLOBAL | FR_CHAN, 0, 0, 0 };
 
   if (!chan) return 0;
 
@@ -482,7 +482,7 @@ int dovoice(struct chanset_t *chan)
 
 int dolimit(struct chanset_t *chan)
 {
-  struct flag_record fr = { FR_GLOBAL | FR_CHAN, 0, 0};
+  struct flag_record fr = { FR_GLOBAL | FR_CHAN, 0, 0, 0 };
 
   if (!chan) return 0;
 
@@ -494,7 +494,7 @@ int dolimit(struct chanset_t *chan)
 
 int whois_access(struct userrec *user, struct userrec *whois_user)
 {
-  struct flag_record fr = {FR_GLOBAL | FR_CHAN, 0, 0}, whois = {FR_GLOBAL | FR_CHAN, 0, 0};
+  struct flag_record fr = {FR_GLOBAL | FR_CHAN, 0, 0, 0 }, whois = {FR_GLOBAL | FR_CHAN, 0, 0, 0 };
 
   get_user_flagrec(user, &fr, NULL);
   get_user_flagrec(whois_user, &whois, NULL);
