@@ -13,10 +13,6 @@
 #  include "config.h"
 #endif
 
-#ifdef CYGWIN_HACKS
-#  undef USE_IPV6
-#endif /* CYGWIN_HACKS */
-
 /* AUTHHASH is pointless without AUTHCMDS. */
 #ifdef S_AUTHHASH
 # ifndef S_AUTHCMDS
@@ -24,21 +20,17 @@
 # endif /* !S_AUTHCMDS */
 #endif /* S_AUTHHASH */
 
-
 #include "garble.h"
 #include "conf.h"
 #include "debug.h"
 #include "eggdrop.h"
 #include "flags.h"
-#include "log.h"	/* putlog() */
-#include "dccutil.h"	/* dprintf() */
+#include "log.h"
+#include "dccutil.h"
 #include "chan.h"
 #include "compat/compat.h"
 
-#ifdef HAVE_UNISTD_H
-#  include <unistd.h>
-#endif
-
+#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
