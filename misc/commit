@@ -1,6 +1,9 @@
 #!/bin/sh
 # $Id$
-utctime=`which utctime`
+utctime="./utctime"
+if test -f "$utctime"; then
+  gcc -Wall -O2 -o utctime src/utc-time.c
+fi
 unixtime=`${utctime}`
 if cvs commit "$@"; then
   if echo "#define CVSBUILD ${unixtime}			/* utc unixtime of cvs commit */" > src/build.h; then
@@ -9,7 +12,7 @@ if cvs commit "$@"; then
 	cvs commit -m "Build stamp (Automatic)" src/build.h
    else
 	echo "Failed to update timestamp, bailing out."
-	exit
+	exit 1 
    fi
 fi
-
+rm ${utctime}
