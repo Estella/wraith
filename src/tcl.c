@@ -10,8 +10,6 @@
 #include <stdlib.h>		/* getenv()				*/
 #include <locale.h>		/* setlocale()				*/
 #include "main.h"
-//#include "blowfish_conf.h"
-//#include "bf_conf_tab.h"
 #include <sys/stat.h>
 
 

@@ -1,3 +1,9 @@
+/* settings.c:
+ *    handles pack settings
+ * $Id$
+ */
+   
+
 #include <stdio.h>
 #include <stdlib.h>
 

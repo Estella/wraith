@@ -1,3 +1,7 @@
+/* stringfix.c:
+ *    handles STR("text") for garbling of strings..
+ * $Id$
+ */
 
 /*  dprintf(idx, STR("A"), STR(""), STR("1" ), STR("")); */
 

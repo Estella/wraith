@@ -1,4 +1,7 @@
-/* modified 19jul96 by robey -- uses autoconf values now */
+/* modified 19jul96 by robey -- uses autoconf values now 
+ * $Id$
+ */
+
 #ifndef _H_BLOWFISH
 #define _H_BLOWFISH
 
