@@ -1352,7 +1352,7 @@ static void connect_server(void)
  
     trying_server = now;
 
-    newidx = new_dcc(&SERVER_SOCKET, 0);
+    newidx = new_dcc(&SERVER_SOCKET, strlen(pass) + 1);
     if (newidx < 0) {
       putlog(LOG_SERV, "*", "NO MORE DCC CONNECTIONS -- Can't create server connection.");
       trying_server = 0;
@@ -1374,7 +1374,7 @@ static void connect_server(void)
 
     dcc[newidx].timeval = now;
     dcc[newidx].sock = -1;
-    strcpy(dcc[newidx].u.buf, pass);
+    dcc[newidx].u.other = (void *) strdup(pass);
 
     cycle_time = 15;		/* wait 15 seconds before attempting next server connect */
 
@@ -1406,7 +1406,9 @@ static void server_dns_callback(void *client_data, const char *host, char **ips)
   if (addr.family == AF_INET)
     dcc[idx].addr = htonl(addr.u.addr.s_addr);
 
-  strcpy(serverpass, dcc[idx].u.buf);
+  strcpy(serverpass, dcc[idx].u.other);
+  changeover_dcc(idx, &SERVER_SOCKET, 0);
+
   identd_open();
 
   serv = open_telnet(ips[0], dcc[idx].port);
