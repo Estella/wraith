@@ -1077,6 +1077,7 @@ share_ufsend(int idx, char *par)
     sock = getsock(SOCK_BINARY);        /* Don't buffer this -> mark binary. */
 #endif /* USE_IPV6 */
     if (sock < 0 || open_telnet_dcc(sock, ip, port) < 0) {
+      fclose(f);
       killsock(sock);
       putlog(LOG_BOTS, "@", "Asynchronous connection failed!");
       dprintf(idx, "s e Can't connect to you!\n");
@@ -1093,7 +1094,6 @@ share_ufsend(int idx, char *par)
       dcc[i].u.xfer->f = f;
       dcc[i].sock = sock;
       strcpy(dcc[i].host, dcc[idx].nick);
-
       dcc[idx].status |= STAT_GETTING;
     }
   }
@@ -1432,12 +1432,10 @@ finish_share(int idx)
 
     killsock(dcc[j].sock);
     lostdcc(j);
-
     return;
   }
 
   /* SUCCESS! */
-
 
   unlink(dcc[idx].u.xfer->filename);
 
