@@ -8,7 +8,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "conf.h"
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #define WTF 50720
 int help = 0;

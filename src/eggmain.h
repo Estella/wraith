@@ -13,7 +13,6 @@
 #  include "config.h"
 #endif
 
-#include "conf.h"
 #include "garble.h"
 
 
