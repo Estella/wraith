@@ -351,6 +351,9 @@ share_mns_chrec(int idx, char *par)
       noshare = 0;
       if (conf.bot->hub)
         putlog(LOG_CMDS, "@", "%s: -chrec %s %s", dcc[idx].nick, user, par);
+      else
+        recheck_channel(chan, 0);
+
     }
   }
 }
