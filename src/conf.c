@@ -35,6 +35,7 @@ tellconf(conf_t * inconf)
   int i = 0;
 
   sdprintf("uid: %d\n", inconf->uid);
+  sdprintf("uname: %s\n", inconf->uname);
   sdprintf("homedir: %s\n", inconf->homedir);
   sdprintf("binpath: %s\n", inconf->binpath);
   sdprintf("binname: %s\n", inconf->binname);
