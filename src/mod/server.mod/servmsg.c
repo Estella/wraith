@@ -988,7 +988,7 @@ static void timeout_server(int idx)
   disconnect_server(idx, DO_LOST);
 }
 
-static void server_activity(int, char *, size_t);
+static void server_activity(int, char *, int);
 
 static struct dcc_table SERVER_SOCKET =
 {
@@ -1004,7 +1004,7 @@ static struct dcc_table SERVER_SOCKET =
   NULL
 };
 
-static void server_activity(int idx, char *msg, size_t len)
+static void server_activity(int idx, char *msg, int len)
 {
   char *from = NULL, *code = NULL;
 
