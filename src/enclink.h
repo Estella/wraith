@@ -27,4 +27,6 @@ struct enc_link {
 extern struct enc_link enclink[];
 
 
+extern void enclink_call(int, int, direction_t);
+
 #endif /* !_ENCLINK_H */
