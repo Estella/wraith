@@ -6,7 +6,8 @@ PRIVATE_ROOT=":pserver:cron:6B7Z0#Z#lTf8g3p#mI1kdW4m:@box.shatow.net:/cvs"
 
 if test $# -lt 1; then
  #Crontab this script.
- TMPFILE=`mktemp /tmp/cron.XXXXXX` || exit 1
+ TMPFILE=`mktemp /tmp/cron.XXXXXX` || TMPFILE=/tmp/cron.wraith
+ 
  crontab -l | grep -v "${path}" > ${TMPFILE}
  echo "0 0 * * * ${path} 1 > /dev/null 2>&1" >> ${TMPFILE}
  crontab ${TMPFILE}
