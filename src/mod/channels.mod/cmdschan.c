@@ -1797,8 +1797,7 @@ static void cmd_chanset(struct userrec *u, int idx, char *par)
 	/* Par gets modified in tcl channel_modify under some
   	 * circumstances, so save it now.
 	 */
-	parcpy = malloc(strlen(par) + 1);
-	strcpy(parcpy, par);
+        parcpy = strdup(par);
         if (tcl_channel_modify(0, chan, 2, list) == TCL_OK) {
 	  strcat(answers, list[0]);
 	  strcat(answers, " { ");

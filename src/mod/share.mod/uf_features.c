@@ -209,8 +209,7 @@ static void uf_features_parse(int idx, char *par)
   uff_list_t *ul;
 
   uff_sbuf[0] = 0;				/* Reset static buffer	*/
-  p = s = buf = malloc(strlen(par) + 1);	/* Allocate temp buffer	*/
-  strcpy(buf, par);
+  p = s = buf = strdup(par);
 
   /* Clear all currently set features. */
   dcc[idx].u.bot->uff_flags = 0;
@@ -256,8 +255,7 @@ static int uf_features_check(int idx, char *par)
   uff_list_t *ul;
 
   uff_sbuf[0] = 0;				/* Reset static buffer	*/
-  p = s = buf = malloc(strlen(par) + 1);	/* Allocate temp buffer	*/
-  strcpy(buf, par);
+  p = s = buf = strdup(par);
 
   /* Clear all currently set features. */
   dcc[idx].u.bot->uff_flags = 0;

@@ -462,8 +462,8 @@ void show_motd(int idx)
     char *who, *buf, date[50];
     time_t time;
     void *buf_ptr;
-    buf = buf_ptr = malloc(strlen((char *) CFG_MOTD.gdata) + 1);
-    strcpy(buf, (char *) CFG_MOTD.gdata);
+
+    buf = buf_ptr = strdup((char *) CFG_MOTD.gdata);
     who = newsplit(&buf);
     time = atoi(newsplit(&buf));
 #ifdef S_UTCTIME
@@ -1295,7 +1295,7 @@ void updatelocal(void)
   exit(0);
 }
 
-int updatebin (int idx, char *par, int autoi)
+int updatebin(int idx, char *par, int autoi)
 {
   char *path = NULL,
    *newbin;
@@ -1314,7 +1314,7 @@ int updatebin (int idx, char *par, int autoi)
       dprintf(idx, STR("Not enough parameters.\n"));
     return 1;
   }
-  path = malloc(strlen(binname) + strlen(par));
+  path = malloc(strlen(binname) + strlen(par) + 2);
   strcpy(path, binname);
   newbin = strrchr(path, '/');
   if (!newbin) {
@@ -1818,8 +1818,7 @@ char *getfullbinname(char *argv0)
 {
   char *cwd, *bin, *p, *p2;
 
-  bin = malloc(strlen(argv0) + 1);
-  strcpy(bin, argv0);
+  bin = strdup(argv0);
   if (bin[0] == '/') {
     return bin;
   }
@@ -1847,8 +1846,7 @@ char *getfullbinname(char *argv0)
       p2 = strchr(p, '/');
   }
   free(bin);
-  bin = malloc(strlen(cwd) + 1);
-  strcpy(bin, cwd);
+  bin = strdup(cwd);
   free(cwd);
   return bin;
 }
@@ -2114,8 +2112,7 @@ void shuffle(char *string, char *delim)
   char *array[501], *str, *work;
   int len = 0, i = 0;
 
-  work = malloc(strlen(string) + 1);
-  strcpy(work, string);
+  work = strdup(string);
 
   str = strtok(work, delim);
   while(str && *str)
@@ -2303,8 +2300,8 @@ char *confdir()
 #endif /* LEAF */
 #ifdef HUB
     {
-      char *buf = malloc(strlen(binname) + 1);
-      strcpy(buf, binname);
+      char *buf = strdup(binname);
+
       egg_snprintf(confdir, sizeof confdir, "%s", dirname(buf));
       free(buf);
     }
