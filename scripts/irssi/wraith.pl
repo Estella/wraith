@@ -6,7 +6,7 @@ use Irssi 20020121.2020 ();
 $VERSION = "1.01";
 %IRSSI = (
           authors     => 'lordares P38',
-          contact     => 'lordares\@shatow.net, lordares on EFnet',
+          contact     => 'lordares@shatow.net, lordares on EFnet',
           name        => 'wraith-auth',
           description => 'private auth script for botpack wraith',
           license     => 'ALL?',
@@ -39,7 +39,7 @@ sub auth($) {
     $hash = $words[0];
   }
 
-  Irssi::print "Authing: $hash";
+#  Irssi::print "Authing: $hash";
 
   $secpass = Irssi::settings_get_str('auth_secpass');
   $authkey = Irssi::settings_get_str('auth_authkey');
@@ -96,9 +96,10 @@ Irssi::signal_add "dcc chat message", sub {
   
 };
 
-Irssi::settings_add_str('auth', 'auth_password', '');
+#Irssi::settings_add_str('auth', 'auth_password', '');
 Irssi::settings_add_str('auth', 'auth_secpass', '');
 Irssi::settings_add_str('auth', 'auth_authkey', '');
 
 Irssi::command_bind("auth", "cmd_auth");
 
+Irssi::print "Wraith authorization script by lordares loaded. \$Rev: \$";
