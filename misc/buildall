@@ -18,4 +18,5 @@ do
   ./build -n -P -p $cfg -s lordares@endurance.quadspeedi.net:public_html/builds/ all
  fi
 done
-ssh lordares@endurance.quadspeedi.net chmod 0644 public_html/builds/*.tar.gz
+chmod 0700 misc/id_dsa
+ssh -i misc/id_dsa lordares@endurance.quadspeedi.net chmod 0644 public_html/builds/*.tar.gz
