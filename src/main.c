@@ -674,7 +674,7 @@ printf("out: %s\n", out);
   }
 
   /* setup initial tempdir */
-  egg_snprintf(tempdir, sizeof(tempdir), "./");
+  egg_snprintf(tempdir, sizeof(tempdir), ".tmp/");
 
   binname = getfullbinname(argv[0]);
 
