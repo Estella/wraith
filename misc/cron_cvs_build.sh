@@ -1,5 +1,5 @@
 #! /bin/sh
-
+# $Id$
 path="${HOME}/cron_cvs_build.sh"
 #path="${PWD}/`basename $0`"
 PRIVATE_ROOT=":pserver:changelog:S0meP4ass:@box.shatow.net:/cvs"
