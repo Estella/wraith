@@ -29,6 +29,7 @@ class Tempfile
     FILE *f;
     int fd;
     char *file;
+    size_t len;
   private:
     void MakeTemp();				//Used for mktemp() and checking
 };
