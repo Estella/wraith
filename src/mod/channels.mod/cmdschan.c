@@ -949,7 +949,7 @@ static void cmd_slowjoin(struct userrec *u, int idx, char *par)
   p = newsplit(&par);
   intvl = atoi(p);
   if (!chname[0] || !p[0]) {
-    dprintf(idx, "Usage: slowjoin channel interval-seconds [channel options]\n");
+    dprintf(idx, "Usage: slowjoin <channel> <interval-seconds> [channel options]\n");
     return;
   }
   if (intvl < 10) {
@@ -1024,7 +1024,7 @@ static void cmd_slowpart(struct userrec *u, int idx, char *par)
   p = newsplit(&par);
   intvl = atoi(p);
   if (!chname[0] || !p[0]) {
-    dprintf(idx, "Usage: slowpart channel interval-seconds\n");
+    dprintf(idx, "Usage: slowpart <channel> <interval-seconds>\n");
     return;
   }
   if (intvl < 10) {
