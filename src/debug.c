@@ -171,7 +171,9 @@ static void write_debug()
 }
 #endif /* DEBUG_CONTEXT */
 
+#ifndef DEBUG_CONTEXT
 static void got_bus(int) __attribute__ ((noreturn));
+#endif /* DEBUG_CONTEXT */
 
 static void got_bus(int z)
 {
@@ -240,7 +242,9 @@ stackdump(int idx)
 };
 #endif /* !CYGWIN_HACKS */
 
+#ifndef DEBUG_CONTEXT
 static void got_segv(int) __attribute__ ((noreturn));
+#endif /* DEBUG_CONTEXT */
 
 static void got_segv(int z)
 {
@@ -280,7 +284,9 @@ static void got_term(int z)
   exit(1);		/* for GCC noreturn */
 }
 
+#ifndef DEBUG_CONTEXT
 static void got_abort(int) __attribute__ ((noreturn));
+#endif /* DEBUG_CONTEXT */
 
 static void got_abort(int z)
 {
