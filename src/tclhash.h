@@ -7,6 +7,7 @@
 #ifndef _EGG_TCLHASH_H
 #define _EGG_TCLHASH_H
 
+#include "cmds.h"
 
 #define TC_DELETED	0x0001	/* This command/trigger was deleted.	*/
 

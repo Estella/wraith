@@ -7,6 +7,8 @@
  */
 
 #include "eggmain.h"
+#include "bg.h"
+#include "main.h"
 #include <signal.h>
 
 

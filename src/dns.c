@@ -8,6 +8,9 @@
  */
 
 #include "eggmain.h"
+#include "dccutil.h"
+#include "net.h"
+#include "misc.h"
 #include <netdb.h>
 #include <setjmp.h>
 #include <sys/socket.h>

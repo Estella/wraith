@@ -23,6 +23,8 @@
  *
  */
 #include "eggmain.h"
+#include "match.h"
+#include "rfc1459.h"
 
 #define QUOTE '\\' /* quoting character (overrides wildcards) */
 #define WILDS '*'  /* matches 0 or more characters (including spaces) */
