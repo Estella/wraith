@@ -1203,7 +1203,7 @@ dcc_telnet(int idx, char *buf, int i)
   IP ip;
   port_t port;
   int j = 0, sock;
-  char s[UHOSTLEN + 1] = "";
+  char s[UHOSTLEN + 1] = "", x[1024] = "";
 
   if (dcc_total + 1 > max_dcc) {
     j = answer(dcc[idx].sock, s, &ip, &port, 0);
@@ -1231,6 +1231,12 @@ dcc_telnet(int idx, char *buf, int i)
 #endif
 
     putlog(LOG_BOTS, "*", DCC_BADSRC, s, port);
+    killsock(sock);
+    return;
+  }
+
+  sprintf(x, "-telnet!telnet@%s", iptostr(htonl(ip)));
+  if (match_ignore(x) || detect_telnet_flood(x)) {
     killsock(sock);
     return;
   }
