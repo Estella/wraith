@@ -901,8 +901,8 @@ gotmode(char *from, char *msg)
 
       if (!isserver) {
         char **modes = (char **) calloc(modesperline + 1, sizeof(char *));
-        char tmp[1024] = "", *p = NULL, work[1024] = "", *wptr = work, sign = '+', *mp;
-        int modecnt = 0, i = 0, n = 0, ops = 0, deops = 0, bans = 0, unbans = 0;
+        char *p = NULL, work[1024] = "", *wptr = work, sign = '+', *mp;
+        int modecnt = 0, ops = 0, deops = 0, bans = 0, unbans = 0;
         bool me_opped = 0;
 
         /* Split up the mode: #chan modes param param param param */
@@ -926,9 +926,12 @@ gotmode(char *from, char *msg)
                 if (sign == '+') {
                   ops++;
                   if (match_my_nick(mp))
-                    me_opped++;
-                } else
+                    me_opped = 1;
+                } else {
                   deops++;
+                  if (match_my_nick(mp))
+                    me_opped = 0;
+                }
               }
               if (p[0] == 'b') {
                 if (sign == '+')
@@ -953,6 +956,8 @@ gotmode(char *from, char *msg)
 
         /* check for mdop */
         if (me_op(chan)) {
+          char tmp[1024] = "";
+
           if (role && (!u || (u && !u->bot)) && m && !chan_sentkick(m)) {
             if (deops >= 3) {
               m->flags |= SENTKICK;
@@ -979,6 +984,8 @@ gotmode(char *from, char *msg)
             }
           }
           if (ops && u) {
+            int i = 0, n = 0;
+
             if (u->bot && !channel_fastop(chan) && !channel_take(chan)) {
               int isbadop = 0;
 
@@ -1096,7 +1103,7 @@ gotmode(char *from, char *msg)
             }
           }
         }
-        for (i = 0; i < modecnt; i++)
+        for (int i = 0; i < modecnt; i++)
           if (modes[i])
             free(modes[i]);
         free(modes);
