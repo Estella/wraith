@@ -517,7 +517,7 @@ void got_config_share(int idx, char *ln)
   int i;
   struct cfg_entry *cfgent = NULL;
 
-  cfg_noshare++;
+  cfg_noshare = 1;
   name = newsplit(&ln);
   for (i = 0; !cfgent && (i < cfg_count); i++)
     if (!strcmp(cfg[i]->name, name))
@@ -527,7 +527,7 @@ void got_config_share(int idx, char *ln)
     botnet_send_cfg_broad(idx, cfgent);
   } else
     putlog(LOG_ERRORS, "*", STR("Unrecognized config entry %s in userfile"), name);
-  cfg_noshare--;
+  cfg_noshare = 0;
 }
 
 void trigger_cfg_changed()
