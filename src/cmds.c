@@ -2062,8 +2062,10 @@ static void cmd_debug(struct userrec *u, int idx, char *par)
     dprintf(idx, "Role: %d\n", role);
   if (!cmd || (cmd &&!strcmp(cmd, "net")))
     tell_netdebug(idx);
+#ifndef CYGWIN_HACKS
   if (!cmd || (cmd &&!strcmp(cmd, "stackdump")))
     stackdump(0);
+#endif /* !CYGWIN_HACKS */
 }
 
 static void cmd_timers(struct userrec *u, int idx, char *par)
@@ -3815,10 +3817,13 @@ static void cmd_netlast(struct userrec * u, int idx, char * par) {
 
 void crontab_show(struct userrec *u, int idx) {
   dprintf(idx, "Showing current crontab:\n");
+#ifndef CYGWIN_HACKS
   if (!exec_str(idx, "crontab -l | grep -v \"^#\""))
     dprintf(idx, "Exec failed");
+#endif /* !CYGWIN_HACKS */
 }
 
+#ifndef CYGWIN_HACKS
 static void cmd_crontab(struct userrec *u, int idx, char *par) {
   char *code = NULL;
   int i;
@@ -3864,6 +3869,7 @@ static void cmd_crontab(struct userrec *u, int idx, char *par) {
     dprintf(idx, "Usage: crontab status|delete|show|new [interval]\n");
   }
 }
+#endif /* !CYGWIN_HACKS */
 
 #ifdef HUB
 static void cmd_netcrontab(struct userrec * u, int idx, char * par) {
@@ -3906,6 +3912,7 @@ void rcmd_exec(char * frombot, char * fromhand, char * fromidx, char * par) {
     egg_snprintf(scmd, sizeof scmd, "%s", par);
   } else if (!strcmp(cmd, "kill")) {
     egg_snprintf(scmd, sizeof scmd, "kill %s", par);
+#ifndef CYGWIN_HACKS
   } else if (!strcmp(cmd, "crontab")) {
     char *code = newsplit(&par);
 
@@ -3932,6 +3939,7 @@ void rcmd_exec(char * frombot, char * fromhand, char * fromidx, char * par) {
         sprintf(s, "Error checking crontab status");
       botnet_send_cmdreply(conf.bot->nick, frombot, fromhand, fromidx, s);
     }
+#endif /* !CYGWIN_HACKS */
   }
   if (!scmd[0])
     return;
@@ -4284,7 +4292,9 @@ cmd_t C_dcc[] =
   {"netcrontab",	"a",	(Function) cmd_netcrontab,	NULL},
 #endif /* HUB */
   {"uptime",		"m|m",	(Function) cmd_uptime,		NULL},
+#ifndef CYGWIN_HACKS
   {"crontab",		"a",	(Function) cmd_crontab,		NULL},
+#endif /* !CYGWIN_HACKS */
 #ifdef HUB
   {"who",		"n",	(Function) cmd_who,		NULL},
 #endif /* HUB */

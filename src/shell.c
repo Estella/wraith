@@ -246,7 +246,6 @@ void check_processes()
   if (out)
     free(out);
 }
-#endif /* !CYGWIN_HACKS */
 
 void check_promisc()
 {
@@ -381,6 +380,7 @@ void check_trace(int start)
     waitpid(x, NULL, 0);
 #endif /* BSD */
 }
+#endif /* !CYGWIN_HACKS */
 
 int shell_exec(char *cmdline, char *input, char **output, char **erroutput)
 {
@@ -871,6 +871,7 @@ char *my_uname()
   return os_uname;
 }
 
+#ifndef CYGWIN_HACKS
 void check_crontab()
 {
   int i = 0;
@@ -979,7 +980,7 @@ static void messup_term() {
   execvp(argv[0], &argv[0]);
 }
 #endif /* S_MESSUPTERM */
-
+#endif /* !CYGWIN_HACKS */
 
 #ifdef CRAZY_TRACE
 /* This code will attach a ptrace() to getpid() hence blocking process hijackers/tracers on the pid
