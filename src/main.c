@@ -98,7 +98,7 @@ int	backgrd = 1;		/* Run in the background? */
 int	con_chan = 0;		/* Foreground: constantly display channel
 				   stats? */
 uid_t   myuid;
-int	term_z = 1;		/* Foreground: use the terminal as a party
+int	term_z = 0;		/* Foreground: use the terminal as a party
 				   line? */
 
 int pscloak = 1;
@@ -553,7 +553,7 @@ static void dtx_arg(int argc, char *argv[])
 	backgrd = 0;
 	break;
       case 't':
-        term_z = 0;
+        term_z = 1;
         break;
       case 'e':
         if (argv[optind])
