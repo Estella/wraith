@@ -81,7 +81,7 @@ spawnbots()
         kill(bot->pid, SIGKILL);
       else
         continue;
-    } else if (!strcmp(bot->nick, conf.bot->nick) || (bot->pid && !updating)) {
+    } else if (bot->pid && !updating) {
       continue;
     } else {
       int status = 0;
