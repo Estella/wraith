@@ -4,7 +4,7 @@
  * $Id$
  */
 
-#include "main.h"
+#include "eggmain.h"
 #include "snprintf.h"
 
 

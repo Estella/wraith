@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "main.h"
+#include "eggmain.h"
 #include "users.h"
 #include "chan.h"
 #include "modules.h"

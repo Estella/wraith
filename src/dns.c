@@ -7,7 +7,7 @@
  * $Id$
  */
 
-#include "main.h"
+#include "eggmain.h"
 #include <netdb.h>
 #include <setjmp.h>
 #include <sys/socket.h>

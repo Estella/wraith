@@ -25,7 +25,7 @@
  * --+ Dagmar
  */
 
-#include "main.h"
+#include "eggmain.h"
 
 int _rfc_casecmp(const char *s1, const char *s2)
 {

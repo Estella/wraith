@@ -8,7 +8,7 @@
  */
 
 
-#include "main.h"
+#include "eggmain.h"
 #include <setjmp.h>
 #include <signal.h>
 #include <sys/types.h>

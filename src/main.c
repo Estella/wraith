@@ -7,7 +7,7 @@
  * $Id$
  */
 
-#include "main.h"
+#include "eggmain.h"
 #include "build.h"
 #include <libgen.h>
 #include <time.h>

@@ -3,7 +3,7 @@
  *
  * $Id$
  */
-#include "main.h"
+#include "eggmain.h"
 #include "memset.h"
 
 #ifndef HAVE_MEMSET

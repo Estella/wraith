@@ -5,7 +5,7 @@
  * $Id$
  */
 
-#include "main.h"
+#include "eggmain.h"
 
 extern int		 use_console_r, debug_output, noshare,
 			 allow_dk_cmds;

@@ -10,7 +10,7 @@
  * $Id$
  */
 
-#include "main.h"
+#include "eggmain.h"
 #include "tandem.h"
 #include "core_binds.h"
 

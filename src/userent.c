@@ -5,7 +5,7 @@
  * $Id$
  */
 
-#include "main.h"
+#include "eggmain.h"
 #include "users.h"
 
 extern int		 noshare, cfg_noshare, cfg_count;

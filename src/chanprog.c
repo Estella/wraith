@@ -10,7 +10,7 @@
  * $Id$
  */
 
-#include "main.h"
+#include "eggmain.h"
 #if HAVE_GETRUSAGE
 #include <sys/resource.h>
 #if HAVE_SYS_RUSAGE_H

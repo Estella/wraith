@@ -7,7 +7,7 @@
  * $Id$
  */
 
-#include "main.h"
+#include "eggmain.h"
 #include <ctype.h>
 #include <errno.h>
 #include "modules.h"

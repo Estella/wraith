@@ -5,7 +5,7 @@
  * $Id$
  */
 
-#include "src/main.h"
+#include "src/eggmain.h"
 #include "strftime.h"
 
 #ifndef HAVE_STRFTIME

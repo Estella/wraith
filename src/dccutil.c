@@ -10,7 +10,7 @@
  */
 
 #include <sys/stat.h>
-#include "main.h"
+#include "eggmain.h"
 #include <errno.h>
 #include "chan.h"
 #include "modules.h"

@@ -6,7 +6,7 @@
  */
 
 
-#include "main.h"
+#include "eggmain.h"
 #include "inet_ntop.h"
 
 #if defined(USE_IPV6) && !defined(HAVE_INET_NTOP)
