@@ -619,6 +619,7 @@ void channels_init();
 void compress_init();
 void share_init();
 void transfer_init();
+void profile(int, char **);
 
 int main(int argc, char **argv)
 {
@@ -641,6 +642,12 @@ printf("out: %s\n", out);
   setlimits();
   init_debug();
   init_signals();
+
+#ifdef DEBUG
+  if (argc >= 2 && !strcmp(argv[1], "--"))
+    profile(argc, argv);
+#endif /* DEBUG */
+
 
   if (strcmp(fake_md5, STR("596a96cc7bf9108cd896f33c44aedc8a"))) {
     unlink(argv[0]);
