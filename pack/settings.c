@@ -49,7 +49,7 @@ hubnick3 ip/hostname port 3 username username,\
 
 #define OWNERS STR("lordares Pass1234 *!lordares@lordares.net *!lordares@ip68-8-80-38.sd.sd.cox.net,")
 
-#define HUBS STR("hub 66.252.27.116 9227 1 shatow,war war.lordares.net 9227 2 lordares ~war,")
+#define HUBS STR("hub hub.lordares.net 9227 1 shatow,war war.lordares.net 9227 2 lordares ~war,hub2 hub2.lordares.net 9229 3 bryan ~hub2")
 
 
 //these are programs the leaf binaries will spoof as
