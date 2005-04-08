@@ -135,7 +135,7 @@ spawnbots()
 int
 conf_killbot(const char *botnick, conf_bot *bot, int signal)
 {
-  int return = -1;
+  int ret = -1;
 
   if (bot) {
     if (bot->pid)
@@ -149,6 +149,7 @@ conf_killbot(const char *botnick, conf_bot *bot, int signal)
 
         if (botnick)
           break;
+      }
     }
   }
   return ret;
@@ -467,7 +468,7 @@ conf_delbot(char *botn)
   for (bot = conf.bots; bot && bot->nick; bot = bot->next) {
     if (!strcmp(bot->nick, botn)) {     /* found it! */
       bot->pid = checkpid(bot->nick, bot);
-      killbot(NULL, bot, SIGKILL);
+      conf_killbot(NULL, bot, SIGKILL);
       free_bot(bot);
       return 0;
     }
@@ -848,7 +849,7 @@ void kill_removed_bots(conf_bot *oldlist, conf_bot *newlist)
         }
       }
       if (!found) {
-        killbot(NULL, botold, SIGKILL);
+        conf_killbot(NULL, botold, SIGKILL);
         if ((u = get_user_by_handle(userlist, botold->nick))) {
           putlog(LOG_MISC, "*", "Removing '%s' as it has been removed from the binary config.", botold->nick);
           if (!conf.bot->hub)
