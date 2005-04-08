@@ -204,7 +204,6 @@ static void expire_simuls() {
 //        if (dcc[idx].irc)
 //          auth[dcc[idx].auth].idx = -1;
         lostdcc(idx);
-        return;		/* only safe to do one at a time */
       }
     }
   }
