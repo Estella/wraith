@@ -512,8 +512,7 @@ void answer_local_whom(int idx, int chan)
         dprintf(idx, format, c, party[i].nick, (party[i].chan == 0) && (chan == (-1)) ? '+' : ' ', idle);
 
       if (party[i].status & PLSTAT_AWAY)
-	dprintf(idx, "   %s: %s\n", MISC_AWAY,
-		party[i].away ? party[i].away : "");
+	dprintf(idx, "   AWAY: %s\n", party[i].away ? party[i].away : "");
     }
   }
   dprintf(idx, "Total users: %d\n", total);
@@ -960,7 +959,7 @@ int botlink(char *linker, int idx, char *nick)
       dprintf(idx, "%s\n", BOT_CANTLINKMYSELF);
   } else if (in_chain(nick) && (idx != -3)) {
     if (idx >= 0)
-      dprintf(idx, "%s\n", BOT_ALREADYLINKED);
+      dprintf(idx, "That bot is already connected up.\n");
   } else {
     register int i;
 
@@ -969,7 +968,7 @@ int botlink(char *linker, int idx, char *nick)
 	  ((dcc[i].type == &DCC_FORK_BOT) ||
 	   (dcc[i].type == &DCC_BOT_NEW))) {
 	if (idx >= 0)
-	  dprintf(idx, "%s\n", BOT_ALREADYLINKING);
+	  dprintf(idx, "Already linking to that bot\n");
 	return 0;
       }
     }
@@ -978,9 +977,8 @@ int botlink(char *linker, int idx, char *nick)
 
     if (!bi || !strlen(bi->address) || !bi->telnet_port || (bi->telnet_port <= 0)) {
       if (idx >= 0) {
-	dprintf(idx, "%s '%s'.\n", BOT_NOTELNETADDY, nick);
-	dprintf(idx, "%s .chaddr %s %s\n",
-		MISC_USEFORMAT, nick, MISC_CHADDRFORMAT);
+	dprintf(idx, "Invalid telnet address:port stored for '%s'.\n", nick);
+	dprintf(idx, "Use: %schaddr %s <address>:<port#>[/<relay-port#>]\n", settings.dcc_prefix, nick);
       }
     } else if (dcc_total == max_dcc) {
       if (idx >= 0)
@@ -989,7 +987,7 @@ int botlink(char *linker, int idx, char *nick)
       correct_handle(nick);
 
       if (idx > -2)
-	putlog(LOG_BOTS, "*", "%s %s at %s:%d ...", BOT_LINKING, nick,
+	putlog(LOG_BOTS, "*", "Linking to %s at %s:%d ...", nick,
 	       bi->address, bi->telnet_port);
 
       i = new_dcc(&DCC_DNSWAIT, sizeof(struct dns_info));
@@ -1081,8 +1079,7 @@ static void failed_tandem_relay(int idx)
       uidx = i;
   }
   if (uidx < 0) {
-    putlog(LOG_MISC, "*", "%s  %d -> %d", BOT_CANTFINDRELAYUSER,
-	   dcc[idx].sock, dcc[idx].u.relay->sock);
+    putlog(LOG_MISC, "*", "Can't find user for relay!  %d -> %d", dcc[idx].sock, dcc[idx].u.relay->sock);
     killsock(dcc[idx].sock);
     lostdcc(idx);
     return;
@@ -1090,7 +1087,7 @@ static void failed_tandem_relay(int idx)
   if (dcc[idx].port >= dcc[idx].u.relay->port + 3) {
     struct chat_info *ci = dcc[uidx].u.relay->chat;
 
-    dprintf(uidx, "%s %s.\n", BOT_CANTLINKTO, dcc[idx].nick);
+    dprintf(uidx, "Could not link to %s.\n", dcc[idx].nick);
     dcc[uidx].status = dcc[uidx].u.relay->old_status;
     free(dcc[uidx].u.relay);
     dcc[uidx].u.chat = ci;
@@ -1141,9 +1138,8 @@ void tandem_relay(int idx, char *nick, register int i)
   struct bot_addr *bi = (struct bot_addr *) get_user(&USERENTRY_BOTADDR, u);
 
   if (!bi || !strlen(bi->address) || !bi->relay_port || (bi->relay_port <= 0)) {
-    dprintf(idx, "%s '%s'.\n", BOT_NOTELNETADDY, nick);
-    dprintf(idx, "%s .chaddr %s %s\n",
-	    MISC_USEFORMAT, nick, MISC_CHADDRFORMAT);
+    dprintf(idx, "Invalid telnet address:port stored for '%s'.\n", nick);
+    dprintf(idx, "Use: %schaddr %s <address>:<port#>[/<relay-port#>]\n", settings.dcc_prefix, nick);
 
     return;
   }
@@ -1163,7 +1159,7 @@ void tandem_relay(int idx, char *nick, register int i)
   strcpy(dcc[i].host, bi->address);
   if (conf.bot->hub) 
     dprintf(idx, "%s %s @ %s:%d ...\n", BOT_CONNECTINGTO, nick, bi->address, bi->relay_port);
-  dprintf(idx, "%s\n", BOT_BYEINFO1);
+  dprintf(idx, "(Type *BYE* on a line by itself to abort.)\n");
   dcc[idx].type = &DCC_PRE_RELAY;
 
   struct chat_info *ci = dcc[idx].u.chat;
@@ -1194,7 +1190,7 @@ static void tandem_relay_dns_callback(int id, void *client_data, const char *hos
     idx = dcc[i].u.dns->ibuf;
   
   if (idx < 0) {
-    putlog(LOG_MISC, "*", "%s  %d -> %d", BOT_CANTFINDRELAYUSER, i, idx);
+    putlog(LOG_MISC, "*", "Can't find user for relay!  %d -> %d", i, idx);
     lostdcc(i);
     return;
   }
@@ -1202,7 +1198,7 @@ static void tandem_relay_dns_callback(int id, void *client_data, const char *hos
   if (!ips) {
     struct chat_info *ci = dcc[idx].u.relay->chat;
 
-    dprintf(idx, "%s %s.\n", BOT_CANTLINKTO, dcc[i].nick);
+    dprintf(idx, "Could not link to %s.\n", dcc[i].nick);
     dcc[idx].status = dcc[idx].u.relay->old_status;
     free(dcc[idx].u.relay);
     dcc[idx].u.chat = ci;
@@ -1219,7 +1215,7 @@ static void tandem_relay_dns_callback(int id, void *client_data, const char *hos
 
   if (dcc[i].sock < 0) {
     lostdcc(i);
-    dprintf(idx, "%s\n", MISC_NOFREESOCK);
+    dprintf(idx, "No free sockets available.\n");
     return;
   }
 
@@ -1269,8 +1265,7 @@ static void pre_relay(int idx, char *buf, register int len)
     }
   }
   if (tidx < 0) {
-    putlog(LOG_MISC, "*", "%s  %d -> %d", BOT_CANTFINDRELAYUSER,
-	   dcc[idx].sock, dcc[idx].u.relay->sock);
+    putlog(LOG_MISC, "*", "Can't find user for relay!  %d -> %d", dcc[idx].sock, dcc[idx].u.relay->sock);
     killsock(dcc[idx].sock);
     lostdcc(idx);
     return;
@@ -1279,9 +1274,9 @@ static void pre_relay(int idx, char *buf, register int len)
     /* Disconnect */
     struct chat_info *ci = dcc[idx].u.relay->chat;
 
-    dprintf(idx, "%s %s.\n", BOT_ABORTRELAY1, dcc[tidx].nick);
-    dprintf(idx, "%s %s.\n\n", BOT_ABORTRELAY2, conf.bot->nick);
-    putlog(LOG_MISC, "*", "%s %s -> %s", BOT_ABORTRELAY3, dcc[idx].nick, dcc[tidx].nick);
+    dprintf(idx, "Aborting relay attempt to %s.\n", dcc[tidx].nick);
+    dprintf(idx, "You are now back on %s.\n\n", conf.bot->nick);
+    putlog(LOG_MISC, "*", "Relay aborted: %s -> %s", dcc[idx].nick, dcc[tidx].nick);
     dcc[idx].status = dcc[idx].u.relay->old_status;
     free(dcc[idx].u.relay);
     dcc[idx].u.chat = ci;
@@ -1315,8 +1310,7 @@ static void failed_pre_relay(int idx)
     }
   }
   if (tidx < 0) {
-    putlog(LOG_MISC, "*", "%s  %d -> %d", BOT_CANTFINDRELAYUSER,
-	   dcc[idx].sock, dcc[idx].u.relay->sock);
+    putlog(LOG_MISC, "*", "Can't find user for relay!  %d -> %d", dcc[idx].sock, dcc[idx].u.relay->sock);
     killsock(dcc[idx].sock);
     lostdcc(idx);
     return;
@@ -1351,8 +1345,7 @@ static void cont_tandem_relay(int idx, char *buf, register int len)
   }
 
   if (uidx < 0) {
-    putlog(LOG_MISC, "*", "%s  %d -> %d", BOT_CANTFINDRELAYUSER,
-	   dcc[idx].sock, dcc[idx].u.relay->sock);
+    putlog(LOG_MISC, "*", "Can't find user for relay!  %d -> %d", dcc[idx].sock, dcc[idx].u.relay->sock);
     killsock(dcc[idx].sock);
     lostdcc(idx);
     return;
@@ -1361,7 +1354,7 @@ static void cont_tandem_relay(int idx, char *buf, register int len)
   dcc[idx].u.relay->sock = dcc[uidx].sock;
   dcc[uidx].u.relay->sock = dcc[idx].sock;
   dprintf(uidx, "%s %s ...\n", BOT_RELAYSUCCESS, dcc[idx].nick);
-  dprintf(uidx, "%s\n\n", BOT_BYEINFO2);
+  dprintf(uidx, "(You can type *BYE* to prematurely close the connection.)\n\n");
   putlog(LOG_MISC, "*", "%s %s -> %s", BOT_RELAYLINK,
 	 dcc[uidx].nick, dcc[idx].nick);
 
@@ -1369,8 +1362,7 @@ static void cont_tandem_relay(int idx, char *buf, register int len)
   dcc[uidx].type = &DCC_CHAT;
   dcc[uidx].u.chat = ri->chat;
   if (dcc[uidx].u.chat->channel >= 0) {
-    chanout_but(-1, dcc[uidx].u.chat->channel, "*** %s %s\n",
-		dcc[uidx].nick, BOT_PARTYLEFT);
+    chanout_but(-1, dcc[uidx].u.chat->channel, "*** %s left the party line.\n", dcc[uidx].nick);
     if (dcc[uidx].u.chat->channel < GLOBAL_CHANS)
       botnet_send_part_idx(uidx, NULL);
   }
@@ -1492,7 +1484,7 @@ static void dcc_relaying(int idx, char *buf, int j)
   if (dcc[idx].status & STAT_TELNET)
     dprintf(idx, TLN_IAC_C TLN_WONT_C TLN_ECHO_C "\n");
   dprintf(idx, "\n(%s %s.)\n", BOT_BREAKRELAY, dcc[j].nick);
-  dprintf(idx, "%s %s.\n\n", BOT_ABORTRELAY2, conf.bot->nick);
+  dprintf(idx, "You are now back on %s.\n\n", conf.bot->nick);
   putlog(LOG_MISC, "*", "%s: %s -> %s", BOT_RELAYBROKEN, dcc[idx].nick, dcc[j].nick);
   if (dcc[idx].u.relay->chat->channel >= 0) {
     chanout_but(-1, dcc[idx].u.relay->chat->channel, "*** %s joined the party line.\n", dcc[idx].nick);
