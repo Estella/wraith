@@ -180,6 +180,7 @@ bin_checksum(const char *fname, int todo)
     }
 
     fclose(f);
+    fclose(newbin->f);
 
     if (size != newpos) {
       delete newbin;
