@@ -402,7 +402,6 @@ static void cmd_botconfig(int idx, char *par)
 static void cmd_cmdpass(int idx, char *par)
 {
   char *cmd = NULL, *pass = NULL;
-  int i;
 
   /* cmdpass [command [newpass]] */
   cmd = newsplit(&par);
