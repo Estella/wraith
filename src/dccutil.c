@@ -324,7 +324,7 @@ chatout(const char *format, ...)
     *p++ = 0;
 
   for (int i = 0; i < dcc_total; i++)
-    if (dcc[i].type && (dcc[i].type == &DCC_CHAT) && !(dcc[i].simul))
+    if (dcc[i].type && (dcc[i].type == &DCC_CHAT) && (dcc[i].simul == -1))
       if (dcc[i].u.chat->channel >= 0)
         dprintf(i, "%s\n", s);
 }
@@ -345,7 +345,7 @@ chanout_but(int x, int chan, const char *format, ...)
     *p = 0;
 
   for (int i = 0; i < dcc_total; i++)
-    if (dcc[i].type && (dcc[i].type == &DCC_CHAT) && (i != x) && !(dcc[i].simul))
+    if (dcc[i].type && (dcc[i].type == &DCC_CHAT) && (i != x) && (dcc[i].simul == -1))
       if (dcc[i].u.chat->channel == chan)
         dprintf(i, "%s\n", s);
 }
