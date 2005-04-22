@@ -51,6 +51,8 @@ static const char rcsid[] = "$Id$";
 #include <unistd.h>
 #include <dirent.h>
 
+bool clear_tmpdir = 0;
+
 #ifdef WIN32
 int
 my_system(const char *run)
@@ -79,12 +81,15 @@ my_system(const char *run)
 }
 #endif /* WIN32 */
 
-int clear_tmp()
+void clear_tmp()
 {
+  if (!clear_tmpdir)
+    return;
+
   DIR *tmp = NULL;
 
   if (!(tmp = opendir(tempdir))) 
-    return 1;
+    return;
 
   struct dirent *dir_ent = NULL;
   char *file = NULL;
@@ -104,7 +109,7 @@ int clear_tmp()
     }
   }
   closedir(tmp);
-  return 0;
+  return;
 }
 
 void check_maxfiles()

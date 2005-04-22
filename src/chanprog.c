@@ -330,6 +330,8 @@ void tell_verbose_status(int idx)
 
   dprintf(idx, "OS: %s %s\n", uni_t, vers_t);
   dprintf(idx, "Running from: %s\n", binname);
+  if (tempdir[0])
+    dprintf(idx, "Tempdir     : %s\n", tempdir);
 }
 
 /* Show all internal state variables

@@ -18,7 +18,6 @@ int can_lstat(const char *);
 int is_symlink(const char *);
 int is_dir(const char *);
 int fixmod(const char *);
-void check_tempdir(bool);
 
 class Tempfile 
 {
@@ -27,6 +26,7 @@ class Tempfile
     Tempfile(const char *prefix);		//constructor with file prefix
     void Tempfile::my_close();
     ~Tempfile();				//destructor
+    static void FindDir();
 
     bool error;					//exceptions are lame.
     FILE *f;
