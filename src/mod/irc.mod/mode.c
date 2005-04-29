@@ -614,7 +614,7 @@ got_op(struct chanset_t *chan, memberlist *m, memberlist *mv)
     simple_sprintf(buf, "jn %s", chan->dname);
     putallbots(buf);
     free(buf);
-    recheck_channel(chan, 1);
+    recheck_channel(chan, 2);
   }
 }
 
