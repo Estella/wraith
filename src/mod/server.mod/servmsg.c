@@ -186,6 +186,7 @@ static int got001(char *from, char *msg)
 
   join_chans();
 
+#ifdef no
   if (egg_strcasecmp(from, dcc[servidx].host)) {
     struct server_list *x = serverlist;
 
@@ -203,6 +204,7 @@ static int got001(char *from, char *msg)
       free(x->realname);
     x->realname = strdup(from);
   }
+#endif
   return 0;
 }
 
