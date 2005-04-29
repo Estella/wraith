@@ -525,6 +525,7 @@ void reload_bin_data() {
       spawnbots();
     }
     free_conf_bots(oldlist);
+    putlog(LOG_MISC, "*", "Rehashed config data from binary.");
   }
 }
 
