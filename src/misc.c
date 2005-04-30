@@ -39,6 +39,8 @@ static const char rcsid[] = "$Id$";
 
 #include <sys/wait.h>
 #include <stdarg.h>
+#include <sys/types.h>
+#include <signal.h>
 
 int		server_lag = 0;	/* GUESS! */
 bool		use_invites = 1;            /* Jason/drummer */
