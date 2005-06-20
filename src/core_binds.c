@@ -20,7 +20,7 @@ static const char rcsid[] = "$Id$";
 #include "users.h"
 #include "misc.h"
 #include "tclhash.h"
-#include "cfg.h"
+#include "dcc.h"
 
 extern cmd_t 		C_dcc[];
 

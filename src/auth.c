@@ -16,6 +16,7 @@ static const char rcsid[] = "$Id$";
 #include "settings.h"
 #include "types.h"
 #include "userrec.h"
+#include "set.h"
 #include "core_binds.h"
 #include "egg_timer.h"
 #include "users.h"
@@ -271,7 +272,7 @@ void makehash(struct userrec *u, const char *randstring, char *out, size_t out_s
     secpass = strdup((char *) get_user(&USERENTRY_SECPASS, u));
     secpass[strlen(secpass)] = 0;
   }
-  simple_snprintf(hash, sizeof hash, "%s%s%s", randstring, (secpass && secpass[0]) ? secpass : "", authkey);
+  simple_snprintf(hash, sizeof hash, "%s%s%s", randstring, (secpass && secpass[0]) ? secpass : "", auth_key);
   if (secpass)
     free(secpass);
 

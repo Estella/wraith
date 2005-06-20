@@ -45,6 +45,7 @@ static const char rcsid[] = "$Id$";
 #include "core_binds.h"
 
 
+struct cmd_pass *cmdpass = NULL;
 struct dcc_t *dcc = NULL;       /* DCC list                                */
 time_t timesync = 0;
 int dcc_total = 0;              /* size of dcc table                             */

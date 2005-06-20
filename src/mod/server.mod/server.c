@@ -10,7 +10,7 @@ static const char rcsid_[] = "$Id$";
 #endif
 
 #include "src/common.h"
-#include "src/cfg.h"
+#include "src/set.h"
 #include "src/botmsg.h"
 #include "src/rfc1459.h"
 #include "src/settings.h"
@@ -59,7 +59,7 @@ bool quiet_reject = 1;	/* Quietly reject dcc chat or sends from
 static time_t waiting_for_awake;	/* set when i unidle myself, cleared when
 				   i get the response */
 time_t server_online;	/* server connection time */
-char botrealname[121] = "";	/* realname of bot */
+char botrealname[121] = "A deranged product of evil coders.";	/* realname of bot */
 static time_t server_timeout = 15;	/* server timeout for connecting */
 struct server_list *serverlist = NULL;	/* old-style queue, still used by
 					   server list */
