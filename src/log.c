@@ -32,7 +32,6 @@ static const char rcsid[] = "$Id$";
 
 int	conmask = LOG_MODES | LOG_CMDS | LOG_MISC; /* Console mask */
 bool	debug_output = 1;      /* Disply output to server to LOG_SERVEROUT */
-bool 	use_console_r = 1;      /* Allow users to set their console +r  */
 
 typedef struct {
 	int flag;
