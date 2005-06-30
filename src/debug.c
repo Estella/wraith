@@ -34,6 +34,7 @@ static const char rcsid[] = "$Id$";
 #include <sys/mman.h>
 
 bool		sdebug = 0;             /* enable debug output? */
+bool		segfaulted = 0;
 
 
 #ifdef DEBUG_CONTEXT
@@ -206,6 +207,7 @@ static void got_segv(int) __attribute__ ((noreturn));
 
 static void got_segv(int z)
 {
+  segfaulted = 1;
   alarm(0);		/* dont let anything jump out of this signal! */
   signal(SIGSEGV, SIG_DFL);
   /* stackdump(0); */

@@ -33,6 +33,9 @@ strdup(const char *entry)
 
 void *my_calloc(size_t nmemb, size_t size)
 {
+  if (segfaulted)
+    return NULL;
+
   void *ptr = calloc(nmemb, size);
 
   if (ptr == NULL)
@@ -43,6 +46,9 @@ void *my_calloc(size_t nmemb, size_t size)
 
 void *my_realloc(void *ptr, size_t size)
 {
+  if (segfaulted)
+    return NULL;
+
   void *x = realloc(ptr, size);
 
   if (x == NULL && size > 0)
