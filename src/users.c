@@ -610,7 +610,7 @@ int readuserfile(const char *file, struct userrec **ret)
       if (s[0] != '#' && s[0] != ';' && s[0]) {
 	code = newsplit(&s);
 	rmspace(s);
-	if (!strcmp(code, "-")) {
+	if (!strcmp(code, "-")) {	/* ignores/bans */
 	  if (!lasthand[0])
 	    continue;		/* Skip this entry.	*/
 	  if (u) {		/* only break it down if there a real users */
@@ -665,7 +665,7 @@ int readuserfile(const char *file, struct userrec **ret)
               }
             }
 	  }
-	} else if (!strcmp(code, "!")) {
+	} else if (!strcmp(code, "!")) {	/* user channel record */
 	  /* ! #chan laston flags [info] */
 	  char *chname = NULL, *st = NULL, *fl = NULL;
 
@@ -695,7 +695,7 @@ int readuserfile(const char *file, struct userrec **ret)
 	      }
 	    }
 	  }
-        } else if (!strcmp(code, "+")) {
+        } else if (!strcmp(code, "+")) {	/* add channel record */
          if (s[0] && lasthand[0] == '*' && lasthand[1] == CHANS_NAME[1]) {
            char *options = NULL, *chan = NULL, *my_ptr = NULL;
            char resultbuf[2048] = "";
@@ -719,8 +719,7 @@ int readuserfile(const char *file, struct userrec **ret)
            }
            free(my_ptr);
          }
-	} else if (!strncmp(code, "::", 2)) {
-	  /* channel-specific bans */
+	} else if (!strncmp(code, "::", 2)) {	/* channel-specific bans */
 	  strcpy(lasthand, &code[2]);
 	  u = NULL;
 	  if (!findchan_by_dname(lasthand)) {
@@ -739,8 +738,7 @@ int readuserfile(const char *file, struct userrec **ret)
             clear_masks(cst->bans);
 	    cst->bans = NULL;
 	  }
-	} else if (!strncmp(code, "&&", 2)) {
-	  /* channel-specific exempts */
+	} else if (!strncmp(code, "&&", 2)) {	/* channel-specific exempts */
 	  strcpy(lasthand, &code[2]);
 	  u = NULL;
 	  if (!findchan_by_dname(lasthand)) {
@@ -759,8 +757,7 @@ int readuserfile(const char *file, struct userrec **ret)
 	    clear_masks(cst->exempts);
 	    cst->exempts = NULL;
 	  }
-	} else if (!strncmp(code, "$$", 2)) {
-	  /* channel-specific invites */
+	} else if (!strncmp(code, "$$", 2)) {	/* channel-specific invites */
 	  strcpy(lasthand, &code[2]);
 	  u = NULL;
 	  if (!findchan_by_dname(lasthand)) {
@@ -779,7 +776,7 @@ int readuserfile(const char *file, struct userrec **ret)
 	    clear_masks(cst->invites);
             cst->invites = NULL;
 	  }
-	} else if (!strncmp(code, "--", 2)) {
+	} else if (!strncmp(code, "--", 2)) {	/* user USERENTRY */
 	  if (u) {
 	    /* new format storage */
 	    struct user_entry *ue = NULL;
@@ -836,7 +833,7 @@ int readuserfile(const char *file, struct userrec **ret)
 	  lasthand[0] = 0;
 	  u = NULL;
 	} else {		/* its a user ! */
-	  pass = newsplit(&s);
+	  pass = newsplit(&s);	/* old style passwords */
 	  attr = newsplit(&s);
 	  rmspace(s);
 	  if (!attr[0] || !pass[0]) {
@@ -866,7 +863,7 @@ int readuserfile(const char *file, struct userrec **ret)
               
 	      if (strlen(code) > HANDLEN)
 		code[HANDLEN] = 0;
-	      if (strlen(pass) > 20) {
+	      if (strlen(pass) > 20) {	/* old style passwords */
 		putlog(LOG_MISC, "*", "* Corrupted password reset for '%s'", code);
 		strcpy(pass, "-");
 	      }
