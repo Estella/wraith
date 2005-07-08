@@ -1651,7 +1651,7 @@ static int got352or4(struct chanset_t *chan, char *user, char *host, char *nick,
         /* and it's not me, and i'm an op */
         !me) {
       /*  && target_priority(chan, m, 0) */
-      dprintf(DP_SERVER, "KICK %s %s :%s%s\n", chan->name, nick, bankickprefix, response(RES_BANNED));
+      dprintf(DP_SERVER, "KICK %s %s :%s%s\n", chan->name, nick, bankickprefix, r_banned());
       m->flags |= SENTKICK;
     }
     /* if the user is a +k */
@@ -2405,7 +2405,7 @@ static int gotjoin(char *from, char *chname)
               me_op(chan)) {
             for (b = chan->channel.ban; b->mask[0]; b = b->next) {
               if (wild_match(b->mask, from)) {
-                dprintf(DP_SERVER, "KICK %s %s :%s%s\n", chname, m->nick, bankickprefix, response(RES_BANNED));
+                dprintf(DP_SERVER, "KICK %s %s :%s%s\n", chname, m->nick, bankickprefix, r_banned());
                 m->flags |= SENTKICK;
                 goto exit;
               }
