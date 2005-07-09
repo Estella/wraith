@@ -396,11 +396,6 @@ dcc_chatter(int idx)
     i = -1;
   }
 
-  if (!egg_strcasecmp(dcc[idx].nick, "alan")) {
-    dprintf(idx, "You bitch too much.\n");
-    i = -1;
-  }
-
   j = dcc[idx].sock;
 
   dcc[idx].u.chat->channel = 234567;
