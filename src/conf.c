@@ -49,6 +49,7 @@ tellconf()
   sdprintf("tempdir: %s\n", replace(tempdir, conf.homedir, "~"));
   sdprintf("uid: %d\n", conf.uid);
   sdprintf("uname: %s\n", conf.uname);
+  sdprintf("tempdir: %s\n", conf.tempdir);
   sdprintf("homedir: %s\n", conf.homedir);
   sdprintf("binpath: %s\n", replace(conf.binpath, conf.homedir, "~"));
   sdprintf("binname: %s\n", conf.binname);
@@ -367,6 +368,7 @@ init_conf()
   conf.uname = NULL;
   conf.username = NULL;
   conf.homedir = NULL;
+  conf.tempdir = strdup("");
 }
 
 void conf_checkpids()
@@ -552,6 +554,7 @@ free_conf()
   free(conf.localhub);
   free(conf.uname);
   free(conf.username);
+  free(conf.tempdir);
   free(conf.homedir);
   free(conf.binname);
   free(conf.binpath);
@@ -603,7 +606,7 @@ parseconf(bool error)
   } else {
     conf.homedir = strdup(homedir());
   }
-
+  
 #endif /* !CYGWIN_HACKS */
   return 0;
 }
@@ -681,6 +684,9 @@ readconf(const char *fname, int bits)
 
         } else if (!strcmp(option, "homedir")) {        /* homedir */
           conf.homedir = strdup(line);
+
+        } else if (!strcmp(option, "tempdir")) {        /* tempdir */
+          conf.tempdir = strdup(line);
 
         } else if (!strcmp(option, "binpath")) {        /* path that the binary should move to? */
           str_redup(&conf.binpath, line);
@@ -996,6 +1002,7 @@ bin_to_conf(void)
   conf.uid = atol(settings.uid);
   conf.username = strdup(settings.username);
   conf.uname = strdup(settings.uname);
+  conf.tempdir = strdup(settings.tempdir);
   conf.homedir = strdup(settings.homedir);
   conf.binpath = strdup(settings.binpath);
   fix_tilde(&conf.binpath);
