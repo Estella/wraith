@@ -3701,7 +3701,7 @@ static void cmd_netps(int idx, char * par) {
 
   char buf[1024] = "";
 
-  simple_snprintf(buf, sizeof(Buf), "exec ps %s", par);
+  simple_snprintf(buf, sizeof(buf), "exec ps %s", par);
   botnet_send_cmd_broad(-1, conf.bot->nick, dcc[idx].nick, idx, buf);
 }
 
@@ -3715,7 +3715,7 @@ static void cmd_netlast(int idx, char * par) {
 
   char buf[1024] = "";
 
-  simple_snprintf(buf, sizeof(Buf), "exec last %s", par);
+  simple_snprintf(buf, sizeof(buf), "exec last %s", par);
   botnet_send_cmd_broad(-1, conf.bot->nick, dcc[idx].nick, idx, buf);
 }
 
