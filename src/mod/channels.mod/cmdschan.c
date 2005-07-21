@@ -499,7 +499,7 @@ static void cmd_chinfo(int idx, char *par)
 static void cmd_slowjoin(int idx, char *par)
 {
   int intvl = 0, delay = 0, count = 1;
-  char *chname = NULL, *p = NULL, buf[2048] = "", buf2[1048] = "";
+  char *chname = NULL, *p = NULL, buf[2048] = "", buf2[RESULT_LEN] = "";
   struct chanset_t *chan = NULL;
   tand_t *bot = NULL;
 
@@ -906,7 +906,7 @@ static void cmd_down(int idx, char *par)
 
 static void pls_chan(int idx, char *par, char *bot)
 {
-  char *chname = NULL, result[1024] = "", buf[2048] = "";
+  char *chname = NULL, result[RESULT_LEN] = "", buf[2048] = "";
   struct chanset_t *chan = NULL;
 
   if (!bot)
@@ -1257,7 +1257,7 @@ static void cmd_chaninfo(int idx, char *par)
 
 static void cmd_chanset(int idx, char *par)
 {
-  char *chname = NULL, result[1024] = "";
+  char *chname = NULL, result[RESULT_LEN] = "";
   struct chanset_t *chan = NULL;
   int all = 0;
 
