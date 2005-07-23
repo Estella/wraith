@@ -227,7 +227,7 @@ static void cmd_kickban(int idx, char *par)
       dprintf(idx, "No such channel.\n");
       return;
     }
-    else if (!chk_op(user, chan)) {
+    else if (!real_chk_op(user, chan, 0)) {
       if (all) goto next;
       dprintf(idx, "You don't have access to %s\n", chan->dname);
       return;
@@ -828,7 +828,7 @@ static void cmd_deop(int idx, char *par)
       if (all) goto next;
       dprintf(idx, "No such channel.\n");
     }
-    else if (!chk_op(user, chan)) {
+    else if (!real_chk_op(user, chan, 0)) {
       if (all) goto next;
       dprintf(idx, "You don't have access to deop on %s\n", chan->dname);
       return;
@@ -930,7 +930,7 @@ static void cmd_kick(int idx, char *par)
       dprintf(idx, "No such channel.\n");
       return;
     }
-    else if (!chk_op(user, chan)) {
+    else if (!real_chk_op(user, chan, 0)) {
       if (all) goto next;
       dprintf(idx, "You don't have access to kick on %s\n", chan->dname);
       return;
@@ -999,7 +999,7 @@ static void cmd_getkey(int idx, char *par)
     dprintf(idx, "No such channel.\n");
     return;
   }
-  else if (!chk_op(user, chan)) {
+  else if (!real_chk_op(user, chan, 0)) {
     dprintf(idx, "You don't have access for %s\n", chan->dname);
     return;
   }
@@ -1222,7 +1222,7 @@ static void do_invite(int idx, char *par, bool op)
       if (all) goto next;
       dprintf(idx, "No such channel.\n");
     }
-    else if (!chk_op(user, chan)) {
+    else if (!real_chk_op(user, chan, 0)) {
       if (all) goto next;
       dprintf(idx, "You don't have access to invite to %s\n", chan->dname);
       return;
