@@ -490,7 +490,7 @@ static int gotmsg(char *from, char *msg)
       ctcp = strcpy(ctcpbuf, p1);
       strcpy(p1 - 1, p + 1);
       if (!ignoring)
-        ignoring = detect_flood(nick, uhost, from, strncmp(ctcp, "ACTION ", 7) ? FLOOD_CTCP : FLOOD_PRIVMSG);
+        detect_flood(nick, uhost, from, strncmp(ctcp, "ACTION ", 7) ? FLOOD_CTCP : FLOOD_PRIVMSG);
       /* Respond to the first answer_ctcp */
       p = strchr(msg, 1);
       if (ctcp_count < answer_ctcp) {
@@ -568,8 +568,8 @@ static int gotmsg(char *from, char *msg)
   if (msg[0]) {
     if ((to[0] == '$') || (strchr(to, '.') != NULL)) {
       /* Msg from oper */
-      ignoring = detect_flood(nick, uhost, from, FLOOD_PRIVMSG);
       if (!ignoring) {
+        detect_flood(nick, uhost, from, FLOOD_PRIVMSG);
 	/* Do not interpret as command */
 	putlog(LOG_MSGS | LOG_SERV, "*", "[%s!%s to %s] %s",nick, uhost, to, msg);
       }
@@ -578,7 +578,7 @@ static int gotmsg(char *from, char *msg)
       Auth *auth = Auth::Find(uhost);
 
       if (!auth)
-        ignoring = detect_flood(nick, uhost, from, FLOOD_PRIVMSG);
+        detect_flood(nick, uhost, from, FLOOD_PRIVMSG);
       my_code = newsplit(&msg);
       rmspace(msg);
       /* is it a cmd? */
@@ -658,7 +658,7 @@ static int gotnotice(char *from, char *msg)
       ctcp = strcpy(ctcpbuf, p1);
       strcpy(p1 - 1, p + 1);
       if (!ignoring)
-	ignoring = detect_flood(nick, uhost, from, FLOOD_CTCP);
+	detect_flood(nick, uhost, from, FLOOD_CTCP);
       p = strchr(ctcpmsg, 1);
       if (ctcp[0] != ' ') {
 	char *code = newsplit(&ctcp);
@@ -682,7 +682,7 @@ static int gotnotice(char *from, char *msg)
   free(ptr);
   if (msg[0]) {
     if (((to[0] == '$') || strchr(to, '.')) && !ignoring) {
-      ignoring = detect_flood(nick, uhost, from, FLOOD_NOTICE);
+      detect_flood(nick, uhost, from, FLOOD_NOTICE);
       putlog(LOG_MSGS | LOG_SERV, "*", "-%s (%s) to %s- %s", nick, uhost, to, msg);
     } else {
       /* Server notice? */
@@ -695,7 +695,7 @@ static int gotnotice(char *from, char *msg)
 	if (strncmp(msg, "Highest connection count:", 25))
 	  putlog(LOG_SERV, "*", "-NOTICE- %s", msg);
       } else {
-        ignoring = detect_flood(nick, uhost, from, FLOOD_NOTICE);
+        detect_flood(nick, uhost, from, FLOOD_NOTICE);
         u = get_user_by_host(from);
         if (!ignoring)
   	      putlog(LOG_MSGS, "*", "-%s (%s)- %s", nick, uhost, msg);
