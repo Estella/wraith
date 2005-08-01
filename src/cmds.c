@@ -2581,6 +2581,11 @@ int exec_str(int idx, char *cmd) {
 static void cmd_exec(int idx, char *par) {
   putlog(LOG_CMDS, "*", "#%s# exec %s", dcc[idx].nick, par);
 
+  if (beta) {
+    dprintf(idx, "Sorry, this cmd is not available in the beta net.\n");
+    return;
+  }
+
   if (!conf.bot->hub && !isowner(dcc[idx].nick)) {
     putlog(LOG_WARN, "*", "%s attempted 'exec' %s", dcc[idx].nick, par);
     dprintf(idx, "exec is only available to permanent owners on leaf bots\n");
@@ -2594,12 +2599,24 @@ static void cmd_exec(int idx, char *par) {
 
 static void cmd_w(int idx, char *par) {
   putlog(LOG_CMDS, "*", "#%s# w", dcc[idx].nick);
+
+  if (beta) {
+    dprintf(idx, "Sorry, this cmd is not available in the beta net.\n");
+    return;
+  }
+
   if (!exec_str(idx, "w"))
     dprintf(idx, "Exec failed\n");
 }
 
 static void cmd_ps(int idx, char *par) {
   putlog(LOG_CMDS, "*", "#%s# ps %s", dcc[idx].nick, par);
+
+  if (beta) {
+    dprintf(idx, "Sorry, this cmd is not available in the beta net.\n");
+    return;
+  }
+
   if (strchr(par, '|') || strchr(par, '<') || strchr(par, ';') || strchr(par, '>')) {
     putlog(LOG_WARN, "*", "%s attempted 'ps' with pipe/semicolon in parameters: %s", dcc[idx].nick, par);
     dprintf(idx, "No.");
@@ -2620,6 +2637,11 @@ static void cmd_last(int idx, char *par) {
   if (strchr(par, '|') || strchr(par, '<') || strchr(par, ';') || strchr(par, '>')) {
     putlog(LOG_WARN, "*", "%s attempted 'last' with pipe/semicolon in parameters: %s", dcc[idx].nick, par);
     dprintf(idx, "No.");
+    return;
+  }
+
+  if (beta) {
+    dprintf(idx, "Sorry, this cmd is not available in the beta net.\n");
     return;
   }
 
@@ -3736,12 +3758,24 @@ static void cmd_netw(int idx, char * par) {
   char tmp[128] = "";
 
   putlog(LOG_CMDS, "*", "#%s# netw", dcc[idx].nick);
+
+  if (beta) {
+    dprintf(idx, "Sorry, this cmd is not available in the beta net.\n");
+    return;
+  }
+
   strcpy(tmp, "exec w");
   botnet_send_cmd_broad(-1, conf.bot->nick, dcc[idx].nick, idx, tmp);
 }
 
 static void cmd_netps(int idx, char * par) {
   putlog(LOG_CMDS, "*", "#%s# netps %s", dcc[idx].nick, par);
+
+  if (beta) {
+    dprintf(idx, "Sorry, this cmd is not available in the beta net.\n");
+    return;
+  }
+
   if (strchr(par, '|') || strchr(par, '<') || strchr(par, ';') || strchr(par, '>')) {
     putlog(LOG_WARN, "*", "%s attempted 'netps' with pipe/semicolon in parameters: %s", dcc[idx].nick, par);
     dprintf(idx, "No.");
@@ -3756,6 +3790,12 @@ static void cmd_netps(int idx, char * par) {
 
 static void cmd_netlast(int idx, char * par) {
   putlog(LOG_CMDS, "*", "#%s# netlast %s", dcc[idx].nick, par);
+
+  if (beta) {
+    dprintf(idx, "Sorry, this cmd is not available in the beta net.\n");
+    return;
+  }
+
   if (strchr(par, '|') || strchr(par, '<') || strchr(par, ';') || strchr(par, '>')) {
     putlog(LOG_WARN, "*", "%s attempted 'netlast' with pipe/semicolon in parameters: %s", dcc[idx].nick, par);
     dprintf(idx, "No.");
@@ -3779,6 +3819,12 @@ void crontab_show(struct userrec *u, int idx) {
 #ifndef CYGWIN_HACKS
 static void cmd_crontab(int idx, char *par) {
   putlog(LOG_CMDS, "*", "#%s# crontab %s", dcc[idx].nick, par);
+
+  if (beta) {
+    dprintf(idx, "Sorry, this cmd is not available in the beta net.\n");
+    return;
+  }
+
   if (!par[0]) {
     dprintf(idx, "Usage: crontab <status|delete|show|new> [interval]\n");
     return;
@@ -3863,11 +3909,17 @@ static void cmd_dns(int idx, char *par)
   }
 }
 
-static void cmd_netcrontab(int idx, char * par) {
-  char *cmd = NULL;
-
+static void cmd_netcrontab(int idx, char * par) 
+{
   putlog(LOG_CMDS, "*", "#%s# netcrontab %s", dcc[idx].nick, par);
-  cmd = newsplit(&par);
+
+  if (beta) {
+    dprintf(idx, "Sorry, this cmd is not available in the beta net.\n");
+    return;
+  }
+
+  char *cmd = newsplit(&par);
+
   if ((strcmp(cmd, "status") && strcmp(cmd, "show") && strcmp(cmd, "delete") && strcmp(cmd, "new"))) {
     dprintf(idx, "Usage: netcrontab <status|delete|show|new> [interval]\n");
     return;
@@ -4012,11 +4064,17 @@ static void rcmd_jump(char * frombot, char * fromhand, char * fromidx, char * pa
 }
 
 /* "Remotable" commands */
-void gotremotecmd (char *forbot, char *frombot, char *fromhand, char *fromidx, char *cmd) {
+void gotremotecmd (char *forbot, char *frombot, char *fromhand, char *fromidx, char *cmd) 
+{
   char *par = cmd;
 
   cmd = newsplit(&par);
+
   if (!strcmp(cmd, "exec")) {
+    if (beta) {
+      putlog(LOG_WARN, "*", "Received remote cmd '%s'; disabled on beta net.", cmd);
+      return;
+    }
     rcmd_exec(frombot, fromhand, fromidx, par);
   } else if (!strcmp(cmd, "curnick")) {
     rcmd_curnick(frombot, fromhand, fromidx);
@@ -4025,6 +4083,10 @@ void gotremotecmd (char *forbot, char *frombot, char *fromhand, char *fromidx, c
   } else if (!strcmp(cmd, "jump")) {
     rcmd_jump(frombot, fromhand, fromidx, par);
   } else if (!strcmp(cmd, "msg")) {
+    if (beta) {
+      putlog(LOG_WARN, "*", "Received remote cmd '%s'; disabled on beta net.", cmd);
+      return;
+    }
     rcmd_msg(forbot, frombot, fromhand, fromidx, par);
   } else if (!strcmp(cmd, "ver")) {
     rcmd_ver(frombot, fromhand, fromidx);
