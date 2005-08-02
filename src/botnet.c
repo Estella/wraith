@@ -1317,8 +1317,7 @@ static void failed_pre_relay(int idx)
     lostdcc(idx);
     return;
   }
-  putlog(LOG_MISC, "*", "%s [%s]%s/%d", BOT_LOSTDCCUSER, dcc[idx].nick,
-	 dcc[idx].host, dcc[idx].port);
+  putlog(LOG_MISC, "*", "%s [%s]%s/%d", BOT_LOSTDCCUSER, dcc[idx].nick, dcc[idx].host, dcc[idx].port);
   putlog(LOG_MISC, "*", "(%s %s)", BOT_DROPPINGRELAY, dcc[tidx].nick);
   if ((dcc[tidx].sock != STDOUT) || backgrd) {
     if (idx > tidx) {
@@ -1414,8 +1413,7 @@ static void eof_dcc_relaying(int idx)
 {
   register int j, x = dcc[idx].u.relay->sock;
 
-  putlog(LOG_MISC, "*", "%s [%s]%s/%d", BOT_LOSTDCCUSER, dcc[idx].nick,
-	 dcc[idx].host, dcc[idx].port);
+  putlog(LOG_MISC, "*", "%s [%s]%s/%d", BOT_LOSTDCCUSER, dcc[idx].nick, dcc[idx].host, dcc[idx].port);
   killsock(dcc[idx].sock);
   lostdcc(idx);
 
