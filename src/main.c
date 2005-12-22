@@ -111,6 +111,7 @@ char *socksfile = NULL;
 static char *getfullbinname(const char *argv_zero)
 {
   char *bin = strdup(argv_zero);
+  char cwd[PATH_MAX] = "";
 
   if (bin[0] == '/')
 #ifdef CYGWIN_HACKS
@@ -118,8 +119,6 @@ static char *getfullbinname(const char *argv_zero)
 #else
     return bin;
 #endif /* CYGWIN_HACKS */
-
-  char cwd[PATH_MAX] = "";
 
   if (!getcwd(cwd, PATH_MAX))
     fatal("getcwd() failed", 0);
