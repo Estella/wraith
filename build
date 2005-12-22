@@ -9,6 +9,7 @@ fi
 # $Id$
 
 
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:${HOME}/bin
 # Awk out the version from source
 AWK="`which awk`"
 if test -z "${AWK}"; then
