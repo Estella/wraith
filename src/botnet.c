@@ -1084,7 +1084,8 @@ static void failed_tandem_relay(int idx)
   }
   if (uidx < 0) {
     putlog(LOG_MISC, "*", "Can't find user for relay!  %d -> %d", dcc[idx].sock, dcc[idx].u.relay->sock);
-    killsock(dcc[idx].sock);
+    if (dcc[idx].sock != -1)
+      killsock(dcc[idx].sock);
     lostdcc(idx);
     return;
   }
@@ -1096,11 +1097,13 @@ static void failed_tandem_relay(int idx)
     free(dcc[uidx].u.relay);
     dcc[uidx].u.chat = ci;
     dcc[uidx].type = &DCC_CHAT;
-    killsock(dcc[idx].sock);
+    if (dcc[idx].sock != -1)
+      killsock(dcc[idx].sock);
     lostdcc(idx);
     return;
   }
-  killsock(dcc[idx].sock);
+  if (dcc[idx].sock != -1)
+    killsock(dcc[idx].sock);
 #ifdef USE_IPV6
   dcc[idx].sock = getsock(SOCK_STRONGCONN, dcc[uidx].u.relay->af);
 #else
