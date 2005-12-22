@@ -61,6 +61,8 @@
 #define RANDSPECIAL     "#*+,-./;<=>?[]^_{}|"
 #define RANDSPECIALLEN  19
 
+#define ESCAPESHELL	"`\\|#*()[]& "
+
 #if (NICKMAX < 9) || (NICKMAX > 32)
 #  include "invalid NICKMAX value"
 #endif
