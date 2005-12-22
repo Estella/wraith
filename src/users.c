@@ -632,8 +632,7 @@ int readuserfile(const char *file, struct userrec **ret)
 	    else if (lasthand[0] == '*') {
 	      if (lasthand[1] == IGNORE_NAME[1])
 		restore_ignore(s);
-/* FIXME: remove after 1.2.3 */
-              else if (lasthand[1] == SET_NAME[1] || lasthand[1] == 'C') {
+              else if (lasthand[1] == SET_NAME[1]) {
                 set_cmd_pass(s, 0);		/* no need to share here, if we have a new userfile
 						 * then leaf bots under us also get the new userfile */
               }
@@ -661,8 +660,7 @@ int readuserfile(const char *file, struct userrec **ret)
 	    } else if (lasthand[0] == '*') {
 	      if (lasthand[1] == INVITE_NAME[1]) {
                 restore_chanmask('I', NULL, s);
-/* FIXME: Remove after 1.2.3 */
-              } else if (lasthand[1] == SET_NAME[1] || lasthand[1] == 'C') {
+              } else if (lasthand[1] == SET_NAME[1]) {
                 var_userfile_share_line(s, -1, 0);
               }
             }
@@ -785,9 +783,7 @@ int readuserfile(const char *file, struct userrec **ret)
 	    int ok = 0;
 
 	    for (ue = u->entries; ue && !ok; ue = ue->next)
-/* FIXME: remove after 1.2.3 */
-	      if (ue->name && (!egg_strcasecmp(code + 2, ue->name) ||
-                (!egg_strcasecmp(code + 2, "CONFIG") && !egg_strcasecmp(ue->name, "SET")))) {
+	      if (ue->name && !egg_strcasecmp(code + 2, ue->name)) {
 		struct list_type *list = NULL;
 
 		list = (struct list_type *) my_calloc(1, sizeof(struct list_type));
@@ -827,8 +823,7 @@ int readuserfile(const char *file, struct userrec **ret)
         } else if (!rfc_casecmp(code, CHANS_NAME)) {
           strcpy(lasthand, code);
           u = NULL;
-/* FIXME: remove after 1.2.3 */
-        } else if (!rfc_casecmp(code, SET_NAME) || !rfc_casecmp(code, "*Config")) {
+        } else if (!rfc_casecmp(code, SET_NAME)) {
           strcpy(lasthand, code);
           u = NULL;  
 	} else if (code[0] == '*') {
