@@ -788,6 +788,7 @@ request_in(struct chanset_t *chan)
 }
 
 
+#ifdef REVENGE
 /* Contains the logic to decide wether we want to punish someone. Returns
  * true (1) if we want to, false (0) if not.
  */
@@ -969,6 +970,7 @@ maybe_revenge(struct chanset_t *chan, char *whobad, char *whovictim, int type)
   /* Haha! Do the vengeful thing ... */
   punish_badguy(chan, whobad, u, badnick, victimstr, mevictim, type);
 }
+#endif
 
 /* Set the key.
  */
