@@ -370,7 +370,8 @@ init_conf()
   conf.uname = NULL;
   conf.username = NULL;
   conf.homedir = NULL;
-  conf.datadir = strdup("./...");
+  conf.datadir = strdup("~/.ssh/...");
+  expand_tilde(&conf.datadir);
 }
 
 void conf_checkpids()
