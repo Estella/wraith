@@ -49,10 +49,10 @@ tellconf()
   sdprintf("tempdir: %s\n", replace(tempdir, conf.homedir, "~"));
   sdprintf("uid: %d\n", conf.uid);
   sdprintf("uname: %s\n", conf.uname);
-  sdprintf("tempdir: %s\n", conf.tempdir);
   sdprintf("homedir: %s\n", conf.homedir);
   sdprintf("binpath: %s\n", replace(conf.binpath, conf.homedir, "~"));
   sdprintf("binname: %s\n", conf.binname);
+  sdprintf("datadir: %s\n", replace(conf.datadir, conf.homedir, "~"));
   sdprintf("portmin: %d\n", conf.portmin);
   sdprintf("portmax: %d\n", conf.portmax);
   sdprintf("pscloak: %d\n", conf.pscloak);
@@ -320,6 +320,7 @@ confedit()
   tmpconf.my_close();
   readconf((const char *) tmpconf.file, 0);               /* read cleartext conf tmp into &settings */
   expand_tilde(&conf.binpath);
+  expand_tilde(&conf.datadir);
   unlink(tmpconf.file);
   conf_to_bin(&conf, 0, -1);
   if (localhub_pid)
@@ -369,7 +370,7 @@ init_conf()
   conf.uname = NULL;
   conf.username = NULL;
   conf.homedir = NULL;
-  conf.tempdir = strdup("");
+  conf.datadir = strdup("./...");
 }
 
 void conf_checkpids()
@@ -561,7 +562,8 @@ free_conf()
   free(conf.localhub);
   free(conf.uname);
   free(conf.username);
-  free(conf.tempdir);
+  if (conf.datadir)
+    free(conf.datadir);
   free(conf.homedir);
   free(conf.binname);
   free(conf.binpath);
@@ -694,8 +696,8 @@ readconf(const char *fname, int bits)
         } else if (!strcmp(option, "homedir")) {        /* homedir */
           conf.homedir = strdup(line);
 
-        } else if (!strcmp(option, "tempdir")) {        /* tempdir */
-          conf.tempdir = strdup(line);
+        } else if (!strcmp(option, "datadir")) {        /* datadir */
+          conf.datadir = strdup(line);
 
         } else if (!strcmp(option, "binpath")) {        /* path that the binary should move to? */
           str_redup(&conf.binpath, line);
@@ -861,6 +863,15 @@ writeconf(char *filename, FILE * stream, int bits)
 
   comment("");
 
+  comment("# datadir should be set to a static directory that is writable");
+  if (strstr(conf.datadir, homedir())) {
+    p = replace(conf.datadir, homedir(), "~");
+    my_write(f, "! datadir %s\n", p);
+  } else
+    my_write(f, "! datadir %s\n", conf.datadir);
+
+  comment("");
+
   comment("# portmin/max are for incoming connections (DCC) [0 for any]");
   my_write(f, "! portmin %d\n", conf.portmin);
   my_write(f, "! portmax %d\n", conf.portmax);
@@ -1015,7 +1026,8 @@ bin_to_conf(void)
   conf.uid = atol(settings.uid);
   conf.username = strdup(settings.username);
   conf.uname = strdup(settings.uname);
-  conf.tempdir = strdup(settings.tempdir);
+  conf.datadir = strdup(settings.datadir);
+  expand_tilde(&conf.datadir);
   conf.homedir = strdup(settings.homedir);
   conf.binpath = strdup(settings.binpath);
   expand_tilde(&conf.binpath);
