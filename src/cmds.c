@@ -227,7 +227,8 @@ static void cmd_botset(int idx, char *par)
     return;
   }
   
-  cmd_set_real(botnick, idx, par);
+  if (cmd_set_real(botnick, idx, par))
+    write_userfile(idx);
   return;
 }
 
@@ -237,7 +238,8 @@ static void cmd_set(int idx, char *par)
 //    dprintf(idx, "Usage: set [<+/->list] <var> [data]\n");
 //    return;
 //  }
-  cmd_set_real(NULL, idx, par);
+  if (cmd_set_real(NULL, idx, par))
+    write_userfile(idx);
   return;
 }
 
