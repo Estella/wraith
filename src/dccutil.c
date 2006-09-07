@@ -79,15 +79,13 @@ colorbuf(char *buf, size_t len, int idx)
   static int cflags;
   int schar = 0;
   char buf3[1024] = "", buf2[1024] = "", c = 0;
-  bool upper = 0, aqua = 0;
-
-  if (idx != -1 && (!egg_strcasecmp(dcc[idx].nick, "aqua") || !egg_strcasecmp(dcc[idx].nick, "motion")))
-    aqua = 1;
+  bool upper = 0;
 
   for (size_t i = 0; i < len; i++) {
     c = buf[i];
     buf2[0] = 0;
 
+/*
     if (aqua) {
       if (upper) {
         upper = 0;
@@ -97,7 +95,7 @@ colorbuf(char *buf, size_t len, int idx)
         c = tolower(c);
       }
     }
-
+*/
     if (cidx) {
       if (schar) {                /* These are for $X replacements */
         schar--;                  /* Unset identifier int */
