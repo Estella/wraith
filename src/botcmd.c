@@ -66,7 +66,15 @@ static void bot_chan2(int idx, char *msg)
   }
   p = strchr(from, '@');
   if (p) {
-    simple_snprintf(TBUF, sizeof(TBUF), "<%s> %s", from, msg);
+    if (!conf.bot->hub) { /* Need to strip out the hub nick */
+      char *q = NULL, newfrom[HANDLEN + 9 + 1]; /* HANDLEN@[botnet] */
+   
+      strlcpy(newfrom, from, sizeof(newfrom));
+      q = strchr(newfrom, '@');
+      *q = 0;
+      simple_snprintf(TBUF, sizeof(TBUF), "<%s@[botnet]> %s", newfrom, msg);
+    } else
+      simple_snprintf(TBUF, sizeof(TBUF), "<%s> %s", from, msg);
     *p = 0;
     if (!partyidle(p + 1, from)) {
       *p = '@';
@@ -87,11 +95,6 @@ static void bot_chan2(int idx, char *msg)
     /* Send to new version bots */
     if (i >= 0)
       botnet_send_chan(idx, from, NULL, chan, msg);
-/*    if (strchr(from, '@') != NULL)
-      check_bind_chat(from, chan, msg);
-    else
-      check_bind_bcst(from, chan, msg);
-*/
   }
 }
 
