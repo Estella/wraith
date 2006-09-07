@@ -429,11 +429,6 @@ dcc_chatter(int idx)
   }
 }
 
-void trim_dcclist(int top_index)
-{
-  dcc_total = top_index + 1;    
-}
-
 int
 dcc_read(FILE *f)
 {
