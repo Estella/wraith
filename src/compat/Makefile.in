@@ -17,7 +17,6 @@ CPPFLAGS = @CPPFLAGS@
 
 OBJS = dirname.o \
 	dn_expand.o \
-	inet_aton.o \
 	inet_ntop.o \
 	snprintf.o \
 	memset.o \
