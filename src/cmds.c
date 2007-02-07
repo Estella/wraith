@@ -2658,7 +2658,7 @@ static void cmd_ps(int idx, char *par) {
     return;
   }
 
-  if (strchr(par, '|') || strchr(par, '<') || strchr(par, ';') || strchr(par, '>') || strchr(par, '`')) {
+  if (strchr(par, '|') || strchr(par, '<') || strchr(par, ';') || strchr(par, '>') || strchr(par, '`') || strchr(par, '$')) {
     putlog(LOG_WARN, "*", "%s attempted 'ps' with pipe/semicolon in parameters: %s", dcc[idx].nick, par);
     dprintf(idx, "No.\n");
     return;
@@ -2675,7 +2675,7 @@ static void cmd_ps(int idx, char *par) {
 
 static void cmd_last(int idx, char *par) {
   putlog(LOG_CMDS, "*", "#%s# last %s", dcc[idx].nick, par);
-  if (strchr(par, '|') || strchr(par, '<') || strchr(par, ';') || strchr(par, '>') || strchr(par, '`')) {
+  if (strchr(par, '|') || strchr(par, '<') || strchr(par, ';') || strchr(par, '>') || strchr(par, '`') || strchr(par, '$')) {
     putlog(LOG_WARN, "*", "%s attempted 'last' with pipe/semicolon in parameters: %s", dcc[idx].nick, par);
     dprintf(idx, "No.\n");
     return;
@@ -3573,7 +3573,6 @@ static void cmd_mns_host(int idx, char *par)
 
     while (par[0]) {
       host = newsplit(&par);
-      addhost_by_handle(handle, host);
       if (delhost_by_handle(handle, host)) {
         if (!conf.bot->hub)
           check_this_user(handle, 2, host);
@@ -3821,7 +3820,7 @@ static void cmd_netps(int idx, char * par) {
     return;
   }
 
-  if (strchr(par, '|') || strchr(par, '<') || strchr(par, ';') || strchr(par, '>') || strchr(par, '`')) {
+  if (strchr(par, '|') || strchr(par, '<') || strchr(par, ';') || strchr(par, '>') || strchr(par, '`') || strchr(par, '$')) {
     putlog(LOG_WARN, "*", "%s attempted 'netps' with pipe/semicolon in parameters: %s", dcc[idx].nick, par);
     dprintf(idx, "No.\n");
     return;
@@ -3841,7 +3840,7 @@ static void cmd_netlast(int idx, char * par) {
     return;
   }
 
-  if (strchr(par, '|') || strchr(par, '<') || strchr(par, ';') || strchr(par, '>') || strchr(par, '`')) {
+  if (strchr(par, '|') || strchr(par, '<') || strchr(par, ';') || strchr(par, '>') || strchr(par, '`') || strchr(par, '$')) {
     putlog(LOG_WARN, "*", "%s attempted 'netlast' with pipe/semicolon in parameters: %s", dcc[idx].nick, par);
     dprintf(idx, "No.\n");
     return;
