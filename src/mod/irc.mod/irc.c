@@ -628,7 +628,7 @@ request_op(struct chanset_t *chan)
 
   int i = 0, my_exp = 0, first = 100;
   time_t n = now;
-  struct flag_record myfr = { FR_GLOBAL | FR_CHAN, 0, 0, 0 };
+  struct flag_record myfr = { FR_GLOBAL | FR_CHAN | FR_BOT, 0, 0, 0 };
 
   get_user_flagrec(conf.bot->u, &myfr, chan->dname);
 
@@ -736,7 +736,7 @@ request_op(struct chanset_t *chan)
 static void
 request_in(struct chanset_t *chan)
 {
-  struct flag_record myfr = { FR_GLOBAL | FR_CHAN, 0, 0, 0 };
+  struct flag_record myfr = { FR_GLOBAL | FR_CHAN | FR_BOT, 0, 0, 0 };
 
   get_user_flagrec(conf.bot->u, &myfr, NULL);
 
