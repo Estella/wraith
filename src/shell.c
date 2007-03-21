@@ -30,6 +30,7 @@ static const char rcsid[] = "$Id$";
 #include "bg.h"
 #include "stat.h"
 #include "users.h"
+#include "botnet.h"
 #include "src/mod/server.mod/server.h"
 
 #include <sys/types.h>
@@ -151,7 +152,12 @@ void check_maxfiles()
         else
           bogus--;
     if (bogus >= 150 || failed_close >= 50) {
-      nuke_server("Max FD reached, restarting...");
+      if (tands > 0) {
+        botnet_send_chat(-1, conf.bot->nick, "Max FD reached, restarting...");
+        botnet_send_bye("Max FD reached, restarting...");
+      }
+
+      nuke_server("brb");
       cycle_time = 0;
       restart(-1);
     } else if (bogus >= 100 && (bogus % 10) == 0) {
