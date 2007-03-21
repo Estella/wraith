@@ -404,7 +404,7 @@ void show_channels(int idx, char *handle)
       total++;
   }
 
-  egg_snprintf(format, sizeof format, "  %%c%%-%us %%-s%%-s%%-s%%-s%%-s\n", (l+2));
+  egg_snprintf(format, sizeof format, "  %%c%%-%us %%-s%%-s%%-s%%-s%%-s%%-s\n", (l+2));
 
   for (chan = chanset;chan;chan = chan->next) {
     get_user_flagrec(u, &fr, chan->dname);
@@ -417,7 +417,7 @@ void show_channels(int idx, char *handle)
         dprintf(idx, format, !conf.bot->hub && me_op(chan) ? '@' : ' ', chan->dname, !shouldjoin(chan) ? "(inactive) " : "", 
            channel_privchan(chan) ? "(private)  " : "", chan->manop ? "(no manop) " : "", 
            channel_bitch(chan) && !channel_botbitch(chan) ? "(bitch)    " : channel_botbitch(chan) ? "(botbitch) " : "",
-           channel_closed(chan) ?  "(closed)" : "");
+           channel_closed(chan) ?  "(closed) " : "", channel_backup(chan) ? "(backup)" : "");
     }
   }
   if (!first)
