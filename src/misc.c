@@ -572,6 +572,8 @@ void kill_bot(char *s1, char *s2)
 void
 readsocks(const char *fname)
 {
+  restarting = 1;
+
   FILE *f = NULL;
 
   if (!(f = fopen(fname, "r"))) {
