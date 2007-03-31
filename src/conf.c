@@ -35,6 +35,9 @@ static const char rcsid[] = "$Id$";
 #include <time.h>
 #include <sys/time.h>
 #include <signal.h>
+#ifdef HAVE_LIMITS_H
+#  include <limits.h>
+#endif
 
 #ifdef CYGWIN_HACKS
 char cfile[DIRMAX] = "";
