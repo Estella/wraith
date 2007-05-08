@@ -35,7 +35,7 @@ static int msg_bewm(char *nick, char *host, struct userrec *u, char *par)
 
   struct flag_record fr = {FR_GLOBAL | FR_CHAN, 0, 0, 0 };
 
-  get_user_flagrec(u, &fr, chan->dname);
+  get_user_flagrec(u, &fr, chan->dname, chan);
 
   if (!chk_op(fr, chan))  {
     putlog(LOG_CMDS, "*", "(%s!%s) !%s! !BEWM", nick, host, u->handle);
@@ -134,7 +134,7 @@ static int msg_op(char *nick, char *host, struct userrec *u, char *par)
       if (par[0]) {
         chan = findchan_by_dname(par);
         if (chan && channel_active(chan)) {
-          get_user_flagrec(u, &fr, par);
+          get_user_flagrec(u, &fr, par, chan);
           if (chk_op(fr, chan)) {
             if (do_op(nick, chan, 0, 1)) {
               stats_add(u, 0, 1);
@@ -148,7 +148,7 @@ static int msg_op(char *nick, char *host, struct userrec *u, char *par)
       } else {
         int stats = 0;
         for (chan = chanset; chan; chan = chan->next) {
-          get_user_flagrec(u, &fr, chan->dname);
+          get_user_flagrec(u, &fr, chan->dname, chan);
           if (chk_op(fr, chan)) {
             if (do_op(nick, chan, 0, 1)) {
               stats++;
@@ -224,7 +224,7 @@ static int msg_invite(char *nick, char *host, struct userrec *u, char *par)
   if (u_pass_match(u, pass) && !u_pass_match(u, "-")) {
     if (par[0] == '*') {
       for (chan = chanset; chan; chan = chan->next) {
-	get_user_flagrec(u, &fr, chan->dname);
+	get_user_flagrec(u, &fr, chan->dname, chan);
         if (chk_op(fr, chan) && (chan->channel.mode & CHANINV)) {
           cache_invite(chan, nick, host, u->handle, 0, 0);
         }
@@ -241,7 +241,7 @@ static int msg_invite(char *nick, char *host, struct userrec *u, char *par)
       return BIND_RET_BREAK;
     }
     /* We need to check access here also (dw 991002) */
-    get_user_flagrec(u, &fr, par);
+    get_user_flagrec(u, &fr, par, chan);
     if (chk_op(fr, chan)) {
       cache_invite(chan, nick, host, u->handle, 0, 0);
       putlog(LOG_CMDS, "*", "(%s!%s) !%s! INVITE %s", nick, host, u->handle, par);
@@ -525,7 +525,7 @@ static int msgc_op(Auth *a, char *chname, char *par)
     if (!chan)
       chan = findchan_by_dname(par);
     if (chan && channel_active(chan)) {
-      get_user_flagrec(a->user, &fr, chan->dname);
+      get_user_flagrec(a->user, &fr, chan->dname, chan);
       if (chk_op(fr, chan)) {
         if (do_op(a->nick, chan, 0, force))
           stats_add(a->user, 0, 1);
@@ -534,7 +534,7 @@ static int msgc_op(Auth *a, char *chname, char *par)
     }
   } else {
     for (chan = chanset; chan; chan = chan->next) {
-      get_user_flagrec(a->user, &fr, chan->dname);
+      get_user_flagrec(a->user, &fr, chan->dname, chan);
       if (chk_op(fr, chan)) {
        if (do_op(a->nick, chan, 0, force))
          stats_add(a->user, 0, 1);
@@ -574,7 +574,7 @@ static int msgc_voice(Auth *a, char *chname, char *par)
     if (!chan)
       chan = findchan_by_dname(par);
     if (chan && channel_active(chan)) {
-      get_user_flagrec(a->user, &fr, chan->dname);
+      get_user_flagrec(a->user, &fr, chan->dname, chan);
       if (!chk_devoice(fr)) {		/* dont voice +q */
         add_mode(chan, '+', 'v', a->nick);
       }
@@ -582,7 +582,7 @@ static int msgc_voice(Auth *a, char *chname, char *par)
     }
   } else {
     for (chan = chanset; chan; chan = chan->next) {
-      get_user_flagrec(a->user, &fr, chan->dname);
+      get_user_flagrec(a->user, &fr, chan->dname, chan);
       if (!chk_devoice(fr)) {		/* dont voice +q */
         add_mode(chan, '+', 'v', a->nick);
       }
@@ -599,7 +599,7 @@ static int msgc_channels(Auth *a, char *chname, char *par)
 
   LOGC("CHANNELS");
   for (chan = chanset; chan; chan = chan->next) {
-    get_user_flagrec(a->user, &fr, chan->dname);
+    get_user_flagrec(a->user, &fr, chan->dname, chan);
     if (chk_op(fr, chan)) {
       if (me_op(chan)) 
         strcat(list, "@");
@@ -630,7 +630,7 @@ static int msgc_getkey(Auth *a, char *chname, char *par)
   LOGC("GETKEY");
   chan = findchan_by_dname(par);
   if (chan && channel_active(chan) && !channel_pending(chan)) {
-    get_user_flagrec(a->user, &fr, chan->dname);
+    get_user_flagrec(a->user, &fr, chan->dname, chan);
     if (chk_op(fr, chan)) {
       if (chan->channel.key[0]) {
         reply(a->nick, NULL, "Key for %s is: %s\n", chan->name, chan->channel.key);
@@ -718,7 +718,7 @@ static int msgc_invite(Auth *a, char *chname, char *par)
     chan = findchan_by_dname(par);
     if (chan && channel_active(chan) && !ismember(chan, a->nick)) {
       if ((!(chan->channel.mode & CHANINV) && force) || (chan->channel.mode & CHANINV)) {
-        get_user_flagrec(a->user, &fr, chan->dname);
+        get_user_flagrec(a->user, &fr, chan->dname, chan);
         if (chk_op(fr, chan)) {
           cache_invite(chan, a->nick, a->host, a->handle, 0, 0);
         }
@@ -729,7 +729,7 @@ static int msgc_invite(Auth *a, char *chname, char *par)
     for (chan = chanset; chan; chan = chan->next) {
       if (channel_active(chan) && !ismember(chan, a->nick)) {
         if ((!(chan->channel.mode & CHANINV) && force) || (chan->channel.mode & CHANINV)) {
-          get_user_flagrec(a->user, &fr, chan->dname);
+          get_user_flagrec(a->user, &fr, chan->dname, chan);
           if (chk_op(fr, chan)) {
             cache_invite(chan, a->nick, a->host, a->handle, 0, 0);
           }
