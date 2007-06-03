@@ -162,19 +162,11 @@ static void cmd_pls_ban(int idx, char *par)
 
 static void cmd_pls_exempt(int idx, char *par)
 { 
-  if (!use_exempts) {
-    dprintf(idx, "This command can only be used with use-exempts enabled.\n");
-    return;
-  }
   cmd_pls_mask('e', idx, par);
 }
 
 static void cmd_pls_invite(int idx, char *par)
 {
-  if (!use_invites) {
-    dprintf(idx, "This command can only be used with use-invites enabled.\n");
-    return;
-  }
   cmd_pls_mask('I', idx, par);
 }
 
@@ -299,19 +291,11 @@ static void cmd_mns_ban(int idx, char *par)
 
 static void cmd_mns_exempt(int idx, char *par)
 {
-  if (!use_exempts) {
-    dprintf(idx, "This command can only be used with use-exempts enabled.\n");
-    return;
-  }
   cmd_mns_mask('e', idx, par);
 }
 
 static void cmd_mns_invite(int idx, char *par)
 {
-  if (!use_invites) {
-    dprintf(idx, "This command can only be used with use-invites enabled.\n");
-    return;
-  }
   cmd_mns_mask('I', idx, par);
 }
 
@@ -338,19 +322,11 @@ static void cmd_bans(int idx, char *par)
 
 static void cmd_exempts(int idx, char *par)
 {
-  if (!use_exempts) {
-    dprintf(idx, "This command can only be used with use-exempts enabled.\n");
-    return;
-  }
   cmd_masks('e', idx, par);
 }
 
 static void cmd_invites(int idx, char *par)
 {
-  if (!use_invites) {
-    dprintf(idx, "This command can only be used with use-invites enabled.\n");
-    return;
-  }
   cmd_masks('I', idx, par);
 }
 
@@ -676,17 +652,9 @@ static void cmd_stick_yn(int idx, char *par, int yn)
   }
   /* Now deal with exemptions */
   if (!egg_strcasecmp(stick_type, "exempt")) {
-    if (!use_exempts) {
-      dprintf(idx, "This command can only be used with use-exempts enabled.\n");
-      return;
-    }
     type = 'e';
     str_type = "exempt";
   } else if (!egg_strcasecmp(stick_type, "invite")) {
-    if (!use_invites) {
-      dprintf(idx, "This command can only be used with use-invites enabled.\n");
-      return;
-    }
     type = 'I';
     str_type = "invite";
   } else if (!egg_strcasecmp(stick_type, "ban")) {
