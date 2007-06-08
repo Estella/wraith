@@ -774,7 +774,7 @@ static void got303(char *from, char *msg)
   newsplit(&msg);
   fixcolon(msg);
   tmp = newsplit(&msg);
-  if (tmp[0] && !match_my_nick(tmp)) {
+  if (tmp[0] && match_my_nick(tmp)) {
     bool ison_orig = 0;
 
     while ((tmp = newsplit(&msg))[0]) {
@@ -806,7 +806,7 @@ static int got432(char *from, char *msg)
   else {
     putlog(LOG_MISC, "*", "Server says my nickname '%s' is invalid.", botname);
     rotate_nick(botname, origbotname);
-    dprintf(DP_MODE, "NICK %s\n", erroneus);
+    dprintf(DP_MODE, "NICK %s\n", botname);
     return 0;
   }
   return 0;
