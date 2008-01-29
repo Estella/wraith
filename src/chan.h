@@ -176,6 +176,7 @@ struct chanset_t {
   int mdop;
   int mop;
   int voice_non_ident;
+  int auto_delay;
 /* Chanint template 
  *int temp;
  */
