@@ -581,6 +581,7 @@ static void bot_update(int idx, char *par)
   char *bot = NULL, x, *vversion = NULL;
   int vlocalhub = 0;
   time_t vbuildts = 0L;
+  int vrevision = 0;
 
   bot = newsplit(&par);
   x = par[0];
@@ -594,10 +595,12 @@ static void bot_update(int idx, char *par)
   if (par[0])
     vbuildts = atol(newsplit(&par));
   if (par[0])
+    vrevision = atol(newsplit(&par));
+  if (par[0])
     vversion = newsplit(&par);
 
   if (in_chain(bot))
-    updatebot(idx, bot, x, vlocalhub, vbuildts, vversion);
+    updatebot(idx, bot, x, vlocalhub, vbuildts, vrevision, vversion);
 }
 
 /* Newbot next share?
@@ -607,6 +610,7 @@ static void bot_nlinked(int idx, char *par)
   char *newbot = NULL, *next = NULL, *p = NULL, s[1024] = "", x = 0, *vversion = NULL;
   int i, vlocalhub = 0;
   time_t vbuildts = 0L;
+  int vrevision = 0;
   bool bogus = 0;
 
   newbot = newsplit(&par);
@@ -658,8 +662,10 @@ static void bot_nlinked(int idx, char *par)
   if (par[0])
     vbuildts = atol(newsplit(&par));
   if (par[0])
+    vrevision = atol(newsplit(&par));
+  if (par[0])
     vversion = newsplit(&par);
-  botnet_send_nlinked(idx, newbot, next, x, vlocalhub, vbuildts, vversion);
+  botnet_send_nlinked(idx, newbot, next, x, vlocalhub, vbuildts, vrevision, vversion);
   
   if (x == '!') {
     if (conf.bot->hub)
@@ -668,7 +674,7 @@ static void bot_nlinked(int idx, char *par)
       chatout("*** %s linked to botnet.\n", newbot);
     x = '-';
   }
-  addbot(newbot, dcc[idx].nick, next, x, vlocalhub, vbuildts, vversion ? vversion : (char *) "");
+  addbot(newbot, dcc[idx].nick, next, x, vlocalhub, vbuildts, vrevision, vversion ? vversion : (char *) "");
 }
 
 static void bot_unlinked(int idx, char *par)
