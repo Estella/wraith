@@ -104,6 +104,7 @@ flush_cookies(struct chanset_t *chan, int pri)
 
   chan->cbytes = 0;
 
+  int nick_i = 0;
   for (unsigned int i = 0; i < (modesperline - 1); i++) {
     if (chan->ccmode[i].op && postsize > strlen(chan->ccmode[i].op)) {
       memberlist* mx = ismember(chan, chan->ccmode[i].op);
@@ -117,7 +118,7 @@ flush_cookies(struct chanset_t *chan, int pri)
         /* .. and params */
         postsize -= egg_strcatn(post, chan->ccmode[i].op, sizeof(post));
         postsize -= egg_strcatn(post, " ", sizeof(post));
-        nicks[i] = mx;
+        nicks[nick_i++] = mx;
       }
       free(chan->ccmode[i].op);
       chan->ccmode[i].op = NULL;
