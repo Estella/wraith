@@ -866,7 +866,8 @@ append_line(int idx, char *line)
       free(p->msg);
       free(p);
     }
-    c->buffer = 0;
+    c->buffer = NULL;
+    c->current_lines = 0;
     dcc[idx].status &= ~STAT_PAGE;
     do_boot(idx, conf.bot->nick, "too many pages - senq full");
     return;
@@ -875,14 +876,10 @@ append_line(int idx, char *line)
   size_t l = strlen(line);
 
   if ((c->line_count < c->max_line) && (c->buffer == NULL)) {
-    c->line_count++;
+    ++c->line_count;
     tputs(dcc[idx].sock, line, l);
   } else {
-    c->current_lines++;
-    if (c->buffer == NULL)
-      q = NULL;
-    else
-      for (q = c->buffer; q->next; q = q->next) ;
+    ++c->current_lines;
 
     p = (struct msgq *) my_calloc(1, sizeof(struct msgq));
 
@@ -890,10 +887,13 @@ append_line(int idx, char *line)
     p->msg = (char *) my_calloc(1, l + 1);
     p->next = NULL;
     strcpy(p->msg, line);
-    if (q == NULL)
+
+    if (c->buffer == NULL)
       c->buffer = p;
-    else
+    else {
+      for (q = c->buffer; q->next; q = q->next) ;
       q->next = p;
+    }
   }
 }
 
