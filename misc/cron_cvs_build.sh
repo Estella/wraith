@@ -23,7 +23,7 @@ cvs -d $PRIVATE_ROOT login
 cvs -z9 -d $PRIVATE_ROOT checkout wraith
 cd ${HOME}/tmp/wraith/
 # export PWD="${HOME}/wraith/"
-./build -C -n -N -s lordares@endurance.quadspeedi.net:public_html/nightly/ all
+./build.sh -C -n -N -s lordares@endurance.quadspeedi.net:public_html/nightly/ all
 cd ${HOME}/tmp/
 cp -f ${HOME}/tmp/wraith/misc/cron_cvs_build.sh ${HOME}/tmp/cron_cvs_build.sh
 #rm -rf ${HOME}/tmp/wraith
