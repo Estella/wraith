@@ -201,7 +201,7 @@ AH_BOTTOM([/*
 #endif
 ])
 
-echo ""
-echo ""
-echo "------------ Configuring BDLIB ------------"
-cd src/bdlib && ./configure
+#echo ""
+#echo ""
+#echo "------------ Configuring BDLIB ------------"
+#cd src/bdlib && ./configure
