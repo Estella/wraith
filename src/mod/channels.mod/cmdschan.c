@@ -424,6 +424,7 @@ static void cmd_info(int idx, char *par)
 
 static void cmd_chinfo(int idx, char *par)
 {
+
   if (!use_info) {
     dprintf(idx, "Info storage is turned off.\n");
     return;
@@ -438,7 +439,7 @@ static void cmd_chinfo(int idx, char *par)
 
   struct userrec *u1 = get_user_by_handle(userlist, handle);
 
-  if (!u1) {
+  if (!u1 || (u1 && !whois_access(dcc[idx].user, u1))) {
     dprintf(idx, "No such user.\n");
     return;
   }
